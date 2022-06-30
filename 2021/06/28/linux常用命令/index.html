@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="linux常用指令整理常用的linux命令">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux总结">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="linux常用指令整理常用的linux命令">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220630180309837.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220630181827664.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220630182231128.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220630182718116.png">
+<meta property="article:published_time" content="2021-06-28T08:42:38.000Z">
+<meta property="article:modified_time" content="2022-06-30T10:36:01.254Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220630180309837.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>linux总结 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          linux总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-06-28 16:42:38" itemprop="dateCreated datePublished" datetime="2021-06-28T16:42:38+08:00">2021-06-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-06-30 18:36:01" itemprop="dateModified" datetime="2022-06-30T18:36:01+08:00">2022-06-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="linux常用指令整理"><a href="#linux常用指令整理" class="headerlink" title="linux常用指令整理"></a>linux常用指令整理</h1><p>常用的linux命令</p>
+<p><strong><span id="more"></span></strong></p>
+<h2 id="ls"><a href="#ls" class="headerlink" title="ls:"></a>ls:</h2><ul>
+<li>alias:定义命令的别名，如alias ls&#x3D;”ls –color&#x3D;auto”</li>
+<li>ualias:删除已定义的别名 ，如ualias ls</li>
+</ul>
+<h2 id="pwd"><a href="#pwd" class="headerlink" title="pwd:"></a>pwd:</h2><ul>
+<li>打印当前工作目录，打印的是当前所在的绝对路径</li>
+</ul>
+<h2 id="cd"><a href="#cd" class="headerlink" title="cd"></a>cd</h2><ul>
+<li>cd：进入home文件夹</li>
+<li>cd .. :向上移动一个级别</li>
+<li>cd -：返回上一个目录</li>
+</ul>
+<h2 id="cp"><a href="#cp" class="headerlink" title="cp"></a>cp</h2><ul>
+<li>cp file1 file2：复制源文件到目标文件</li>
+<li>cp -r dir1 dir2：递归复制整个dir1目录到dir2目录</li>
+</ul>
+<h2 id="rm"><a href="#rm" class="headerlink" title="rm"></a>rm</h2><ul>
+<li>rm filename：删除文件</li>
+<li>rm -r dir&#x2F; ：删除整个空目录</li>
+<li>rm -rf dir&#x2F; ：删除整个有内容的目录</li>
+</ul>
+<h2 id="mv"><a href="#mv" class="headerlink" title="mv"></a>mv</h2><ul>
+<li>mv file1 file2&#x2F; :移动文件file1到file2的位置，如果使用绝对路径，则使用 mv &#x2F;home&#x2F;username&#x2F;file .&#x2F;(.&#x2F;是当前所在目录)</li>
+<li>mv oldname newname：给文件重命名，同时将其保存在原目录中</li>
+</ul>
+<h2 id="mkdir"><a href="#mkdir" class="headerlink" title="mkdir"></a>mkdir</h2><ul>
+<li>mkdir dir&#x2F; :创建不存在的新目录</li>
+<li>mkdir -p dir1&#x2F;dir&#x2F; :创建一个子目录</li>
+</ul>
+<h2 id="man"><a href="#man" class="headerlink" title="man"></a>man</h2><ul>
+<li>man mkdir :查看其他命令的命令手册</li>
+</ul>
+<h2 id="touch"><a href="#touch" class="headerlink" title="touch"></a>touch</h2><ul>
+<li>touch new_file_name :创建新文件夹</li>
+</ul>
+<h2 id="chomd"><a href="#chomd" class="headerlink" title="chomd"></a>chomd</h2><ul>
+<li>chomd +x filename :赋予filename文件可执行权限（w:写权限，r:读权限）</li>
+</ul>
+<h2 id="x2F-命令"><a href="#x2F-命令" class="headerlink" title=".&#x2F;命令"></a>.&#x2F;命令</h2><ul>
+<li>.&#x2F;filename :可以直接执行该文件，不用在系统中安装任何解释器，如<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220630180309837.png" alt="image-20220630180309837"></li>
+</ul>
+<h2 id="exit"><a href="#exit" class="headerlink" title="exit"></a>exit</h2><ul>
+<li>结束会话</li>
+</ul>
+<h2 id="sudo"><a href="#sudo" class="headerlink" title="sudo"></a>sudo</h2><ul>
+<li>代表超级用户，允许在运行特定命令时充当超级用户或根用户</li>
+</ul>
+<h2 id="shutdown"><a href="#shutdown" class="headerlink" title="shutdown"></a>shutdown</h2><ul>
+<li>shutdown now :在一分钟内关机</li>
+<li>shutdown 20:40 :在晚上八点四十关机</li>
+<li>shutdown -c :取消以前的shutdown调用</li>
+</ul>
+<h2 id="apt-x2F-yum-x2F-pacman"><a href="#apt-x2F-yum-x2F-pacman" class="headerlink" title="apt&#x2F;yum&#x2F;pacman"></a>apt&#x2F;yum&#x2F;pacman</h2><ul>
+<li>sudo apt&#x2F;yum&#x2F;pacman install appname：安装软件</li>
+</ul>
+<h2 id="echo"><a href="#echo" class="headerlink" title="echo"></a>echo</h2><ul>
+<li>echo “$pathname” :打印环境变量，echo在终端中显式定义的文本</li>
+</ul>
+<h2 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h2><ul>
+<li>cat filename :预览文件，cat是concatenate缩写</li>
+</ul>
+<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a>ps</h2><ul>
+<li>打印当前会话正在运行的进程</li>
+</ul>
+<h2 id="kill"><a href="#kill" class="headerlink" title="kill"></a>kill</h2><ul>
+<li>kill +进程ID或程序的二进制名称来结束程序</li>
+</ul>
+<h2 id="ping"><a href="#ping" class="headerlink" title="ping"></a>ping</h2><ul>
+<li>ping goole.com :使用它来请求域或IP地址</li>
+</ul>
+<h2 id="passwd"><a href="#passwd" class="headerlink" title="passwd"></a>passwd</h2><ul>
+<li>修改用户账户的密码</li>
+</ul>
+<h2 id="which"><a href="#which" class="headerlink" title="which"></a>which</h2><ul>
+<li>输出shell命令的完整路径，如<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220630181827664.png" alt="image-20220630181827664"></li>
+</ul>
+<h2 id="shred"><a href="#shred" class="headerlink" title="shred"></a>shred</h2><ul>
+<li>shred filename :覆盖文件的内容，极难修复</li>
+<li>shred -u filename :立即删除文件</li>
+</ul>
+<h2 id="whomai"><a href="#whomai" class="headerlink" title="whomai"></a>whomai</h2><ul>
+<li>得到当前使用whoami的用户的用户名</li>
+</ul>
+<h2 id="whatis"><a href="#whatis" class="headerlink" title="whatis"></a>whatis</h2><ul>
+<li>打印任何其他命令的单行说明<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220630182231128.png" alt="image-20220630182231128"></li>
+</ul>
+<h2 id="wc"><a href="#wc" class="headerlink" title="wc"></a>wc</h2><ul>
+<li>wc filename :显示文件的行数、字数、字节大小和文件名</li>
+<li>wc -w filename :只显示文件的字数</li>
+</ul>
+<h2 id="uname"><a href="#uname" class="headerlink" title="uname"></a>uname</h2><ul>
+<li>打印操作系统信息</li>
+</ul>
+<h2 id="find"><a href="#find" class="headerlink" title="find"></a>find</h2><ul>
+<li>find [flags] [path] -name [expression] :根据正则表达式在目录层次结构中搜索文件，如<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220630182718116.png" alt="image-20220630182718116"></li>
+</ul>
+<h2 id="wget"><a href="#wget" class="headerlink" title="wget"></a>wget</h2><ul>
+<li><p>从互联网上检索资源，如从github获取一个python文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/DaniDiazTech/Object-Oriented-Programming-in-Python/main/object_oriented_programming/cookies.py</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/linux/" rel="tag"># linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/06/27/linux%E6%80%BB%E7%BB%93/" rel="prev" title="linux总结">
+      <i class="fa fa-chevron-left"></i> linux总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/06/27/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/" rel="next" title="测试工具">
+      测试工具 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#linux%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4%E6%95%B4%E7%90%86"><span class="nav-text">linux常用指令整理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ls"><span class="nav-text">ls:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pwd"><span class="nav-text">pwd:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cd"><span class="nav-text">cd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cp"><span class="nav-text">cp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rm"><span class="nav-text">rm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mv"><span class="nav-text">mv</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mkdir"><span class="nav-text">mkdir</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#man"><span class="nav-text">man</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#touch"><span class="nav-text">touch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chomd"><span class="nav-text">chomd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#x2F-%E5%91%BD%E4%BB%A4"><span class="nav-text">.&#x2F;命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#exit"><span class="nav-text">exit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sudo"><span class="nav-text">sudo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shutdown"><span class="nav-text">shutdown</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#apt-x2F-yum-x2F-pacman"><span class="nav-text">apt&#x2F;yum&#x2F;pacman</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#echo"><span class="nav-text">echo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cat"><span class="nav-text">cat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ps"><span class="nav-text">ps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kill"><span class="nav-text">kill</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ping"><span class="nav-text">ping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#passwd"><span class="nav-text">passwd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#which"><span class="nav-text">which</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shred"><span class="nav-text">shred</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#whomai"><span class="nav-text">whomai</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#whatis"><span class="nav-text">whatis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wc"><span class="nav-text">wc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#uname"><span class="nav-text">uname</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#find"><span class="nav-text">find</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wget"><span class="nav-text">wget</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
