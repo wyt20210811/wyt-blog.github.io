@@ -269,7 +269,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-06-30 10:33:13" itemprop="dateModified" datetime="2022-06-30T10:33:13+08:00">2022-06-30</time>
+                <time title="Modified: 2022-06-30 10:59:28" itemprop="dateModified" datetime="2022-06-30T10:59:28+08:00">2022-06-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -292,138 +292,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><!--read more-->
-
-<h3 id="终端快捷键"><a href="#终端快捷键" class="headerlink" title="终端快捷键"></a>终端快捷键</h3><ul>
-<li>crtl+a：移动到命令行开始</li>
-<li>crtl+e：移动到命令行末尾</li>
-<li>crtl+l： 清理命令行</li>
-<li>crtl+c： 终止命令</li>
-<li>!$： 显示系统最近用过的一条参数（比如说最近用过的一条路径）</li>
-</ul>
-<h3 id="gonome快捷键"><a href="#gonome快捷键" class="headerlink" title="gonome快捷键"></a>gonome快捷键</h3><ul>
-<li>alt+F1：同Windows的win，打开应用程序菜单</li>
-<li>alt+F2：同Windows的win+R，打开命令</li>
-<li>crtl+alt+d：返回桌面</li>
-<li>crtl+alt+l：锁屏</li>
-<li>alt+tab：切换程序窗口</li>
-</ul>
-<h3 id="文件查找"><a href="#文件查找" class="headerlink" title="文件查找"></a>文件查找</h3><h4 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h4><ul>
-<li>grep -color “*” &#x2F;路径 :在文件中高亮“*”</li>
-<li>grep -v “*”  :查找文件中不包含“*”的行</li>
-<li>grep -n “*” :显示“*“在文件中的行号</li>
-<li>grep -c “*”:显示有多少行”*“</li>
-<li>grep -A 1 “*”：显示包含”*“的一行和其之后的一行</li>
-<li>grep -B 1 “*”：显示包含行和之前的一行</li>
-<li>grep -C 1”*”：显示包含行和前后一行</li>
-<li>grep -i “*”：不区分大小写</li>
-<li>grep -l “a”*：查找批量文件中包含a的文件</li>
-<li>grep -L “a”*：查找批量文件中不包含a的文件</li>
-<li>grep正则：可以识别^,$,.,[,],*，如查找以a开头 grep ‘^a’，以b结尾 grep ‘b$’</li>
-<li>grep -w “a”:查找单词a</li>
-</ul>
-<h4 id="egrep"><a href="#egrep" class="headerlink" title="egrep"></a>egrep</h4><ul>
-<li>适用于多条件查找，支持的正则表达式除了grep中的还包括（，），、，{，}，？，+，|等</li>
-</ul>
-<h4 id="fgrep"><a href="#fgrep" class="headerlink" title="fgrep"></a>fgrep</h4><ul>
-<li>不支持正则表达式，因此可以直接在文件中查找正则表达式里面的符号</li>
-</ul>
-<h3 id="vim"><a href="#vim" class="headerlink" title="vim"></a>vim</h3><ul>
-<li>一般指令模式：默认模式，只读</li>
-<li>编辑模式：+”i“，编辑文本</li>
-<li>指令列模式：+”：“，用于保存退出<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/linux%E6%80%BB%E7%BB%93/image-20220629160449767.png" alt="image-20220629160449767"></li>
-</ul>
-<h2 id="磁盘"><a href="#磁盘" class="headerlink" title="磁盘"></a>磁盘</h2><ul>
-<li>SATA：抗干扰性强，支持热插拔</li>
-<li>SCSI：多用于个人工作站，高转速，传输时CPU占用率低</li>
-<li>SAS：采取序列式技术，更高的传输速度</li>
-</ul>
-<h2 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h2><ul>
-<li>MBR：第一个扇区最重要，包含446bytes的主要开机记录和64bytes的分区表，分区表最多分为四个分区，一个主分区和扩展分区</li>
-<li>GPT：针对不同磁盘有不同大小的扇区，在定义扇区上使用逻辑区块地址，默认大小512bytes。第一个区块记录主要开机记录，后33个区块记录分区信息，除了第一个分区做表头，剩下的32个分区最多可以分为32*4&#x3D;128个分区，且都是主分区</li>
-</ul>
-<h2 id="开机检测程序BIOS"><a href="#开机检测程序BIOS" class="headerlink" title="开机检测程序BIOS"></a>开机检测程序BIOS</h2><ul>
-<li>basic input&#x2F;output system，基本输入&#x2F;输出系统，存放在断电后不会丢失的只读内存中。</li>
-<li>开机后执行的第一个程序，知道可以开机的磁盘并读取磁盘第一个扇区的主要开机记录，再由主要开机记录执行其中的开机程序</li>
-<li>主要开机记录：包含选单、载入核心文件、转交其他开机管理程序。转交功能可以实现多重引导</li>
-</ul>
-<h2 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h2><ul>
-<li>inode：一个文件占用一个inode（128bytes），记录文件权限、所有者、容量、更改时间等，以及记录文件内容所在的block编号，可以使用直接引用和间接引用</li>
-<li>block：记录文件的内容</li>
-<li>目录：创建目录时，会分配一个inode和至少一个block,block记录的时所有文件的inode编号和文件名</li>
-</ul>
-<h2 id="文件与目录的基本操作"><a href="#文件与目录的基本操作" class="headerlink" title="文件与目录的基本操作"></a>文件与目录的基本操作</h2><ul>
-<li>ls -a：列出全部文件&#x2F;-d:列出目录&#x2F;-l:以长数据串行列出，包含文件属性、权限</li>
-<li>cd：更改目录</li>
-<li>mkdir：创建目录 -m：配置目录权限&#x2F;-p：递归创建目录</li>
-<li>rmkdir：删除目录</li>
-<li>touch：更新文件时间</li>
-<li>cp：复制文件 -i：若目标文件已存在就要先询问&#x2F;-u：只有目标不存在或者比较旧才更新</li>
-<li>rm：删除文件</li>
-<li>mv:移动文件</li>
-<li>修改权限：chmod [u&#x2F;g&#x2F;o&#x2F;a] [+-&#x3D;] [rwx] dirname&#x2F;filename</li>
-<li>文件默认权限：没有可执行权限（666）</li>
-<li>目录默认权限：必须有可执行权限（777）</li>
-</ul>
-<h2 id="获取文件内容"><a href="#获取文件内容" class="headerlink" title="获取文件内容"></a>获取文件内容</h2><ul>
-<li>cat：获取文件内容</li>
-<li>tac：从该文件的最后一行开始打印</li>
-<li>more：适合大文件查看，可以一页一页查看</li>
-<li>less：多了一个向前翻页</li>
-<li>head - n：得到文件的前n行</li>
-<li>tail -n：得到文件的后几行</li>
-<li>od：以字符或16进制显示二进制文件</li>
-</ul>
-<h2 id="指令与文件搜索"><a href="#指令与文件搜索" class="headerlink" title="指令与文件搜索"></a>指令与文件搜索</h2><ul>
-<li>搜索指令：which [-a] commond</li>
-<li>文件搜索：whereis [-b&#x2F;m&#x2F;s&#x2F;u] dirname&#x2F;filename；locate [-i&#x2F;r] keyword；find -name “*“</li>
-</ul>
-<h2 id="文件压缩与打包"><a href="#文件压缩与打包" class="headerlink" title="文件压缩与打包"></a>文件压缩与打包</h2><ul>
-<li>gzip -c：将压缩数据输出到屏幕上&#x2F;-d：解压缩&#x2F;-t：显示压缩文件是否出错&#x2F;-v：显示压缩比等信息</li>
-<li>bzip2 -k：保留原文件压缩</li>
-<li>xz -dtlkc# filename：最佳的压缩比</li>
-<li>打包压缩：tar -jcv -f filename.tar.bz2</li>
-<li>查看：tar -jtv -f filename.tar.bz2</li>
-<li>解压缩：tar -jxv -f filename.tar.bc2 -C要解压缩的目录</li>
-</ul>
-<h2 id="提取指令"><a href="#提取指令" class="headerlink" title="提取指令"></a>提取指令</h2><ul>
-<li>cut -d ：后接分隔符</li>
-<li>cut -f n ：在分隔符分割以后，取第n个区间</li>
-<li>cut -c n- ：以字符为单位取出区间</li>
-</ul>
-<h2 id="排序指令"><a href="#排序指令" class="headerlink" title="排序指令"></a>排序指令</h2><ul>
-<li>sort -f：忽略大小写</li>
-<li>sort -b ：忽略前面空格</li>
-<li>sort -r ：反向排序</li>
-<li>sort -u ：重复内容只出现一次</li>
-<li>sort -t  ：以“*”为分隔符</li>
-<li>sort -k ：指定区间的排序</li>
-<li>uniq -i：重复数据只取一个，不区分大小写</li>
-<li>uniq -c ：重复数据只取一个并计数</li>
-</ul>
-<h2 id="双向输出重定向"><a href="#双向输出重定向" class="headerlink" title="双向输出重定向"></a>双向输出重定向</h2><ul>
-<li>tee [-a] file ：不仅在屏幕上显示输出，还会传送到文件中</li>
-</ul>
-<h2 id="字符转换指令"><a href="#字符转换指令" class="headerlink" title="字符转换指令"></a>字符转换指令</h2><ul>
-<li>tr [-d] ：-d用来删除一行，否则用来替换字符</li>
-<li>col ：将tab转成空格</li>
-<li>expand -t ：将tab转成t个空格</li>
-<li>join ：将相同数据的两行合并</li>
-<li>paste ：将两行粘贴在一起</li>
-<li>split [-bl] file PREFIX：将一个文件划分成多个文件，-b以大小分区，-l以行数分区</li>
-</ul>
-<h2 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h2><ul>
-<li>awk $n ：每次处理一行，以字段为单位进行处理，n是字段号，$0表示一整行<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/linux%E6%80%BB%E7%BB%93/image-20220630100756345.png" alt="image-20220630100756345"></li>
-<li>awk ‘条件类型1 {动作1} 条件类型2 {动作2}…’ filename：根据字段的条件进行匹配 FS:分隔符 NF：每一行拥有的总字段数 NR：目前处理到第几行<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/linux%E6%80%BB%E7%BB%93/image-20220630101053144.png" alt="image-20220630101053144"></li>
-</ul>
-<h2 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h2><ul>
-<li>ps -l：查看自己的进程； aux：查看系统进程；ps aux | grep thread：查看特定进程</li>
-<li>netstat -anp | grep port ：查看占用端口的进程</li>
-<li>wait()：收到子进程退出的信号，销毁子进程</li>
-<li>孤儿进程：子进程还在运行而父进程退出了，此时孤儿进程会被init进程收养，不会对系统造成危害</li>
-<li>僵尸进程：子进程已经退出，但父进程一直不调用wait或waitpid，导致子进程的进程描述一直在系统中占用进程号，成为僵尸进程。此时需要将他们的父进程杀死，然后僵尸进程会变成孤儿进程被init进程收养，释放掉资源</li>
-</ul>
-
+          <h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><p><em></em></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/wyt-blog.github.io/2021/06/27/linux%E6%80%BB%E7%BB%93/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
