@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="计网基础知识，网络模型、各层协议、设备等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算计网络基础">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/%E8%AE%A1%E7%BD%91/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="计网基础知识，网络模型、各层协议、设备等">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-27T08:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-03T10:29:12.249Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="计网">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/%E8%AE%A1%E7%BD%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>计算计网络基础 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/%E8%AE%A1%E7%BD%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算计网络基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-06-27 16:42:38" itemprop="dateCreated datePublished" datetime="2021-06-27T16:42:38+08:00">2021-06-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-07-03 18:29:12" itemprop="dateModified" datetime="2022-07-03T18:29:12+08:00">2022-07-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/%E8%AE%A1%E7%BD%91/" itemprop="url" rel="index"><span itemprop="name">计网</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>计网基础知识，网络模型、各层协议、设备等</p>
+<p><em><span id="more"></span></em></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<li>目的：资源共享；组成单元：分布在不同地理位置的多台独立的自治计算机；网络中的计算机必须遵循一个统一规则：网络协议</li>
+<li>组成：<ul>
+<li>组成部分：硬件（主机、通信链路、交换设备、网卡等）+ 软件（实现资源共享的工具，一般属于应用层）+ 协议（计网核心，规定了数据传输规范）</li>
+<li>工作方式：边缘部分（用户主机）+ 核心部分（大量网络和了路由器，为边缘提供联通和交换服务）</li>
+<li>功能组成：通信子网（传输介质、通信设备、网络协议，实现数据通信）+ 资源子网（实现硬件、软件、数据资源共享的设备和软件）</li>
+</ul>
+</li>
+<li>分类：<ul>
+<li>分布范围：<ul>
+<li>广域网WAN：几十千米到几千千米之间，因特网的核心，使用交换技术，使用分组存储转发和路由选择，是点到点通信</li>
+<li>局域网LAN：几十米到几千米，使用的是广播技术，一台发送报文所有其他主机都能收到，根据目的地址判断是否接收</li>
+</ul>
+</li>
+<li>交换技术：<ul>
+<li>电路交换网路：在源节点和目的节点之间建立一条专用通路，利用率低、不便于差错控制</li>
+<li>报文交换网络：用户数据+源地址+目的地址+效验码封装成报文，每个节点依次存储转发直到到达目的节点，可以差错控制，但增加了缓冲时延，缓冲区大小难以管理</li>
+<li>分组交换网络：把数据块分为较短的固定长度数据块，加上源地址、目的地址等组成分组进行存储转发，易于管理缓冲区大小、缓冲时延小</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>性能指标：<ul>
+<li>带宽：在数字信道上能达到的最高数据传送速率</li>
+<li>时延：发送时延（从分组的第一个比特到把最后一个比特发送到数据链路上的时间&#x3D;分组长度&#x2F;信道宽度）+传播时延（一个比特从链路一端到达另一端的时间&#x3D;信道长度&#x2F;电磁波在信道上的传输速度）+处理时延+排队时延</li>
+<li>时延带宽积：发送端连续发送数据且第一个比特到达接收端时已经发送了多少比特的数据&#x3D;传播时延*信道带宽</li>
+<li>往返时延 RTT ：从发送端发送数据到发送端接收到来自接收端的确认的时间</li>
+<li>吞吐量：单位时间通过某网络（信道、接口）的数据量</li>
+</ul>
+</li>
+</ul>
+<h2 id="体系结构与参考模型"><a href="#体系结构与参考模型" class="headerlink" title="体系结构与参考模型"></a>体系结构与参考模型</h2><ul>
+<li>分层结构：<ul>
+<li>实体：第n层中活动的元素为实体</li>
+<li>PDU：协议数据单元，是每一层传送数据的单位，包括数据部分 SDU 和控制信息部分 PCI （控制协议操作）</li>
+<li>第n层的实体要使用第n-1层提供的服务实现自身的功能，并向第n+1层提供服务，且提供服务的实现细节是透明的</li>
+</ul>
+</li>
+<li>协议：对等实体之间数据交换的规则，水平结构。协议&#x3D;语法（数据格式）+语义（功能，即发出何种控制信息、完成何种动作、做出何种应答）+同步（各种操作的条件、执行顺序）</li>
+<li>接口：两个相邻层之间数据交换的连接点， SAP 上层实体访问下一层提供的服务的逻辑接口</li>
+<li>服务：下层为紧邻的上层提供功能调用，垂直结构。服务原语&#x3D;请求（用户到提供者）+指示+响应（用户到提供者）+证实<ul>
+<li>有连接（事先建立好连接：连接建立+数据传输+连接释放，如 TCP ）和无连接服务（不用事先建立连接，不可靠，如 UDP \ IP ）</li>
+<li>可靠服务（纠错、检错、应答机制）和不可靠服务</li>
+<li>有应答服务（如文件传输服务，接收方给出应答）和无应答服务（如 www ）</li>
+</ul>
+</li>
+<li><strong>ISO&#x2F;OSI 模型</strong> ：物理层+数据链路层+网络层（通信子网）+传输层（承上启下）+会话层+表示层+应用层（资源子网）<ul>
+<li>物理层：传输单位 比特</li>
+<li>数据链路层：传输单位 帧 ，把网络层传来的 IP 数据报组装成帧。功能包括差错控制、流量控制（接收节点和发送节点的数据传输速率）、共享信道访问控制（广播时），点到点通信</li>
+<li>网络层：传输单位 数据报 ，主要进行分组的路由选择、差错控制、流量控制、拥塞控制</li>
+<li>传输层：传输单位 报文段 TCP 、用户数据报 UDP ，负责的是不同主机之中两个进程之间端到端的通信，流量控制、差错控制等</li>
+<li>会话层：不同主机的两个进程之间进行会话</li>
+<li>表示层：处理两个通信系统中交换信息的表示方式</li>
+<li>应用层：用户与网络的界面</li>
+</ul>
+</li>
+<li><strong>TCP&#x2F;IP 模型</strong>：网络接口层（物理层+数据链路层）+网际层+传输层+应用层（会话层+表示层+应用层）<ul>
+<li>网络接口层：将接收到的 IP 分组发送到指定的物理网络上</li>
+<li>网际层： 数据传输格式和协议为 IP ，同样进行路由选择，但不保证按顺序到达</li>
+<li>传输层：发送端和接收端的对等实体进行会话，包含面向连接的、使用报文段的传输控制协议 TCP ，和无连接的、使用用户数据报、不保证可靠传输的 UDP</li>
+<li>应用层：包括各种高层协议</li>
+</ul>
+</li>
+<li><strong>两种模型的比较</strong>：<ul>
+<li>相同点：<ul>
+<li>二者都采用分层结构</li>
+<li>都基于独立的协议栈</li>
+<li>都解决了异构网络的互联问题</li>
+</ul>
+</li>
+<li>不同点：<ul>
+<li>OSI 明确定义了服务、接口、协议三个概念</li>
+<li>OSI 设计的时候现有结构后有协议，有的协议放置位置不够好，但是由于没有偏向哪个具体协议所以通用性好； TCP&#x2F;IP 是先有协议后有模型，不会出现模型和协议不匹配的问题，但是不适用于其他非 TCP&#x2F;IP 的协议栈</li>
+<li>OSI 模型在网络层上有面向连接和无连接服务，在传输层只有面向连接服务； TCP&#x2F;IP 认为可靠性是端到端的问题，因此网际层只有无连接的，而传输层有面向连接和无连接的</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="物理层"><a href="#物理层" class="headerlink" title="物理层"></a>物理层</h2><ul>
+<li>电路交换：进行数据传输前，两个节点之间先建立一条专用的物理通信路径，包含连接建立、数据传输、连接释放。<ul>
+<li>优点：通信时延小、有序到达、不存在冲突、实时性强、控制简单</li>
+<li>缺点：建立连接时间长、线路独占、不灵活</li>
+</ul>
+</li>
+<li>报文交换：报文携带源地址、目标地址等信息，在交换节点采用存储转发的方式。<ul>
+<li>优点：无需建立连接、动态分配线路、提高线路利用率和可靠性、<strong>提供多目标服务</strong></li>
+<li>缺点：存储转发存在转发时延、报文大小没有限制导致对缓存要求大</li>
+</ul>
+</li>
+<li>分组交换：把大数据分成固定大小的数据段，加上源地址、目的地址、分组等信息构成分组，对分组进行存储转发<ul>
+<li>方式（网络层提供）：<ul>
+<li>无连接的数据报服务：也就是对分组进行路由选择，直到所有分组达到目的节点。数据报服务由于无连接所以是尽最大可能交付因此不保证可靠性，而且不同分组走不同路由可能存在乱序到达目的节点，分组在交换节点存储转发时可能要排队，但对故障适应力好，一条坏了就换另一条，资源利用率高</li>
+<li>面向连接的虚电路服务：综合电路交换和数据报交换方式。源节点首先发出“呼叫请求”，此时带有目的地址，目的地址同意后发出“呼叫应答”，建立一条拥有自己虚电路号的虚电路；释放的时候源节点发出“释放请求”。虚电路的连接建立有时间开销、路由选择体现在虚电路的连接建立阶段，建立后每个分组不携带目的地址而是携带虚电路号，是可靠的传输、保证分组有序到达，但是只要有一个节点或链路故障，所有经过该故障的虚电路都不能使用了。</li>
+</ul>
+</li>
+<li>优点：同报文+加速了传输、减少了出错概率和重发数据量</li>
+<li>缺点：存在传输时延、有大量额外信息、使用数据报服务可能会出现失序、丢失、重复；若使用虚电路，需要呼叫建立、数据传输和虚电路释放</li>
+</ul>
+</li>
+<li>奈式准则和香农定理区别：<ul>
+<li>奈式准则指出码元的传播速率最大值为2W，但由于是在理想条件下所以没有对信息传输速率做限制，只要编码技术足够好，让一个码元能代表更多的信息那么信息传输速率就更高</li>
+<li>香农定理对信息传输速率给出了限制，在带宽和信噪比一定时，信息传输速率的上限就确定了</li>
+</ul>
+</li>
+<li>设备：<ul>
+<li>中继器：连接相同速率、相同协议的两个网段，对衰减的信号进行整形再生，用在局域网中扩大网络规模</li>
+<li>集线器：多端口的中继器，信号进行再生后要向除输入端口以外的所有端口输出</li>
+</ul>
+</li>
+</ul>
+<h2 id="数据链路层"><a href="#数据链路层" class="headerlink" title="数据链路层"></a>数据链路层</h2><ul>
+<li>功能：把物理层不可靠的通信封装成可靠的逻辑链路，服务于网络层<ul>
+<li>为从源主机的网络层到目的主机的网络层传输数据。为网络层提供无确认无连接服务（多用于误码率低的网络，如以太网）、有确认无连接服务（用于误码率较多的网络，如无线网）、有确认有连接服务（对实时性、可靠性要求高的场合）</li>
+<li>链路管理：建立、维持、释放</li>
+<li>帧定界（把网络层传来的分组添加开始、结束等控制符封装成帧）、帧同步（接收端可以从比特流中识别到帧）、透明传输（不管数据内容是什么，都要可以正确传输）</li>
+<li>差错控制：位错误（发送端在传输的帧中添加校验位：循环冗余码 CRC ，接收端接收到帧后进行校验，发现有错的位就丢弃帧，接收端超时未接收到确认就重传该帧，即 ARQ 自动重传请求）帧错误（帧的丢失、失序、重复等，在数据链路层引入定时器和编号机制解决这些问题）</li>
+<li>流量控制</li>
+</ul>
+</li>
+<li>检错编码——循环冗余码：假设一个原始的帧有K位，那么这个帧转为多项式的阶数就是K-1阶。接收方和发送方预先商定一个最高位和最低位必须是1的多项式G(X)，阶数为r。在发送端首先将K位的帧后添加r个0，在作为被除数，G(X)作为除数，最后得到的余数就是冗余码。最终发送端发送的数据为帧+冗余码</li>
+<li>流量控制：<ul>
+<li>单帧滑动窗口和停止-等待协议：接收端和发送端的滑动窗口大小都为1，只有在发送端收到接收端的确认以后才能发送下一帧。当接收端收到重复帧时会丢弃，并且发送端的缓冲区会存放发送的数据帧的副本，便于出错重传，直到收到确认才会清除此副本。</li>
+<li>多帧滑动窗口和后退N帧协议 GBN ：发送窗口大于1，接收窗口等于1。发送方不用等待接收到确认就可以一直发送，但对每个发送的帧都有一个定时器，如果某一帧的定时器超时，那么这一帧及以后的所有帧都要重传；或者接收方发现帧失序，会要求发送方重发最后一个正确帧以后的所有帧，此时接收方会不断发送对最后一个正确帧的确认帧。即该协议接收端必须按序接收数据帧。接收方可以使用累计确认（即连续接受好几个正确帧后才对最后一个正确帧发确认帧）并且如果采用n比特对帧编号，那么发送窗口的最大值为2^n-1，这样可以区分新旧帧（帧序号是重复使用的）</li>
+<li>多帧滑动窗口和选择重传协议 SR ：发送窗口 &#x3D; 接收窗口 &gt; 1。发送方的缓冲区里有计时器，如果超时未收到某一帧的确认帧（或接收方怀疑收到错误的数据帧后，给发送端发送否定帧 NAK  ，要求重传 NAK 中的数据帧），就重传该帧，此时接收方可以把其他正确帧先留在缓冲区里， 等到错误帧重传以后再统一交给主机。</li>
+</ul>
+</li>
+<li>介质访问控制：为使用介质的每个节点隔离来自同一信道上其他节点所传送的信号，协调节点的传输。介质访问控制协议属于数据链路层的一个子层——介质访问控制子层 MAC<ul>
+<li>CSMA  ：载波侦听多路访问协议<ul>
+<li>1-坚持 CSMA：节点发送数据前先侦听信道中有没有信号，如果空闲立即发送，如果忙就继续侦听直到空闲立刻发送。会受到传播时延的影响，如果一个节点已发送但信号还没发到该节点，那么该节点以为信道空闲，此时发出信号就会冲突；或者有两个节点都在侦听，一空闲两个就同时立刻发出，也会冲突。</li>
+<li>非坚持 CSMA：空闲则立刻发送，不空闲就随机等待一段时间再侦听，虽然降低了碰撞几率但是信道利用率低。</li>
+<li>p-坚持 CSMA：侦听到信道空闲，以p概率发送信号，以1-p概率等到下一个时隙，监听到信道忙，就等到下一个时隙再继续侦听</li>
+</ul>
+</li>
+<li>CSMA&#x2F;CD ：载波侦听多路访问&#x2F;碰撞检测协议。先听后发、边听边发、冲突停发、随机重发。半双工通信。<ul>
+<li>假设信道的传播时延为t，那么由于传播时延，可能出现第一个节点已经发送数据，但另一个节点还侦听不到所以也发送数据，之后发生碰撞，并在至多 2t 以后第一个节点就可以知道发生了冲突，所以为了确保发送方在发送数据的同时能够检测到碰撞，该协议下有最短帧长的要求：最短帧长&#x3D;传播时延*2*数据传输速率。所有小于最短帧长的帧都被认为是错误帧丢弃。</li>
+<li>冲突恢复：采用二进制指数退避算法。首先设定一个基本的退避时间是 2t ，再定义一个重传参数 k&#x3D;min(重传次数，10)，在数组[0,1…2^k-1]中随机选择一个数 r ，则退避时间就是 2tr ，在这个时间后重传数据帧。并且如果重传次数达到16次还没有成功，就认为不会成功了，就丢弃该帧。</li>
+</ul>
+</li>
+<li>CSMA&#x2F;CA ：载波侦听多路访问&#x2F;碰撞避免协议。在侦听到空闲后发送信号的同时广播自己需要使用信道的时间，采用 ACK 确认帧，如果接收方接收到就像发送方发送 ACK ，如果超时未收到 ACK ，就用二进制指数退避算法重传。<ul>
+<li>与 CD 的区别：CD 可以检测冲突但无法避免， CA 不能检测只能尽量避免；CD 用于以太网， CA 用于无线网</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>设备：<ul>
+<li>网桥：连接不同的以太网形成一个大的以太网，连接的不同以太网就变成一个个网段，通过网桥使以太网各网段成为隔离开的多个碰撞域。网桥具有存储转发的功能，因此可以连接不同协议的局域网、不同的物理层，但没有流量控制功能。转发帧的时候看目的地址是否在其他网段中，在的话就转发，不在就丢弃，因为一个网段内不用转发就能到达。</li>
+<li>局域网交换机：多端口的网桥，与网桥的不同在于交换机的每个端口直接连接主机而网桥连的是网段</li>
+</ul>
+</li>
+</ul>
+<h2 id="网络层"><a href="#网络层" class="headerlink" title="网络层"></a>网络层</h2><ul>
+<li>拥塞控制与流量控制的区别：流量控制是控制接收端与发送端，而拥塞控制是全局性的，涉及每个主机、子网、路由器</li>
+<li>路由算法：<ul>
+<li>距离-向量路由算法 ：每个节点向与他相邻的所有节点发送自己的路由表，当某个节点接受到相邻节点的路由表，发现有一条自己没有的新目的地址的路径或者发现一条到已有目的地址代价更小的路径就更新自己的路由表。</li>
+<li>链路状态路由算法  ：当与该节点直接相连的链路状态（本路由器与哪些路由器相邻及该链路的费用、距离、时延、带宽等信息）发生变化时，采用泛洪法也就是广播给网上的所有其他节点。</li>
+</ul>
+</li>
+<li>IPV4 ：<ul>
+<li>IPV4 地址：同一个网络的主机的网络必须相同、主机号必须不同；一个路由器至少有两个 IP 地址，因此路由器的两个端口连接的是不同的网络</li>
+<li>子网划分：把主机号中划出一部分，网络号仍旧不变，子网划分是一个网络内部行为，同一个子网中的主机的子网掩码是相同的。在路由表中数据变为：目的网络地址+子网掩码+下一跳地址，此时路由器选择路由的步骤变为：首先提取目的地址D，再判断是否是直接交付（将路由器直接相连的各网络的子网掩码逐位与上 D）；如果有目的地址为 D 的特定主机路由，直接转发 ；否则在路由表中把每一行的子网掩码与 D 按位与，如果结果和这一行的目的地址相同，那么转发；如果不存在相同的但存在默认路由，就转发给默认路由；否则报错。</li>
+<li>地址解析协议 ARP ：两个对等的网络层看到的是源 IP 地址和目的 IP地址，但数据链链路层看到的是 MAC 地址，所以当数据包传送到某个局域网以后，需要将下一个目的 IP 地址解析为 MAC 地址，在该局域网中广播找到相应的主机&#x2F;路由器，工作在网络层，因为它”看到了 “ IP 地址。</li>
+<li>动态主机配置协议 DHCP ：应用层协议，采用 C&#x2F;S 模式，为某局域网内的主机分配临时 IP 地址。</li>
+<li>网际控制报文协议 ICMP ：包括 ICMP 差错报告报文（用于主句或路由器报告差错和异常）、ICMP 询问报文（回送请求和回答报文等）</li>
+</ul>
+</li>
+<li>路由协议：<ul>
+<li>路由信息协议 RIP ：基于 UDP 的应用层协议，使用距离-向量路由算法，发送自己的全部路由信息的时间间隔为10 s ，并且如果超过180 s 没有收到相邻节点的信息就认为该节点不可达。选择路由的方式是那一条路径上的路由器最少（即跳数最小），一条路径上最多允许有15个路由器，当距离是16时就认为不可达。坏消息传得慢，收敛快但限制了网络规模不会太大。</li>
+<li>开放最短路径优先协议 OSPF ：网络层协议，使用链路状态路由算法，当有多条度量相同的路由时可以平均分配达到负载平衡。</li>
+<li>边界网关协议 BGP ：基于 TCP 的应用层协议，每个自治系统选择一个路由器作为 BGP 发言人，发言人之间首先建立 TCP 连接，相互交换网络的可达性信息， BGP 就是尽可能找到一条较好的路由。</li>
+</ul>
+</li>
+<li>设备：<ul>
+<li>路由器：隔离了广播域。当一个存储转发的设备实现了某个层次的功能以后就可以连接使用不同协议的网段了。</li>
+</ul>
+</li>
+</ul>
+<h2 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h2><ul>
+<li>两个主机的端口之间的通信，即提供应用进程之间的逻辑通信</li>
+<li>差错检测（首部和数据部分）</li>
+<li>两种不同传输协议—— TCP（此时即使通信子网不可靠，但逻辑信道仍相当于一条可靠的全双工信道， FTP 、 HTTP 、TELNET 远程登录） 和 UDP （下层不可靠，逻辑信道也不可靠， DNS 、实时传输）</li>
+<li><strong>熟知端口号</strong>： FTP 21, SMTP 25, HTTP 80, DNS 53</li>
+<li><strong>UDP 协议</strong><ul>
+<li>适用于一次性传输较少数据的网络应用，没有连接时延、不用维护连接、首部开销小（8 B ）、无拥塞控制对于一些对实时性要求高的比较合适。虽然是尽最大努力交付，但对数据的要求仍旧是可靠的，只不过可靠性工作留给了应用层用户完成。</li>
+<li>面向报文，从应用层传来的报文添加首部后原封不动的交给 IP 层</li>
+<li>UDP 校验：使用伪首部（源 IP 、目的 IP、0、17、 UDP 长度），伪首部既不向上传也不向下传，仅为了计算校验和，这样既检查了 UDP 数据报有检查了源 IP 和目的 IP 。发送方首先把两个字节的全0字段放入校验和中，然后还要保证 UDP 数据包的部分长度是偶数个字节，如果不够就在末端补一个字节的0；把此时的伪首部+ UDP 视为若干个16位的字相连，计算这些16位字的二进制反码，作为最终的校验和。接收方加上伪首部后同样计算这些16位的字的二进制反码，如果没错的话结果应该全为1。</li>
+</ul>
+</li>
+<li><strong>TCP 协议</strong><ul>
+<li>在不可靠的 IP 层之上实现可靠的数据传输协议，解决可靠、有序、无丢失、不重复，全双工通信、面向字节流的（也就是是逐字节的传输数据）</li>
+<li>使用的数据单元是 TCP报文段，首部至少有20 B 。除了源端口、目的端口、校验和（伪首部的17改为6）以外还包含：序号字段 seq 用来表明现在传递的字节流是从哪个字节开始的；确认号字段表示期望收到的下一个字节流从哪里开始；数据偏移指的是从报文段开头到报文数据有多远，以4 B 为计算单位；<strong>确认位 ACK</strong>当连接建立以后必须是1；<strong>同步位 SYN</strong>用来请求或接受连接（如 SYN &#x3D;1， ACK &#x3D; 0表示连接请求， SYN &#x3D;1， ACK &#x3D;1表示接收连接）；<strong>终止位 FIN</strong>表示已经完成传输，要求断开连接。</li>
+<li><strong>TCP 连接管理</strong>：连的两个端口是套接字（ IP +端口），采用 C &#x2F; S 方式<ul>
+<li>三次握手建立连接<ul>
+<li>客户机的 TCP 发送一个连接建立请求给服务机， 此时 SYN &#x3D;1, seq &#x3D; x ，此时不携带数据，但要随机消耗一个序号位</li>
+<li>服务机的 TCP 接收后同意，发送 SYN &#x3D;1, ACK &#x3D;1， seq &#x3D; y , ack &#x3D; x+1。同时为 TCP 连接分配缓存和变量</li>
+<li>客户机收到同意后，发送 ACK &#x3D; 1， seq &#x3D; y+1 ,ack &#x3D; y +1。同时为 TCP 连接分配缓存和变量</li>
+</ul>
+</li>
+<li>四次挥手断开连接<ul>
+<li>当客户机想要断开连接，向服务机发送 FIN &#x3D;1, seq &#x3D; v (最后一个发送序号+1)</li>
+<li>服务器收到后发出确认， ACK &#x3D;1, seq &#x3D; u (最后一个发送序号+1)， ack &#x3D; v +1。此时客户机到服务器的 TCP 连接就释放了</li>
+<li>当服务器还想发数据可以继续通过服务器到客户机的 TCP 连接发送，发送完要断开连接后发送 FIN &#x3D;1, ACK &#x3D;1, seq &#x3D; w, ack &#x3D; v +1</li>
+<li>客户机收到后发出确认， ACK &#x3D; 1, seq &#x3D; v +1 , ack &#x3D;  w +1。但此时 TCP 连接还未释放，需要再等待2 MSL 后，才进入连接关闭状态。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>TCP 可靠传输：<ul>
+<li>序号</li>
+<li>确认</li>
+<li>重传<ul>
+<li>超时重传：计算超时时间采用的是自适应算法。从报文段发出到接收到确认的往返时间（ RTT ）的加权平均值+4* RTT 的偏差加权平均值。每个报文段超过这个时间没有收到确认就重传。</li>
+<li>冗余 ACK 重传：当接收端收到失序数据时，会把失序的报文段先保存在缓冲区里，然后不断发送希望收到的报文段的 ACK ，指明期待的是哪个字节，当接收端连续收到3个冗余 ACK 就认为丢失，重传。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>TCP 流量控制：采用可变大小的滑动窗口，接收端根据自己剩余缓存的大小（接收窗口 rwnd ）来调整发送端的发送窗口的大小，把 rwnd 这个字段值放到报文段的首部的窗口字段中即可。发送方同时还要根据网络拥塞程度估计一个拥塞窗口 cwnd ，最终发送窗口的大小取决于 min ( rwnd , cwnd )。</li>
+<li>TCP 拥塞控制<ul>
+<li>慢开始和拥塞避免：首先把 cwnd &#x3D; 1 ，每接收到一个确认后加1，这样在慢开始阶段每经过一个 RTT ， cwnd 的大小就会加倍，呈现指数增长，直到达到慢开始门限 ssthresh ，这以后 cwnd 线性增长，每个 RTT 只加1。当出现拥塞后，把 ssthresh &#x3D; 当前 cwnd &#x2F;2， 把 cwnd &#x3D; 1，快速减少数据量让拥塞的路由器有时间把拥塞分组处理完</li>
+<li>快重传和快恢复：快重传是指在连续收到3个冗余 ACK 后，（丢失就证明发生了拥塞）立刻重传报文段，而不等待计时器超时；快恢复是指在收到连续3个冗余 ACK 后，让 sstresh &#x3D; 新 cwnd &#x3D;此时的 cwnd &#x2F;2。</li>
+<li>具体使用哪种拥塞控制要看发送端接收到的是计时器超时还是冗余 ACK 。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h2><ul>
+<li>网络应用模型<ul>
+<li>客户&#x2F;服务器模型 ：服务器永远在接受状态，客户请求服务。客户需要知道服务器程序的地址，而服务器不需要知道用户的地址，是不平等模型，客户之间不能直接通信，可扩展性不佳。常用的有 Web 、FTP 、电子邮件等</li>
+<li>P2P 模型：平等的，各主机之间可以直接通信，既做服务器又做客户</li>
+</ul>
+</li>
+<li>域名系统 DNS ：协议基于 UDP ，端口53<ul>
+<li>层次域名空间：顶级、二级、三级等</li>
+<li>域名服务器：根域名服务器，包含所有顶级域名服务器的 IP 地址；顶级域名服务器，管理在该顶级域名服务器注册的所有二级域名；授权域名服务器，知道每台主机的 IP  ;本地域名服务器，主机发出的 DNS 请求报文首先就是发给本地域名服务器</li>
+<li>域名到 IP 地址的解析过程：首先主机通过递归的方式发送给本地域名服务器，如果本地不知道就代替主机向根域名服务器查询，根域名服务器要么给出 IP 结果要么迭代的告诉本地去哪个顶级服务器查，顶级的要么给出结果要么告诉本地去哪个授权查，最后在授权域名服务器得到结果。</li>
+</ul>
+</li>
+<li>FTP 文件传输协议：基于 TCP ，端口21，用户&#x2F;服务器模型。服务器端口21用于 TCP 控制连接，端口 20用于 TCP 数据连接</li>
+<li>万维网 WWW <ul>
+<li>URL ：表示万维网中的各种文档资源 &lt;协议&gt;：&#x2F;&#x2F;&lt;主机&gt;：&lt;端口&gt;&#x2F;&lt;路径&gt;</li>
+<li>HTTP ：超文本传输协议，应用层，基于 TCP </li>
+<li>HTML ：超文本标记语言，对页面信息进行描述</li>
+</ul>
+</li>
+<li>HTTP ：端口号80<ul>
+<li>传输过程：浏览器要访问 WWW ，首先通过 DNS 解析到 WWW 服务器的 IP 地址，向该服务器发送 TCP 连接请求，服务器一直在监听 TCP 端口（80），听到请求后建立连接。连接建立后浏览器向服务器请求获取某个 Web 页面的 http 请求，服务器收到后构建 HTTP 响应把信息返回给浏览器，浏览器解析信息以后显示给用户，释放 TCP 连接</li>
+<li>cookie :由于 HTTP 是无状态的，所以他不会知道这个用户访问了多少次，因此 HTTP 使用 cookie +数据库的方式跟踪用户活动。 cookie 是存储在用户主机的文本文件，用于识别用户，服务器就可以根据 cookie 中的识别码在数据库中查找用户活动。</li>
+<li>报文：<ul>
+<li>HTTP 请求报文 ：请求报文的开始行叫做请求行，包括 方法（ GET :请求读取由 URL 标识的信息、 POST ：给服务器添加信息如注释）+ URL +版本+回车换行</li>
+<li>HTTP 响应报文</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/%E8%AE%A1%E7%BD%91/" rel="tag"># 计网</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/06/27/linux%E6%80%BB%E7%BB%93/" rel="next" title="linux总结">
+      linux总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E4%B8%8E%E5%8F%82%E8%80%83%E6%A8%A1%E5%9E%8B"><span class="nav-text">体系结构与参考模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%A9%E7%90%86%E5%B1%82"><span class="nav-text">物理层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82"><span class="nav-text">数据链路层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%B1%82"><span class="nav-text">网络层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E5%B1%82"><span class="nav-text">传输层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%B1%82"><span class="nav-text">应用层</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
