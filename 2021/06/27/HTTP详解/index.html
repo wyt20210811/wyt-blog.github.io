@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="HTTP的请求方法、响应代码、报文段首部、Web服务器、HTTPS等的详细介绍">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP详解">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="HTTP的请求方法、响应代码、报文段首部、Web服务器、HTTPS等的详细介绍">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704094726505.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704101743799.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704101846073.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704101927796.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704102006184.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704102611584.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704102713866.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704102925098.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704103024553.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704103255650.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704103605992.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704105136385.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704105905374.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704110002016.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704110228374.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704110826057.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704111247117.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704111326676.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704111926119.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704112054320.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704150256359.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704153842300.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704154023194.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704154058081.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704154644795.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704154706486.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704155048064.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704163325778.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704163727570.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704163901600.png">
+<meta property="article:published_time" content="2021-06-27T08:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-04T09:00:13.161Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="计网">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704094726505.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>HTTP详解 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HTTP详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-06-27 16:42:38" itemprop="dateCreated datePublished" datetime="2021-06-27T16:42:38+08:00">2021-06-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-07-04 17:00:13" itemprop="dateModified" datetime="2022-07-04T17:00:13+08:00">2022-07-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/%E8%AE%A1%E7%BD%91/" itemprop="url" rel="index"><span itemprop="name">计网</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>HTTP的请求方法、响应代码、报文段首部、Web服务器、HTTPS等的详细介绍</p>
+<p><em><span id="more"></span></em></p>
+<h2 id="HTTP进阶"><a href="#HTTP进阶" class="headerlink" title="HTTP进阶"></a>HTTP进阶</h2><ul>
+<li><p>TCP&#x2F;IP :与互联网相关的协议的集合</p>
+</li>
+<li><p>可靠的 TCP 协议：面向字节流服务是指为了方便传输把大块数据分割成以报文段为单位的数据包进行管理</p>
+</li>
+<li><p>HTTP 与TCP 、IP 、DNS 的关系<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704094726505.png" alt="image-20220704094726505"></p>
+</li>
+<li><p>绝对 URI （统一资源标识符、标识某一互联网资源，而 URL 统一资源定位符表示的是资源的地点，是 URI 的子集）格式：</p>
+<p>http（协议名）:&#x2F;&#x2F;username:password（用户及密码登录，可选）@<a target="_blank" rel="noopener" href="http://www.example.jp/">www.example.jp</a> （要访问的服务器的域名或者 IP 地址）:80 （要使用的服务的端口号，可选）&#x2F;dir&#x2F;index.html （要访问的资源的路径）?uid&#x3D;1 （查询条件）#ch1 （标识某个资源的子资源）</p>
+</li>
+</ul>
+<h2 id="简单的HTTP协议"><a href="#简单的HTTP协议" class="headerlink" title="简单的HTTP协议"></a>简单的HTTP协议</h2><ul>
+<li>请求报文：<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704101743799.png" alt="image-20220704101743799"><ul>
+<li>请求 URI 定位资源方式：<ul>
+<li>使用完整的请求 URI<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704101846073.png" alt="image-20220704101846073"></li>
+<li>在首部的 HOST 字段写明网络域名或 IP 地址<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704101927796.png" alt="image-20220704101927796"></li>
+<li>如果是访问服务器本身，可以用 * 代替 URI<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704102006184.png" alt="image-20220704102006184"></li>
+</ul>
+</li>
+<li>告知服务器意图的 HTTP 方法<ul>
+<li>GET ：请求访问已经被 URI 识别的资源<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704102611584.png" alt="image-20220704102611584"></li>
+<li>POST ：传输实体的主体，也就是把某些信息高度服务器，服务器返回处理这些信息的结果<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704102713866.png" alt="image-20220704102713866"></li>
+<li>PUT 和 DELETE ：用于上传和删除文件，但由于 HTTP&#x2F;1.1 中没有验证机制，所以几乎不能使用</li>
+<li>HEAD ：用来获得报文的首部，即确认 URI 的有效性、资源更新日期等<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704102925098.png" alt="image-20220704102925098"></li>
+<li>OPTIONS ：查询针对请求 URI 指定的资源支持的方法<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704103024553.png" alt="image-20220704103024553"></li>
+<li>TRACE ：让服务器把之前的请求通信环会给客户端，可以查询发送出去的请求是怎样被加工或篡改的。因为在经过代理站点的时候请求可能会被篡改。</li>
+<li>CONNECT ：要求在于代理服务器通信时建立隧道，使用隧道协议进行 TCP 通信，保证安全<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704103255650.png" alt="image-20220704103255650"></li>
+</ul>
+</li>
+<li>非持久连接：每传输一次 HTTP 就断开 TCP 连接<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704103605992.png" alt="image-20220704103605992"></li>
+<li>持久连接+管线化：直到有一方明确提出断开连接时才断开 TCP 连接+不用等待一个 HTTP 的响应就可以先请求下一个 HTTP ，实现并行</li>
+</ul>
+</li>
+</ul>
+<h2 id="HTTP-报文内的-HTTP-信息"><a href="#HTTP-报文内的-HTTP-信息" class="headerlink" title="HTTP 报文内的 HTTP 信息"></a>HTTP 报文内的 HTTP 信息</h2><ul>
+<li><p>HTTP 报文是由多行数据构成的字符串文本。</p>
+</li>
+<li><p>报文和实体：</p>
+<ul>
+<li>报文： HTTP 通信的基本单位，由8位组字节流组成</li>
+<li>实体：作为请求或响应的有效载荷数据被传输，实体&#x3D;实体首部+实体主体</li>
+<li>报文主体 &#x3D;（不编码情况） 实体主体</li>
+</ul>
+</li>
+<li><p>通过编码提升传输速率：</p>
+<ul>
+<li>HTTP 的内容编码功能：使用内容编码指明应用在实体上的编码格式，由客户端解码<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704105136385.png" alt="image-20220704105136385"></li>
+<li>分割发送的分块传输编码：数据量太大时，可以把数据分割成多块，这样数据可以在浏览器页面上逐步显示。其中每块用十六进制标记块的大小，最后一块使用0来标记</li>
+</ul>
+</li>
+<li><p>发送多种数据的多部份对象集合：用于在 HTTP 上传图片或文本时，指的是内容中包含很多不同种类的数据（比如文本、图片、视频等）。使用时需要在首部字段中使用</p>
+<p>请求</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704105905374.png" alt="image-20220704105905374"></p>
+<p>响应</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704110002016.png" alt="image-20220704110002016"></p>
+</li>
+<li><p>获取部分内容的范围请求：比如下载中断以后想要继续之前的下载，只要在首部中使用 Range指明要获取的范围<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704110228374.png" alt="image-20220704110228374"></p>
+</li>
+<li><p>内容协商返回最合适的内容：比如提供多种形式的完全相同的内容，可以通过客户端和服务器的协商（基于语言、字符集、编码方式等）确定使用哪种形式展示，可以使用首部中的 Accept 等字段</p>
+<ul>
+<li>服务器驱动协商：按照请求的字段为参考</li>
+<li>客户端驱动协商：由用户在浏览器显示的可选列表中手动选择</li>
+<li>透明协商：两者结合</li>
+</ul>
+</li>
+</ul>
+<h2 id="返回结果的状态码"><a href="#返回结果的状态码" class="headerlink" title="返回结果的状态码"></a>返回结果的状态码</h2><ul>
+<li>状态码类别：一般以2开头就是成功了，以4（客户端错误）&#x2F;5（服务器错误）开头就是出错了。<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704110826057.png" alt="image-20220704110826057"></li>
+<li>常用状态码：<ul>
+<li>200 OK ：正常处理</li>
+<li>204 No Content ：已成功处理请求，但没有资源返回<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704111247117.png" alt="image-20220704111247117"></li>
+<li>206 Partial Content ：表示用户做范围请求，服务器成功执行<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704111326676.png" alt="image-20220704111326676"></li>
+<li>301 Moved Permanently：永久性重定向，资源的 URI 已经变更了，以后要使用新的 URI ，需要更新已经保存的书签<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704111926119.png" alt="image-20220704111926119"></li>
+<li>302 Found :临时性重定向：资源的 URI 暂时改成了这个，但以后还有可能改成别的，希望本次使用新的访问，但不需要更新书签<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704112054320.png" alt="image-20220704112054320"></li>
+<li>303 See Other：明确表示客户端要采用 GET 方法取重定向获得资源</li>
+<li>304 Not Modified ：用户使用了附加条件，服务器允许访问资源但是不满足条件，所以返回的相应没有主体部分</li>
+<li>400 Bad Request ：客户端发出的请求有语法错误，服务器不能理解</li>
+<li>401 Unauthorized ：客户端需要进行认证，如果第二次收到就证明认证失败了</li>
+<li>403 Forbidden :服务器禁止访问此资源</li>
+<li>404 Not Found ：服务器中没有此资源</li>
+<li>500 Internal Server Error ：服务器在执行时发生错误</li>
+<li>503 Service Unavailable ：服务器正忙或停机维护</li>
+</ul>
+</li>
+</ul>
+<h2 id="Web-服务器"><a href="#Web-服务器" class="headerlink" title="Web 服务器"></a>Web 服务器</h2><ul>
+<li>一台 HTTP 服务器可以搭建多个 Web 站点，利用虚拟主机功能，在逻辑上有多台主机，但是 IP 地址是一样的，域名不一样</li>
+<li>通信数据转发：<ul>
+<li>代理：具有转发功能的应用程序，作为“中间人”，不改变请求 URI 。一次通信中可以级联多个代理服务器，代理服务器转发时需要添加 via ，代表经过了哪个代理服务器。并且代理服务器方法有：<ul>
+<li>代理缓存：会保存从源服务器得到的资源，当下一次再申请时就会直接从代理服务器返回给客户端（客户端的浏览器中也有本地缓存，同理），这样减少了带宽。</li>
+<li>透明代理：不改变 URI</li>
+</ul>
+</li>
+<li>网关：转发其他服务器通信数据的服务器。可以使通信线路上的服务器提供非 HTTP 服务<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704150256359.png" alt="image-20220704150256359"> </li>
+<li>隧道：建立一条与其他服务器的通信线路，本身不会解析 HTTP 请求，之保持原样转发给之后的服务器，会在双方断开连接时结束。</li>
+</ul>
+</li>
+</ul>
+<h2 id="HTTP-首部"><a href="#HTTP-首部" class="headerlink" title="HTTP 首部"></a>HTTP 首部</h2><p>端到端首部：此类首部会转发到最终目标，必须保存在由缓存生成的响应中，必须被转发；逐跳首部：只对单次转发有效，会因为通过缓存或代理而不再转发</p>
+<ul>
+<li>通用首部<ul>
+<li>Cache-Control:参数用逗号分隔<ul>
+<li>no-cache ：<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704153842300.png" alt="image-20220704153842300"></li>
+<li>no-store:信息里面有机密信息，不允许缓存</li>
+<li>max-age&#x3D;秒：<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704154023194.png" alt="image-20220704154023194"></li>
+<li>min-fresh&#x3D;秒：<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704154058081.png" alt="image-20220704154058081"></li>
+<li>max-stale：表示虽然缓存资源过期了，但是只要没超过请求给定的值，就还要</li>
+<li>only-if-cached ：只要缓存里的资源，没有也不去源服务器查</li>
+<li>must-revalidate ：代理会向源服务器再次验证即将返回的响应缓存是否仍然有效</li>
+<li>public ：表示代理缓存服务器的资源可以发给任何用户</li>
+<li>private ：表示这个资源只能发给请求的这个用户</li>
+</ul>
+</li>
+<li>Connection：<ul>
+<li>控制不再转发的首部字段<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704154644795.png" alt="image-20220704154644795"></li>
+<li>管理持久连接<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704154706486.png" alt="image-20220704154706486"></li>
+</ul>
+</li>
+<li>Date ：报文创建时间</li>
+<li>Trailer ：常用在分块传输编码，事先说明在报文主题后记录了哪些首部字段<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704155048064.png" alt="image-20220704155048064"></li>
+<li>Transfer-Encoding ：传输报文主体时采用的编码方式，只对分块编码有效</li>
+</ul>
+</li>
+<li>请求首部</li>
+<li>响应首部</li>
+<li>实体首部</li>
+<li>cookie：服务器响应首部包含 set-cookie，用来指明名称、有效期、适用对象等信息；客户端请求首部包含cookie ，以获得 HTTP 状态管理的支持</li>
+</ul>
+<h2 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h2><ul>
+<li><p>HTTP 的缺点：明文传输会被窃听（可使用 SSL 隧道来对通信加密或者对内容加密）、无法验证通信双方身份可能会存在伪装（使用 SSL 发送身份证书）、无法确认报文是否完整没有经过篡改（数字签名、 DM 5算法校验等）</p>
+</li>
+<li><p>HTTPS &#x3D;HTTP +加密+认证+完整性保护</p>
+<ul>
+<li>通信过程：要先建立 SSL 连接，再通过 SSL 去执行 HTTP 。</li>
+<li>SSL 通信慢，占用 CPU 资源导致处理也慢<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704163325778.png" alt="image-20220704163325778"></li>
+</ul>
+</li>
+</ul>
+<h2 id="数据发布的格式及语言"><a href="#数据发布的格式及语言" class="headerlink" title="数据发布的格式及语言"></a>数据发布的格式及语言</h2><ul>
+<li>XML ：可按应用目标进行扩展的通用标记语言，基本都是用标签分割形成的树形结构<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704163727570.png" alt="image-20220704163727570"></li>
+<li>JSON ：以 JavaScript 的对象表示法为基础的轻量级数据标记语言<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/06/27/HTTP%E8%AF%A6%E8%A7%A3/image-20220704163901600.png" alt="image-20220704163901600"></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/%E8%AE%A1%E7%BD%91/" rel="tag"># 计网</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/06/27/linux%E6%80%BB%E7%BB%93/" rel="prev" title="linux总结">
+      <i class="fa fa-chevron-left"></i> linux总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" rel="next" title="linux常用命令">
+      linux常用命令 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP%E8%BF%9B%E9%98%B6"><span class="nav-text">HTTP进阶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84HTTP%E5%8D%8F%E8%AE%AE"><span class="nav-text">简单的HTTP协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-%E6%8A%A5%E6%96%87%E5%86%85%E7%9A%84-HTTP-%E4%BF%A1%E6%81%AF"><span class="nav-text">HTTP 报文内的 HTTP 信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%94%E5%9B%9E%E7%BB%93%E6%9E%9C%E7%9A%84%E7%8A%B6%E6%80%81%E7%A0%81"><span class="nav-text">返回结果的状态码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Web-%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-text">Web 服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-%E9%A6%96%E9%83%A8"><span class="nav-text">HTTP 首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTPS"><span class="nav-text">HTTPS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%8F%91%E5%B8%83%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8F%8A%E8%AF%AD%E8%A8%80"><span class="nav-text">数据发布的格式及语言</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
