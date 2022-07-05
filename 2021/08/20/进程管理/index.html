@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="介绍操作系统中的处理器管理也就是进程管理，包括 OS 基础、进程与线程介绍、处理机调度策略、进程同步、死锁等内容">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程管理">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/08/20/%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="介绍操作系统中的处理器管理也就是进程管理，包括 OS 基础、进程与线程介绍、处理机调度策略、进程同步、死锁等内容">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-20T08:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-05T10:30:51.673Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/08/20/%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>进程管理 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/08/20/%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          进程管理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-20 16:42:38" itemprop="dateCreated datePublished" datetime="2021-08-20T16:42:38+08:00">2021-08-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-05 18:30:51" itemprop="dateModified" datetime="2022-07-05T18:30:51+08:00">2022-07-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>介绍操作系统中的处理器管理也就是进程管理，包括 OS 基础、进程与线程介绍、处理机调度策略、进程同步、死锁等内容<br><em><span id="more"></span></em></p>
+<h2 id="操作系统基础"><a href="#操作系统基础" class="headerlink" title="操作系统基础"></a>操作系统基础</h2><h3 id="特征："><a href="#特征：" class="headerlink" title="特征："></a>特征：</h3><ul>
+<li>并发：指操作系统内的多个程序在一段时间内同时执行。也就是宏观的，从一个时间间隔来看，有多个事件一起在发生，但从微观的每个时刻来看，每个时刻只有一个事情在发生。所以操作系统的并发是通过分时实现的。（并行：指的是在一个时刻下同时发生了多件事）</li>
+<li>共享：指操作系统内存中的资源可以供多个并发执行的进程共同使用。分为互斥共享（在一段时间内只能给一个进程使用，比如打印机）和同时共享（分时共享，在一段时间内进程交替使用同一资源）</li>
+<li>虚拟：物理的一个变为逻辑的多个。虚拟技术分为基于时分复用的分时共享（如虚拟处理器，通过多道程序设计技术，把一个物理的 CPU 分为多个逻辑上的 CPU ，给每个终端用户一种有一个处理器再单独为他服务的错觉）和基于空分复用技术（如虚拟存储器）</li>
+<li>异步：多个程序并发执行并共享资源，那么每个程序必然是走走停停的，以一种我们无法知道的速度向前推进。但只要运行环境相同，每次运行的结果必须是一样的。</li>
+</ul>
+<h2 id="CPU-状态："><a href="#CPU-状态：" class="headerlink" title="CPU 状态："></a>CPU 状态：</h2><p>CPU 中的程序包含了属于是管理者的操作系统内核程序和被管理的用户应用程序，管理程序可以执行一些特权指令，而由于安全原因特权指令是禁止用户程序直接使用的</p>
+<ul>
+<li>核心态：系统调用位于核心态，还包括对系统内核（底层的时钟管理、终端管理等以及运行频率较高的进程管理、存储管理、设备管理等）的操作指令。<ul>
+<li>时钟管理：既起到计时作用为用户提供标准的时间系统，又可以通过时钟中断用于进程的切换</li>
+<li>中断机制：提高 CPU 利用率。一小部分属于内核，负责保护和恢复中断现场信息，转移控制权到相关的处理程序</li>
+<li>原语： OS 的底层就相当于有很多被上层不断调用的小程序，它们不可以被中断、执行时间短、被调用的非常频繁</li>
+<li>系统控制的数据结构及处理：系统控制的数据结构如进程控制块、作业控制快、内存分配表等。处理包括了进程管理、存储器管理设备管理</li>
+</ul>
+</li>
+<li>用户态与核心态的转换：依靠的是中断（外中断和异常）。用户执行 trap 指令（此时就是外中断）或发生异常，发起系统调用，向 OS 提出服务请求，把 CPU 的使用权交给了操作系统内核程序（此时从用户态转到核心态），同时会保存此时的中断现场，当操作系统处理完以后也发出中断回到用户态</li>
+<li>用户使用的是操作系统的上层程序，而上层程序需要操作系统底层资源的支持。</li>
+</ul>
+<h2 id="进程管理"><a href="#进程管理" class="headerlink" title="进程管理"></a>进程管理</h2><h3 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h3><ul>
+<li>进程：是一个进程实体（标志着进程存在的进程控制块 PCB +程序段+数据段）的运行过程，是资源分配和调度的独立单位。进程具有创建、活动、暂停、终止等过程构成的生命周期，是动态的。</li>
+<li>进程状态包括了 创建态、结束态、运行态（进程在执行，单处理机下每个时刻只有一个进程在运行）、就绪态（进程除了处理机什么都有了，一旦分配到处理机就可以运行了）、阻塞态&#x2F;等待态（等待某个资源的分配或某件事的完成）</li>
+<li>进程通信：<ul>
+<li>共享存储：进程之间有一个共享空间，用户使用操作系统提供的同步互斥工具传递消息，也就是甲和乙中间有个箱子，甲把消息放到箱子里，乙从箱子里拿走，但不能直接从甲手上拿</li>
+<li>消息传递：把格式化的消息传递到一个中间实体，接收进程再从中间实体拿到消息，如计网中的电子邮件</li>
+<li>管道通信：管道就相当于是一片固定大小的缓存区，通过write()&#x2F;read()以半双工方式传递信息。管道通信相当于对共享存储的优化，因为只要缓冲区内有数据，就可以读而不用担心有进程在写，因为写是要一次把缓冲区写满的，只要缓冲区还有数据就不会向里面写。</li>
+</ul>
+</li>
+<li>线程：进程中的一个实体，有了线程以后，进程是分配资源的最小单位，而线程是执行的最小单位。由于线程本身不具备资源，并且多个线程在同一进程中共享进程的所有资源，这样当线程切换时可能还是在一个进程中，因此降低了程序在并发执行时付出的时空开销，进一步提升了操作系统的并行能力。当有了线程以后，进程处于“执行”状态代表的就是该进程里有线程在运行。不同线程可以执行相同的程序（比如同一个应用程序被不同用户调用，就会被生成为不同的线程）</li>
+<li>多线程模型：指的是用户级线程和内核级线程的映射关系<ul>
+<li>多对一：多个用户级线程映射到同一个内核级线程。线程管理之在用户空间完成，内核感受不到多线程，但当一个线程在使用内核服务时被阻塞，整个进程都会被阻塞</li>
+<li>一对一：并发性好，有一个线程被阻塞，其他线程还可以运行，但开销太大了</li>
+<li>多对多：m 个用户线程映射到小于 m 个内核线程，结合了多对一和一对多的优势</li>
+</ul>
+</li>
+</ul>
+<h3 id="处理机调度"><a href="#处理机调度" class="headerlink" title="处理机调度"></a>处理机调度</h3><ul>
+<li>调度方式：<ul>
+<li>非剥夺调度方式：也就是当一个进程被分配到处理机执行时，即使有更高优先级的进程到来也要先等到当前进程执行完</li>
+<li>剥夺调度方式：高优先级的可以抢占低优先级的、正在运行的进程的处理机</li>
+</ul>
+</li>
+<li>处理机调度算法：<ul>
+<li>先来先服务 FCFS ：作业&#x2F;进程排成一队，按先后顺序分配处理机。对长作业有利，对短作业不利。</li>
+<li>短作业优先 SJF ：对短作业（短进程）优先分配，对长作业不利（长作业可能陷入“饥饿”状态，一直得不到运行），但 SJF 的平均等待时间和平均周转时间最小。</li>
+<li>优先级调度：优先级分为静态优先级（创建进程时确定的）和动态优先级（在进程运行过程中根据等待时间等动态调整），调度分为非剥夺式优先级调度和剥夺式优先级调度。</li>
+<li>高响应比优先：用于作业调度。结合 FCFS 和 SJF ，先计算作业队列里的每个作业响应比（等待时间+要求服务时间&#x2F;要求服务时间），这样既可以在等待时间相同情况下让短作业优先，也可以让长作业由于等待时间的增加响应比变大，避免“饥饿”。</li>
+<li>时间片轮转调度：适用于分时系统，每个进程按照先后顺序执行一个时间片。</li>
+<li>多级反馈队列调度：设置多个就绪队列（1-n)，优先级依次降低（第一个队列的优先级最高），时间片依次增大（第一个队列的时间片最短）。新进程首先被放到第一级队列的末尾，按照 FCFS 原则，如果在当前时间片没运行完，就到第2级的末尾去，如果一直到了第 n 级的末尾就按照时间片轮转来执行。并且只有当上一级队列空了才能执行下一级，如果在执行下一级的时候上一级有了进程，那么会剥夺处理机给更高优先级的进程使用。</li>
+</ul>
+</li>
+</ul>
+<h3 id="进程同步"><a href="#进程同步" class="headerlink" title="进程同步"></a>进程同步</h3><ul>
+<li><p>临界资源：一次只允许一个进程使用的资源（比如打印机），临界资源的访问分为进入区（看是否空闲，如果空闲就进入，并设置正在访问临界区标志）、临界区（程序中用来访问临界资源的代码）、退出区（把正在访问标志清除）、剩余区</p>
+</li>
+<li><p>同步：进程之间的直接制约关系，也就是进程之间的执行顺序的关系。</p>
+</li>
+<li><p>互斥：进程之间的间接制约关系，当一个进程进入临界区以后，其他进程必须等待。</p>
+</li>
+<li><p>同步机制：</p>
+<ul>
+<li>空闲让进</li>
+<li>忙则等待</li>
+<li>有限等待</li>
+<li>让权等待：等待的时候要释放处理器</li>
+</ul>
+</li>
+<li><p>临界区互斥方法之信号量：</p>
+<ul>
+<li><p>记录型信号量：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> value;	<span class="comment">//资源的数量</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">process</span> *L;	<span class="comment">//等待使用资源的进程链表</span></span><br><span class="line">&#125; semaphore;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">wait</span><span class="params">(semaphore S)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    S.value--;</span><br><span class="line">    <span class="keyword">if</span>(S.value &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        add <span class="keyword">this</span> process to S.L;	<span class="comment">//当没有该类资源的时候，把进程放入等待队列并阻塞该进程，释放处理器</span></span><br><span class="line">        <span class="built_in">block</span>(S.L);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">signal</span><span class="params">(semaphore S)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    S.value++;	<span class="comment">//当进程释放了一个资源，而此时资源数还小于等于0，证明还有进程在等待资源</span></span><br><span class="line">    <span class="keyword">if</span>(S.value &lt;= <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        remove process from S.L;</span><br><span class="line">        <span class="built_in">wakeup</span>(P);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>信号量实现同步：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//P1执行完后执行P2</span></span><br><span class="line">semaphore S = <span class="number">0</span>;</span><br><span class="line"><span class="built_in">P1</span>()</span><br><span class="line">&#123;</span><br><span class="line">	x;</span><br><span class="line">	<span class="built_in">V</span>(S);	<span class="comment">//</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">P2</span>()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">P</span>(S);	<span class="comment">//如果先执行到了P(S)，那此时S=0，P2就会被阻塞，直到P1执行了V(S)使S=1</span></span><br><span class="line">	y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>信号量实现互斥：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//把semaphore=1,临界区放在P和V操作之间</span></span><br><span class="line">semaphore S = <span class="number">1</span>;</span><br><span class="line"><span class="built_in">P1</span>()</span><br><span class="line">&#123;</span><br><span class="line">    ...;</span><br><span class="line">    <span class="built_in">P</span>(S);	<span class="comment">//当S=1，证明可以进入，首先P以下把S=0，这样P2的P操作发现S小于0就不能进入临界区就会被阻塞</span></span><br><span class="line">    进入P1的临界区;</span><br><span class="line">    <span class="built_in">V</span>(S);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">P2</span>()</span><br><span class="line">&#123;</span><br><span class="line">    ...;</span><br><span class="line">    <span class="built_in">P</span>(S);</span><br><span class="line">    进入P2的临界区；</span><br><span class="line">    <span class="built_in">V</span>(S);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><ul>
+<li><p>定义：多个进程因争夺资源陷入相互等待，如无外力作用都无法向前推进</p>
+</li>
+<li><p>产生的必要条件：</p>
+<ul>
+<li>互斥</li>
+<li>不剥夺</li>
+<li>请求并保持：在请求其他资源时不释放已经拥有的资源。</li>
+<li>循环等待条件：一条链上前一个需要的资源已经被后一个占有，形成一个环状链。</li>
+</ul>
+</li>
+<li><p>死锁预防：破坏索斯的四个条件。其中破坏互斥不现实；破坏不剥夺会导致进程之前的执行都失效；破坏请求并保持采用预先静态分配策略，给一个进程一下分配所有资源让他执行完，资源不够就等待，这样会发生饥饿；破坏循环等待条件就是给资源编号，从小到大申请资源，且申请到几号资源就必须全都分配出去，不灵活对编号稳定性要求高。</p>
+</li>
+<li><p>死锁避免之银行家算法：进程首次申请资源时，比较进程所需的最大资源与现存资源的大小，如果够的话就分配，否则推迟；在运行中再次申请资源时，要先看已占用的资源数+申请的资源数是否大于最大需求资源，大于就拒绝分配，否则再比较申请量与现存量如果够就分配，否则推迟。具体数据结构及描述如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//可用资源矩阵</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Avaliable</span><span class="params">(m)</span></span>;</span><br><span class="line">Avaliable[j]=第J类资源现在剩下多少可以使用</span><br><span class="line"><span class="comment">//最大需求矩阵</span></span><br><span class="line"><span class="type">int</span> <span class="built_in">MAX</span>(n)(m);</span><br><span class="line">MAX[i][j]=第i个进程对第j类资源的最大需求量</span><br><span class="line"><span class="comment">//分配矩阵</span></span><br><span class="line"><span class="type">int</span> <span class="built_in">Allocation</span>(n)(m);</span><br><span class="line">Allocation[i][j]=第i个进程已经分配了第j个资源的数目</span><br><span class="line"><span class="comment">//需求矩阵</span></span><br><span class="line"><span class="type">int</span> <span class="built_in">Need</span>(n)(m);</span><br><span class="line">Need[i][j]=MAX[i][j]-Allocation[i][j]=第i个进程还需要第j类资源的数目</span><br><span class="line"></span><br><span class="line"><span class="comment">//在分配资源时，如果已经有多个进程满足了上面说的要求，那么选择其中的一个试探性地分配下资源，然后计算下这样是否是安全状态，如果是就分配，不是就推迟。</span></span><br><span class="line"><span class="comment">//安全状态推导过程：首先根据MAX和Allocation矩阵计算出Need矩阵，把它的每一行去和Avaliable比较，首先拿出一行比Avaliable小的数据，假装把资源分给他让他运行完并释放资源，此时应该更新Available=原Avaliable+这一行的Need，并且此时的Need中也要删除这一行，对接下来的其他行重复以上操作，如果最后Need为空了，也就是说得到了一个进程的执行序列，那么就是安全状态。</span></span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>死锁检测和解除：</p>
+<ul>
+<li>检测：通过简化资源分配图（进程到资源，资源到进程的有向图），如果资源分配图无边了就没有死锁</li>
+<li>接触：<ul>
+<li>资源剥夺：挂起某些死锁进程并剥夺他的资源</li>
+<li>撤销进程：撤销部分或全部死锁进程并剥夺他们的资源，可以按照优先级或撤销代价高低来进行</li>
+<li>进程回退：让一个或多个进程回退到足以回避死锁的地步，回退过程中自愿释放资源</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/06/28/linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" rel="prev" title="linux常用命令">
+      <i class="fa fa-chevron-left"></i> linux常用命令
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/06/27/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/" rel="next" title="测试工具">
+      测试工具 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80"><span class="nav-text">操作系统基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%EF%BC%9A"><span class="nav-text">特征：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU-%E7%8A%B6%E6%80%81%EF%BC%9A"><span class="nav-text">CPU 状态：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="nav-text">进程管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B"><span class="nav-text">进程与线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E6%9C%BA%E8%B0%83%E5%BA%A6"><span class="nav-text">处理机调度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%90%8C%E6%AD%A5"><span class="nav-text">进程同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%BB%E9%94%81"><span class="nav-text">死锁</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
