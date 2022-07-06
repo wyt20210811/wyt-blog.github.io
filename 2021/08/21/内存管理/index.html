@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="详细介绍了传统内存管理和虚拟内存管理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内存管理">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/08/21/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="详细介绍了传统内存管理和虚拟内存管理">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-21T08:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-06T09:52:34.276Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/08/21/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>内存管理 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/08/21/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          内存管理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-21 16:42:38" itemprop="dateCreated datePublished" datetime="2021-08-21T16:42:38+08:00">2021-08-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-06 17:52:34" itemprop="dateModified" datetime="2022-07-06T17:52:34+08:00">2022-07-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>详细介绍了传统内存管理和虚拟内存管理<br><em><span id="more"></span></em></p>
+<h1 id="传统内存管理"><a href="#传统内存管理" class="headerlink" title="传统内存管理"></a>传统内存管理</h1><ul>
+<li>具有一次性（必须把作业一次性全部装入内存才能开始运行）和驻留性（必须全部运行完才能一起退出内存）</li>
+</ul>
+<h2 id="程序装入和链接"><a href="#程序装入和链接" class="headerlink" title="程序装入和链接"></a>程序装入和链接</h2><ul>
+<li>编译：把用户源代码编译成若干个目标模块（每个目标模块的地址都是从0开始的逻辑地址）。</li>
+<li>链接：<ul>
+<li>静态链接：程序运行之前，先把一组目标模块和他们所需的库函数链接成一个完整的可执行程序（此时这些模块共同构成了一个逻辑地址以0开始的大模块）。</li>
+<li>装入时动态链接：装入内存时，边装边链接。</li>
+<li>运行时动态链接：在程序执行到该模块时才链接。</li>
+</ul>
+</li>
+<li>装入：把装入模块装进内存里运行<ul>
+<li>绝对装入：已经提前知道了程序会放在内存的哪个物理位置，这样在编译的时候就直接得到一个物理地址。</li>
+<li>可重定位装入：一次必须把整个作业完整的装入内存中，并把逻辑地址重定位到在内存中的物理地址上。</li>
+<li>动态运行时装入：程序可以分散的放在不连续的存储区，在运行时只需要先装入一部分，在运行期间需要哪部分再装哪部分，运行时动态申请分配内存。</li>
+</ul>
+</li>
+</ul>
+<h2 id="内存保护"><a href="#内存保护" class="headerlink" title="内存保护"></a>内存保护</h2><ul>
+<li>界地址寄存器：存放的是最大的逻辑地址。将每个模块的逻辑地址与界地址比较，小于的话就加上重定位寄存器中的物理地址&#x3D;最终放在内存的物理地址。</li>
+<li>重定位寄存器：存放的是最小的物理地址。</li>
+</ul>
+<h2 id="连续分配管理"><a href="#连续分配管理" class="headerlink" title="连续分配管理"></a>连续分配管理</h2><ul>
+<li>为一个用户程序分配一片连续的地址空间</li>
+</ul>
+<h3 id="单一连续分配"><a href="#单一连续分配" class="headerlink" title="单一连续分配"></a>单一连续分配</h3><ul>
+<li>内存分为系统区（低位）和用户区，一次只放一个作业，采用覆盖的方式解决空间不足，没有外部碎片、但有内部碎片。</li>
+</ul>
+<h3 id="固定分区分配"><a href="#固定分区分配" class="headerlink" title="固定分区分配"></a>固定分区分配</h3><ul>
+<li>把用户内存分成若干个固定大小的分区（可以相等，也可以不相等），维护一张分区说明表来表示某个分区是否可以分配。但可能存在一个程序太大无法放进任何一个分区需要采用覆盖技术，也存在由于一个程序小于固定分区大小却占用了整个分区以至于出现内部碎片。</li>
+</ul>
+<h3 id="动态分区分配"><a href="#动态分区分配" class="headerlink" title="动态分区分配"></a>动态分区分配</h3><ul>
+<li>在进程装入程序时根据其大小，动态的建立分区，使分区大小正好等于进程大小。但当发生进程交换时，会出现大进程换出留意一块较大的分区，而小进程换入后这个较大分区只剩下较小的空闲块，不足以再让任何一个进程使用了，这样就产生了外部碎片（通过紧凑解决）</li>
+<li>在有足够的空闲块时，决定分配到哪个内存块的策略包括：<ul>
+<li>首次适应：效果最好的策略，就是按照物理地址递增的顺序依次找，找到的第一个符合的就分配。</li>
+<li>最佳适应：按照容量递增分配第一个符合的，但每次留下的外部碎片都太小了，根本无法再次分配。</li>
+<li>最坏适应：按照容量递减找到第一个最大的分配，但会出现之后的大程序没地方分配。</li>
+<li>临近适应：以上一次首次适应查到的内存块为起始，继续首次适应查找</li>
+</ul>
+</li>
+</ul>
+<h2 id="非连续分配管理"><a href="#非连续分配管理" class="headerlink" title="非连续分配管理"></a>非连续分配管理</h2><h3 id="基本分页存储管理方式"><a href="#基本分页存储管理方式" class="headerlink" title="基本分页存储管理方式"></a>基本分页存储管理方式</h3><ul>
+<li>页面：把内存空间和进程都分块，其中进程分成的每一块叫做“页”，内存中的每一块叫“页框”，并且页的页面大小通常是固定的2的整数次幂（4 KB )</li>
+<li>逻辑地址结构：逻辑地址&#x3D;页号+页内偏移量。共32位，低12位（0-11，页内偏移位数&#x3D;$log_2{4 KB}$ ）是页内偏移量，高20位（12-31）是页号</li>
+<li>页表：由页表项构成，页表项&#x3D;页号+块号。用来存储页号到内存中物理块号地址的映射关系，页表长度也就是页表中有多少个页面。</li>
+<li>基本地址变换机构：系统中设有一个页表寄存器（页表寄存器&#x3D;页表起始地址+页表长度），首先给定一个逻辑地址，首先根据这个逻辑地址计算页号（逻辑地址&#x2F;已知的页面大小）、页内偏移（逻辑地址%页面大小），把页号与页表寄存器中的页表长度比较，当他小于这个值时就可以计算页表中的页号对应的页表项地址&#x3D;页表起始地址+页号*页表项长度，根据页表项地址找到对应的页表项得到对应的内存块的块号，最终的物理地址&#x3D;块号*页面大小+页内偏移。 由于其他值都是已知的，所以只要给出一个逻辑地址值就可以得到物理地址，因此基本分页存储地址空间是一维的。</li>
+<li>具有快表的地址变换机构：在基本的机构中，存取一条指令或数据要访问两次内存，因为页表是放在内存中的，所以第一次访问得到物理地址，第二次才去地址取指令或数据。所以在高速缓存中添加一个快表，在进行地址转换时先查快表，快表有就可以直接到内存去取指令了，快表没有再到内存中地址转换并存到快表里面。</li>
+<li>两级页表：就是有时候进程太大了，导致页表项太多，光是页表就需要非常多页，都放进内存不合理，这时需要对页表也建立进行索引，得到两级页表。两级页表逻辑地址&#x3D;一级页号+二级页号+页内偏移</li>
+</ul>
+<h3 id="基本分段式存储管理方式"><a href="#基本分段式存储管理方式" class="headerlink" title="基本分段式存储管理方式"></a>基本分段式存储管理方式</h3><ul>
+<li>把程序按照自然段划分逻辑空间，把一整个用户进程按照构成分为大小不等的几段，段内要求又连续的地址空间、段间不要求连续空间。</li>
+<li>逻辑地址结构&#x3D;段号（高16位16-31）+段内偏移量（低16位0-15）</li>
+<li>段表项&#x3D;段号+段长+本段在主存内的始址。由于需要比较段长和段号，因此地址空间是二维的。</li>
+<li>地址变换机构：系统中包含一个段表寄存器，内有段表始址和段表长度。首先在给定的逻辑地址中提取出高16位的段号与段表长度比较，大于等于就越界了，小于的话得到该段的段表项在段表中的地址&#x3D;段表始址+段号*段表项长度，此时需要再比较得到的段长与逻辑地址中的段内偏移，如果段内偏移大那么也越界了，否则计算得到物理地址&#x3D;基址+段内偏移</li>
+</ul>
+<h3 id="段页式存储管理方式"><a href="#段页式存储管理方式" class="headerlink" title="段页式存储管理方式"></a>段页式存储管理方式</h3><ul>
+<li>首先还是把进程按照自然内容分段，再在每一段中进行分页，分配内存还是以页为单位的。</li>
+<li>逻辑地址结构&#x3D;段号+页号+页内偏移量</li>
+<li>即每个进程维护一张段表，每个段表各有一张页表。其中段表表项&#x3D;段号+页表长度+页表始址；页表表项&#x3D;页号+块号。</li>
+<li>地址变换机构：系统维护一个段表寄存器，指出段表长度和段表始址。首先从给定的逻辑地址中提取出段号与段表长度比较，之后得到该段表项在段表中的地址&#x3D;段表始址+段号*段表项长度；此时根据逻辑地址中的页号，与由段表项得到的页表长度比较，不越界就可以查到该页表的页表始址，此时可以得到该逻辑地址对应的页表项在页表中的地址&#x3D;页表始址+页号*页面大小，在页表项中得到内存块号，最终得到物理地址&#x3D;块号*页面大小+页内偏移。   </li>
+<li>综上可以发现段页式如果想存取一条指令或数据需要访问内存三次。</li>
+</ul>
+<h1 id="虚拟内存管理"><a href="#虚拟内存管理" class="headerlink" title="虚拟内存管理"></a>虚拟内存管理</h1><h2 id="局部性原理"><a href="#局部性原理" class="headerlink" title="局部性原理"></a>局部性原理</h2><ul>
+<li>时间局部性：刚掉用过的指令在不久之后会被再次调用、刚使用过的数据会在不久之后被再次使用，这是因为程序内带有大量循环导致的</li>
+<li>空间局部性：刚访问过的存储单元，不久之后他相邻的存储单元也会被访问到，即程序在一段时间内所访问的地址，可能集中在某一个范围内。这是因为指令都是顺序存储顺序执行的，数据都是以数组等形式簇聚存储的。</li>
+</ul>
+<h2 id="虚拟存储器"><a href="#虚拟存储器" class="headerlink" title="虚拟存储器"></a>虚拟存储器</h2><ul>
+<li>基于局部性原理，可以在执行某个作业时，先放进内存一部分，当需要的部分不在内存中时再从外存调入内存，当某一部分暂时不再需要时就把它换出到外存，为将要调入的部分空出空间来。这样的换入换出方式会让用户有一种内存空间比实际内存看起来大得多的错觉，因此叫做虚拟存储器。<ul>
+<li>多次性：作业允许被分成多次调入内存运行</li>
+<li>对换性：作业运行时无需一直常驻内存，可以在运行过程中换入换出</li>
+<li>虚拟性：指的是再逻辑上扩充内存容量，只是让用户看起来大了</li>
+</ul>
+</li>
+</ul>
+<h2 id="虚拟内存的实现技术：请求分页存储管理"><a href="#虚拟内存的实现技术：请求分页存储管理" class="headerlink" title="虚拟内存的实现技术：请求分页存储管理"></a>虚拟内存的实现技术：请求分页存储管理</h2><h3 id="请求分页管理方式"><a href="#请求分页管理方式" class="headerlink" title="请求分页管理方式"></a>请求分页管理方式</h3><ul>
+<li>页表机制：相较于基本分页存储管理，请求分页需要解决如何让发现和处理缺页的情况，因此请求分页的页表项&#x3D;页号+物理块号+页状态（是否在内存中）+访问字段（最近是否被访问过）+修改位（是否被修改过）+外存地址</li>
+<li>缺页中断机构：当要访问的页面不在内存中时，产生一个缺页中断，首先要看内存中是否还有空闲块，如果有就直接从外存中调入，如果没有就要根据页面置换算法换出一页。</li>
+<li>地址变换机构：当程序要访问某一页时，首先根据页号比较页表大小，如果不越界就先查快表（如果快表中有的话证明该页就在内存里，直接修改访问位和修改位并得到物理地址），快表没有再查内存中的页表，根据页表项中的状态位判断该页是否在内存中，如果在内存中（修改快表、访问位、修改位）得到物理地址；如果不在内存中产生缺页中断并在外存中找到该页，此时需要判断内存是否已满，如果内存已满（调一页出去，如果该页被修改了那么需要写回外存中），如果没满就直接换入内存并修改页表，重头执行地址变换过程。</li>
+</ul>
+<h3 id="页面置换算法"><a href="#页面置换算法" class="headerlink" title="页面置换算法"></a>页面置换算法</h3><ul>
+<li><p>最佳置换算法：不可能实现的，“向后看”的算法，把以后都不会用到的页面换出。</p>
+</li>
+<li><p>先进先出算法：按照页面进入内存的先后顺序换出，会发生 Belady 异常，即随着所分配的物理块数的增加页面故障数不减反增。</p>
+</li>
+<li><p>最近最久未使用算法：把最近最长时间没有使用的页面换出，需要用到堆栈开销大</p>
+</li>
+<li><p><strong>时钟算法：</strong>通过比较页面的使用位、修改位来决定置换哪个页面，这些候选帧可以视为一个循环缓冲区，设置一个指针不断在里面循环查找，有一个页面被换出，那指针下一次循环的初始指向就是该页面的下一个页面。页面可能存在的状态有：</p>
+<ul>
+<li>使用位&#x3D;0，修改位&#x3D;0</li>
+<li>使用位&#x3D;0，修改位&#x3D;1</li>
+<li>使用位&#x3D;1，修改位&#x3D;0</li>
+<li>使用位&#x3D;1，修改位&#x3D;1</li>
+</ul>
+<p>在算法中，第一次循环找的是全为0的页面，将找到的第一个换出，如果没找到的话就开始第二轮循环，第二轮循环找的是第一个使用位&#x3D;0，修改位&#x3D;1的页面，并且在循环的时候把每个不符合条件的页的使用位都置0，如果这一轮也没有符合条件的，那此时整个循环里的页的使用位也都变成0了，重复以上步骤就一定会找到要么符合第一轮循环的条件、要么符合第二轮循环的条件的页。</p>
+</li>
+</ul>
+<h3 id="页面分配策略"><a href="#页面分配策略" class="headerlink" title="页面分配策略"></a>页面分配策略</h3><ul>
+<li>驻留集：指的是内存分配给每个作业的物理页框数量。当驻留集小的时候，内存可以同时容纳多个进程共同执行，但太小的话又会产生频繁的换入换出。</li>
+<li>可变分配局部置换策略：先给每个进程分配一定大小的驻留集，在 OS 自身保留一定数量的物理块。当需要置换页面时首先就在每个进程的驻留集内分配，如果某个进程的置换频率太频繁了就要给他分配额外的物理块，直到它的置换频率正常，同时如果哪个进程置换频率很低就回收一些物理块。</li>
+<li>何处调入页面：外存&#x3D;存放文件的文件区+存放对换页面的对换区。当对换区足够大时最好都在对换区调入，此时需要作业运行前先把所有需要的文件都复制到对换区里；如果对换区不够大，把可能会修改的放在对换区；UNIX 方式：把没有运行过的放在文件区，运行过的放在对换区，如果一个共享页面已经被其他进程调入内存了，就不要再调入了。</li>
+<li>抖动：频繁的页面调度行为，如果页面调度时间&gt;执行时间，那么就发生了抖动。抖动的原因是因为分配的物理块数小于了经常需要用到的页面数。</li>
+<li>工作集：工作集指的是某段时间内某些频繁使用的页面的合集，驻留集大小必须大于工作集才不会抖动。</li>
+</ul>
+<h1 id="作业与进程"><a href="#作业与进程" class="headerlink" title="作业与进程"></a>作业与进程</h1><h2 id="联系"><a href="#联系" class="headerlink" title="联系"></a>联系</h2><ul>
+<li>一个作业会产生好几个进程，多个进程完成一个作业</li>
+<li>当用户提交作业，作业被调度时， OS 会自动为作业创建若干个进程</li>
+</ul>
+<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><ul>
+<li>作业是用户提交给系统的任务，进程是一个程序在一个数据集上的一次执行</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/08/20/%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86/" rel="prev" title="进程管理">
+      <i class="fa fa-chevron-left"></i> 进程管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/06/27/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/" rel="next" title="测试工具">
+      测试工具 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-text">传统内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E8%A3%85%E5%85%A5%E5%92%8C%E9%93%BE%E6%8E%A5"><span class="nav-text">程序装入和链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E4%BF%9D%E6%8A%A4"><span class="nav-text">内存保护</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD%E5%88%86%E9%85%8D%E7%AE%A1%E7%90%86"><span class="nav-text">连续分配管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E4%B8%80%E8%BF%9E%E7%BB%AD%E5%88%86%E9%85%8D"><span class="nav-text">单一连续分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BA%E5%AE%9A%E5%88%86%E5%8C%BA%E5%88%86%E9%85%8D"><span class="nav-text">固定分区分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%88%86%E5%8C%BA%E5%88%86%E9%85%8D"><span class="nav-text">动态分区分配</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E8%BF%9E%E7%BB%AD%E5%88%86%E9%85%8D%E7%AE%A1%E7%90%86"><span class="nav-text">非连续分配管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%88%86%E9%A1%B5%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F"><span class="nav-text">基本分页存储管理方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%88%86%E6%AE%B5%E5%BC%8F%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F"><span class="nav-text">基本分段式存储管理方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E9%A1%B5%E5%BC%8F%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F"><span class="nav-text">段页式存储管理方式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-text">虚拟内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86"><span class="nav-text">局部性原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-text">虚拟存储器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF%EF%BC%9A%E8%AF%B7%E6%B1%82%E5%88%86%E9%A1%B5%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86"><span class="nav-text">虚拟内存的实现技术：请求分页存储管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E5%88%86%E9%A1%B5%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F"><span class="nav-text">请求分页管理方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B5%E9%9D%A2%E7%BD%AE%E6%8D%A2%E7%AE%97%E6%B3%95"><span class="nav-text">页面置换算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B5%E9%9D%A2%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5"><span class="nav-text">页面分配策略</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%9C%E4%B8%9A%E4%B8%8E%E8%BF%9B%E7%A8%8B"><span class="nav-text">作业与进程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%94%E7%B3%BB"><span class="nav-text">联系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB"><span class="nav-text">区别</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
