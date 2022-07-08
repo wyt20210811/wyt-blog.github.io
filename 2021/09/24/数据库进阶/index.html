@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="包括体系结构、存储引擎、索引、查询优化、视图、锁、主从复制、读写分离等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL进阶">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="包括体系结构、存储引擎、索引、查询优化、视图、锁、主从复制、读写分离等">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16571595067671.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16571595593292.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16571596273903.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16571596722284.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220707103222568.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220707110002275.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220707110631382.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220707110651874.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16571598921557.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572464148041.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708103041498.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708104731349.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708105535813.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708105625469.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708144742081.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708145323247.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708145339262.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708150550475.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708152820817.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708153648818.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708160314660.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708160330697.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708160408626.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708160711000.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572676745352.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572676897963.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572679498414.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572680380405.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572681699636.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572683353347.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572702440558.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572703564209.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-165727054169710.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708170217222.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708170513059.png">
+<meta property="article:published_time" content="2021-09-24T08:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-08T10:23:26.530Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL进阶 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL进阶
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-24 16:42:38" itemprop="dateCreated datePublished" datetime="2021-09-24T16:42:38+08:00">2021-09-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-08 18:23:26" itemprop="dateModified" datetime="2022-07-08T18:23:26+08:00">2022-07-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>包括体系结构、存储引擎、索引、查询优化、视图、锁、主从复制、读写分离等<br><em><span id="more"></span></em></p>
+<h1 id="MySQL-进阶"><a href="#MySQL-进阶" class="headerlink" title="MySQL 进阶"></a>MySQL 进阶</h1><hr>
+<h2 id="mysql体系结构"><a href="#mysql体系结构" class="headerlink" title="mysql体系结构"></a>mysql体系结构</h2><ul>
+<li>连接层：客户端链接服务，类似于TCP&#x2F;IP通信，完成连接、授权、安全认证</li>
+<li>服务层：大多数核心服务、缓存查询，服务器解析创建相应的树，并优化表的查询顺序，决定是否利用索引等，最后生成相应的执行操作。</li>
+<li><strong>引擎层：真正进行数据存储和提取，索引也在该层实现。存储引擎即我们创建表的类型，不同类型提供不同的存储数据、建立索引、更新&#x2F;查询数据的方式。</strong></li>
+<li>存储层：将数据存储在文件系统上</li>
+</ul>
+<h2 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h2><ul>
+<li><p>InnoDB：</p>
+<ul>
+<li>MySQL默认的存储引擎</li>
+<li>DML 操作遵循 ACID （原子性&#x2F;一致性&#x2F;隔离性&#x2F;持久性）模型</li>
+<li>支持事务&#x2F;行级锁&#x2F;外键约束；</li>
+<li>文件格式 xxx.ibd ，包含建表结构 sdi ，数据和索引</li>
+<li>存储的逻辑结构为： 表空间 -&gt; 段 -&gt; 区（1M）-&gt; 页（16K）-&gt; 行（即表中一个主键对应的一行信息）<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image.png" alt="Image"></li>
+<li>使用 B+ 树索引，适合对事务完整性、数据一致性、更新删除擦操作较多的应用。</li>
+</ul>
+</li>
+<li><p>MyISAM：MySQL早期默认引擎；不支持事务和外键&#x2F;不支持行级锁但支持表锁&#x2F;访问快；文件分开存储，xxx.sdi&#x2F;xxx.MYD（存储数据）&#x2F;xxx.MYI（存储索引）；适合用于读取、插入，对事务完整性、并发操作一致性要求不高的应用。</p>
+</li>
+<li><p>Memory：文件存储在内存中，作为临时表&#x2F;缓存表使用，使用哈希索引</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16571595067671.png" alt="Image"></p>
+</li>
+</ul>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
+<li>是帮助 MySQL 高效获取数据的数据结构，以某种方式指向数据，可以实现高级查找算法。</li>
+<li>当我们没有创建索引时，如想执行 <code>select * from user where age=20</code>时，就只能一行一行的从头开始全表扫描，而如果我们先创建了关于 age 的索引，就可以利用 B+ 树的结构大大减少查询次数，提高查询效率了。</li>
+<li>索引的优势包括：提高数据检索效率、通过索引列对数据排序可以降低排序成本。劣势包括：索引表也要占存储空间，并且由于多使用树，对表的更新、插入、删除速度都会造成影响。</li>
+</ul>
+<h3 id="常见的索引结构"><a href="#常见的索引结构" class="headerlink" title="常见的索引结构"></a>常见的索引结构</h3><p>数据结构可视化网站 <a target="_blank" rel="noopener" href="https://www.cs.usfca.edu/~galles/visualization/BTree.html">https://www.cs.usfca.edu/~galles/visualization/BTree.html</a></p>
+<ul>
+<li><p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16571595593292.png" alt="Image"></p>
+<ul>
+<li>B-tree：多叉路平衡查找树。n度即该树可以最多有n个分支，每个节点内最多有n-1个key，有n个指针。也就是每个节点内按顺序存储n-1个key，再按照相邻key的区间去查找下一个节点。在创建时，一开始就按照顺序在一个节点里插入，当该节点的key数量大于n-1时，把插入新key以后的中间key向上提升，并将原来节点变为中间key提升到的节点的两个子节点。B-tree的数据是直接存储在key上的。<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16571596273903.png" alt="Image"></li>
+</ul>
+<ul>
+<li>B+-tree：相比于B-tree，所有数据都存储在叶子节点的key上，也就是说上层所有key都要出现在叶子节点上，并且叶子节点形成一条链表，而且innodb还将叶子节点又新增了一条链表，使其可以双向查找。在构建B+-tree时，提升方式与B-tree相同，但在拆分原节点时要把中间key留下。<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16571596722284.png" alt="Image"></li>
+</ul>
+</li>
+<li><p>InnoDB选择B+tree原因：</p>
+<ul>
+<li>首先相较于二叉搜索树，B+tree在数据量大的时候不会产生那么多层，层级少，搜索效率就高。</li>
+<li>其次相较于B-tree，因为InnoDB的逻辑结构是表空间-段-区-页-行的，而页的大小有限制为16k，树的每个节点都作为一页存储，如果像B树一样，每个key都直接有数据，那一页可以存放的key就会变少，相应的指针也要变少，树的高度就增加了，性能随之降低</li>
+<li>相较于哈希索引，B+tree是支持范围匹配和顺序操作的。</li>
+</ul>
+</li>
+</ul>
+<h3 id="索引分类：InnoDB存储引擎"><a href="#索引分类：InnoDB存储引擎" class="headerlink" title="索引分类：InnoDB存储引擎"></a>索引分类：InnoDB存储引擎</h3><ul>
+<li>主键索引：对表中主键创建的索引，是系统自动创建的，PRIMARY</li>
+<li>唯一索引：避免一个表中某列数据中的值重复，一张表可以有多个唯一索引， UNIQUE</li>
+<li>常规索引：快速定位特定数据</li>
+<li>全文索引：查找文本中的关键词， FULLTEXT</li>
+<li>聚集索引：数据和索引放在一起，叶子节点是每行的数据，是<strong>必须存在、且只能有一个的索引</strong>。默认主键索引是聚集索引，没有主键则第一个唯一索引做聚集索引，没有唯一索引引擎自动生成一个隐藏的聚集索引</li>
+<li>二级索引：数据和索引分开存放，叶子节点上是主键。可以有多个。二级索引会发生回表查询，也就是先在二级索引的叶子节点找到主键，再回到聚集索引找到主键对应的叶子节点中的数据</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220707103222568.png" alt="image-20220707103222568"></p>
+<h3 id="索引创建"><a href="#索引创建" class="headerlink" title="索引创建"></a>索引创建</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb_user(</span><br><span class="line">    id <span class="type">int</span> <span class="keyword">primary</span> key auto_increment comment <span class="string">&#x27;主键&#x27;</span>，</span><br><span class="line">    name <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">not</span> <span class="keyword">null</span> comment <span class="string">&#x27;姓名&#x27;</span>,</span><br><span class="line">    phone <span class="type">varchar</span>(<span class="number">11</span>) <span class="keyword">not</span> <span class="keyword">null</span> comment <span class="string">&#x27;电话&#x27;</span>,</span><br><span class="line">    email <span class="type">varchar</span>(<span class="number">100</span>) comment <span class="string">&#x27;邮箱&#x27;</span>,</span><br><span class="line">    profession <span class="type">varchar</span>(<span class="number">11</span>) comment <span class="string">&#x27;专业&#x27;</span>,</span><br><span class="line">    age tinyint unsigned comment <span class="string">&#x27;年龄&#x27;</span>，</span><br><span class="line">    gender <span class="type">char</span>(<span class="number">1</span>) comment <span class="string">&#x27;性别，1：男，2：女&#x27;</span>,</span><br><span class="line">    status <span class="type">char</span>(<span class="number">1</span>) comment <span class="string">&#x27;状态&#x27;</span>,</span><br><span class="line">    createtime datetime comment <span class="string">&#x27;创建时间&#x27;</span> </span><br><span class="line">)comment <span class="string">&#x27;用户表&#x27;</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb_user (name,phone,email,profssion,age,gender,status,createtime) <span class="keyword">values</span> (...);</span><br><span class="line"></span><br><span class="line"><span class="operator">*</span> 创建索引</span><br><span class="line"><span class="keyword">create</span> index idx_user_name <span class="keyword">on</span> tb_user(name);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">unique</span> index idx_phone <span class="keyword">on</span> tb_user(phone);</span><br><span class="line"><span class="operator">*</span> 创建联合索引</span><br><span class="line"><span class="keyword">create</span> index idx_user_pro_age_sta <span class="keyword">on</span> tb_user(profession,age,status);</span><br><span class="line"></span><br><span class="line"><span class="operator">*</span> 查看索引</span><br><span class="line"><span class="keyword">show</span> index <span class="keyword">from</span> tb_user;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="SQL性能分析"><a href="#SQL性能分析" class="headerlink" title="SQL性能分析"></a>SQL性能分析</h2><ul>
+<li><p>show global&#x2F;session status 查看数据库中插入、更新、查询、删除操作的使用频率，这样就可以知道该数据库主要是以查询为主还是插入为主。<code>show global status like &#39;Com_&#39;</code><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220707110002275.png" alt="image-20220707110002275"></p>
+</li>
+<li><p>slow_query_log（默认未开启，在 &#x2F;etc&#x2F;my.cnf 中修改slow_query_log&#x3D;1并设置long_query_time的时间）中记录查询时间超过设定的慢查询时间的操作。慢查询日志中通过设置 long_query_time 参数，记录了所有超过该时间的查询语句<code>tail -f localhost-slow.log</code></p>
+</li>
+<li><p>show profiles查看每条sql的基本耗时<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220707110631382.png" alt="image-20220707110631382">；show profile for query query_id查看具体sql语句中每步操作的耗时<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220707110651874.png" alt="image-20220707110651874"></p>
+</li>
+<li><p>explain select * from table查看mysql如何执行select语句</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16571598921557.png" alt="Image"></p>
+</li>
+</ul>
+<h2 id="索引使用"><a href="#索引使用" class="headerlink" title="索引使用"></a>索引使用</h2><ul>
+<li><p>最左前缀法则：使用联合索引时，要包含最左面的索引（查询从索引的最左列开始，并且不能跳过索引中的列），否则联合索引失效，如果跳索引，跳以后的索引都失效，如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">*</span> 有效</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb_user <span class="keyword">where</span> profession<span class="operator">=</span><span class="string">&#x27;软件工程&#x27;</span>，age<span class="operator">=</span><span class="string">&#x27;24&#x27;</span>,statue<span class="operator">=</span><span class="string">&#x27;0&#x27;</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb_user <span class="keyword">where</span> profession<span class="operator">=</span><span class="string">&#x27;软件工程&#x27;</span>，age<span class="operator">=</span><span class="string">&#x27;24&#x27;</span>;</span><br><span class="line">selsect <span class="operator">*</span> <span class="keyword">from</span> tb_user <span class="keyword">where</span> profession<span class="operator">=</span><span class="string">&#x27;软件工程&#x27;</span>，age<span class="operator">=</span><span class="string">&#x27;24&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="operator">*</span> 失效：无最左边列</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb_user <span class="keyword">where</span> age<span class="operator">=</span><span class="string">&#x27;20&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="operator">*</span> 失效：跳列</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb_user <span class="keyword">where</span> profession<span class="operator">=</span><span class="string">&#x27;软件工程&#x27;</span>，status<span class="operator">=</span><span class="string">&#x27;0&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>当使用范围查询时，索引失效，因此要尽量使用&gt;&#x3D;,&lt;&#x3D;等</p>
+</li>
+<li><p>对索引进行运算操作（如substr）、使用or但有一侧的索引不存在<code>select * from tb_user where phone=&#39;12345678&#39; or age=12,此时age没有索引，整个索引失效</code>、字符串不加引号、对头部进行模糊匹配索引都会失效；如果数据分布下MySQL评估进行全表索引更快（即索引返回的是大批量数据，如<code>select * from tb_user where profession is not null</code>），索引也会失效</p>
+</li>
+<li><p>可以使用 use index(index_name)建议数据库使用指定索引；ignore index(index_name)不使用指定索引；force index(index_name)强制使用指定索引</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb_user use index(idx_pro) <span class="keyword">where</span> profession<span class="operator">=</span><span class="string">&#x27;软件工程&#x27;</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb_user ignore index(idx_pro) <span class="keyword">where</span> profession<span class="operator">=</span><span class="string">&#x27;软件工程&#x27;</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb_user force index(idx_pro) <span class="keyword">where</span> profession<span class="operator">=</span><span class="string">&#x27;软件工程&#x27;</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应该尽量使用覆盖索引，也就是说需要返回的信息在该索引的叶子节点中已经包含了，不需要再进行回表查询了</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">*</span> 有联合索引idx_pro_age_sta</span><br><span class="line"><span class="keyword">select</span> id,pro,age,sta <span class="keyword">from</span> tb_user <span class="keyword">where</span> profession<span class="operator">=</span><span class="string">&#x27;软件工程&#x27;</span>,age<span class="operator">=</span><span class="number">23</span>,sta<span class="operator">=</span><span class="string">&#x27;0&#x27;</span>; 此时就是覆盖查询</span><br><span class="line"><span class="keyword">select</span> name,pro <span class="keyword">from</span> tb_user <span class="keyword">where</span> profession<span class="operator">=</span><span class="string">&#x27;软件工程&#x27;</span>; 此时需要回表查询去查到name</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当字段类型为较大的文本类型，可以使用前缀索引create index index_name on table(ziduan(n))指定使用前n个字符进行索引，如<code>create index id_email_5 on tb_user(email(5))</code>。n的确定可以根据索引的选择性，也就是不重复性count(distinct ziduan)&#x2F;count(ziduan)，这个值越接近1越好。</p>
+</li>
+<li><p>单列索引与联合索引：如果存在多个查询条件，考虑针对查询字段建立索引时，应该建立联合索引。因为如果有两个单独索引<code>idx_age,idx_phone</code>，在<code>select age,phone from tb_user where age=20 and phone=&#39;12345678&#39;</code>时，他只会使用and前的age索引，phone字段还需要去回表查询。</p>
+</li>
+</ul>
+<h2 id="索引设计原则"><a href="#索引设计原则" class="headerlink" title="索引设计原则"></a>索引设计原则</h2><p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572464148041.png" alt="Image"></p>
+<h2 id="sql优化"><a href="#sql优化" class="headerlink" title="sql优化"></a>sql优化</h2><ul>
+<li><p>insert优化：尽量使用批量插入<code>insert into tb_user values(1,&#39;a&#39;)(2,&#39;b)(3,&#39;c)</code>；手动控制事务</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> transaction;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb_user <span class="keyword">values</span>(<span class="number">1</span>,<span class="string">&#x27;a&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb_user <span class="keyword">values</span>(<span class="number">2</span>,<span class="string">&#x27;b&#x27;</span>);</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+
+<p>主键顺序插入，如果乱序可能出现页分裂现象；大批量数据使用load </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">*</span> 客户端连接服务端时，要加参数 <span class="comment">--local-infile</span></span><br><span class="line">mysql <span class="comment">--local-infile -u root -p</span></span><br><span class="line"></span><br><span class="line"><span class="operator">*</span> 设置全局参数local_infile为<span class="number">1</span>，开启从本地加载文件导入数据的开关</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> local_infile<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">load data <span class="keyword">local</span> infile <span class="string">&#x27;/root/sql1.log&#x27;</span> <span class="keyword">into</span> tb_user fields terminated <span class="keyword">by</span> <span class="string">&#x27;,&#x27;</span> lines terminated <span class="keyword">by</span> <span class="string">&#x27;\n&#x27;</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>主键优化：主键尽量短；采用auto_increment；尽量不修改主键</p>
+<ul>
+<li>页分裂：当乱序插入时，可能第一页和第二页已经排好并且满了，第一页和第二页也链接好了，此时新插入的数据主键大小位于第一页和第二页之间，此时不会直接把它放在第三页，而是分配第三页后把第一页后一半的数据都挪到第三页，再把新数据插到第三页。而此时由于第三页数据肯定是比第二页小的，所以页之间还需要重新链接。<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708103041498.png" alt="image-20220708103041498"></li>
+</ul>
+</li>
+<li><p>order by 优化：</p>
+<ul>
+<li><p>using filesort：使用索引或全表扫描得到满足条件的数据行后在缓冲区中完成排序</p>
+</li>
+<li><p>using index：使用有序索引顺序扫描直接返回有序数据（要使用这种！）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">*</span> 排序时也遵守最左前缀法则，索引先是哪个，排序时就要先排哪个，否则会<span class="keyword">using</span> filesort</span><br><span class="line"><span class="keyword">create</span> index idx_age_phone <span class="keyword">on</span> tb_user(age,phone);</span><br><span class="line"><span class="keyword">select</span> id,age,phone <span class="keyword">from</span> tb_user <span class="keyword">order</span> <span class="keyword">by</span> age,phone;</span><br><span class="line"></span><br><span class="line"><span class="operator">*</span> 创建索引时如果没有设置排序方式，默认都是升序，如果查询时一个升序、一个降序就会<span class="keyword">using</span> sortfile</span><br><span class="line"><span class="keyword">create</span> index idx_age_phone <span class="keyword">on</span> tb_user(age <span class="keyword">desc</span>,phone);</span><br><span class="line"><span class="keyword">select</span> id,age,phone <span class="keyword">from</span> tb_user <span class="keyword">order</span> <span class="keyword">by</span> age <span class="keyword">desc</span>,phone <span class="keyword">asc</span>;</span><br></pre></td></tr></table></figure>
+
+<p>优化原则：根据字段建立联合索引；尽量使用覆盖索引；不可避免的出现filesort时，可以适当增大排序缓冲区的大小</p>
+</li>
+</ul>
+</li>
+<li><p>group by 优化:<code>select id,name,age from tb_user group by profession</code>时可以建立索引提高效率,并且联合索引也遵守最左前缀法则.</p>
+</li>
+<li><p>limit 分页查询优化:建立索引+子查询<code>select * from tb_sku t,(select id from tb_sku order by id limit 2000000,10) a where t.id=a.id;</code></p>
+</li>
+<li><p>count：innodb要把数据一行一行的读出来再累加；count(字段)&lt;count(主键)&lt;count(数字)&#x3D;count(*)效率由小到大<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708104731349.png" alt="image-20220708104731349"></p>
+</li>
+<li><p>update时innodb提供的行锁是针对索引的，如果没有该索引或索引失效就会升级为表锁。行锁时其他用户可以操作其他行，但表锁整张表都不能update。</p>
+</li>
+</ul>
+<h2 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h2><ul>
+<li><p>一个虚拟的表，保存了查询的sql逻辑,也就是说视图用来展示我们查询语句所得到的表。创建视图 create or replace view  view_name as select selectsql;如果创建时有where条件但没有使用with cascaded&#x2F;local check option的话，在对视图进行插入修改删除数据时就都可以在基表中操作成功，只不过不会显示在该视图，如果想要各种操作符合where条件才能进行，必须添加 with cascaded&#x2F;local check option。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">or</span> replace <span class="keyword">view</span> stu_v_1 <span class="keyword">as</span> <span class="keyword">select</span> id,name <span class="keyword">from</span> student <span class="keyword">where</span> id<span class="operator">&lt;=</span><span class="number">10</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> stu_v_1 <span class="keyword">where</span> id<span class="operator">&lt;</span><span class="number">3</span>;</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">view</span> stu_v_1 <span class="keyword">as</span> <span class="keyword">select</span> id,name <span class="keyword">from</span> student <span class="keyword">where</span> id<span class="operator">&lt;=</span><span class="number">9</span>;</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">view</span> if <span class="keyword">exists</span> stu_v_1;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li>cascaded：当一个视图的基表是另一个视图，使用cascaded嵌套检查所有的where条件（即使基表没有check也会检查where）<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708105535813.png" alt="image-20220708105535813"></li>
+<li>local：嵌套检查当前视图和基表，如果基表有check则检查基表的where，如果没有就不检查。<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708105625469.png" alt="image-20220708105625469"></li>
+<li>作用：安全(视图用户只能查询和修改能见到的数据)，数据独立(帮助用户屏蔽真实表结构变化带来的影响)，简单(对于经常被使用的查询可以定义为视图,这样用户不用为以后的操作每次都指定全部查询条件)</li>
+</ul>
+<h2 id="存储过程"><a href="#存储过程" class="headerlink" title="存储过程"></a>存储过程</h2><ul>
+<li><p>就是把一段sql语句封装起来,下次使用直接调用就行了</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> p1()</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;</span><br><span class="line"><span class="keyword">end</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 调用</span></span><br><span class="line"><span class="keyword">call</span> p1();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li><p>变量:</p>
+<ul>
+<li><p>系统变量：服务器指定的</p>
+</li>
+<li><p>用户变量：不需要提前声明，直接@name,作用域是当前连接</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 赋值</span></span><br><span class="line"><span class="keyword">set</span> <span class="variable">@myname</span><span class="operator">=</span><span class="string">&#x27;wyt&#x27;</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="variable">@myname</span> :<span class="operator">=</span><span class="string">&#x27;wyt&#x27;</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">into</span> <span class="variable">@mycount</span> <span class="keyword">from</span> tb_user;</span><br><span class="line"><span class="comment">-- 使用</span></span><br><span class="line"><span class="keyword">select</span> <span class="variable">@myname</span>,<span class="variable">@mycount</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>局部变量：需要提前声明 declare name 类型;作用域是begin\end块</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> p2()</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">declare</span> stu_count <span class="type">int</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">into</span> stu_count <span class="keyword">from</span> student;</span><br><span class="line">	<span class="keyword">select</span> stu_count;</span><br><span class="line"><span class="keyword">end</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">call</span> p2();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li><p>参数: in (输入)\out(输出)\inout(又输入又输出)</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> p3(<span class="keyword">in</span> score <span class="type">int</span>,<span class="keyword">out</span> <span class="keyword">result</span> <span class="type">varchar</span>(<span class="number">20</span>))</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	if score <span class="operator">&gt;=</span> <span class="number">85</span> <span class="keyword">then</span></span><br><span class="line">		<span class="keyword">set</span> <span class="keyword">result</span> :<span class="operator">=</span><span class="string">&#x27;优秀&#x27;</span>;</span><br><span class="line">    elseif score <span class="operator">&gt;=</span><span class="number">60</span> <span class="keyword">then</span></span><br><span class="line">    	<span class="keyword">set</span> <span class="keyword">result</span> :<span class="operator">=</span><span class="string">&#x27;及格&#x27;</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    	<span class="keyword">set</span> <span class="keyword">result</span> :<span class="operator">=</span><span class="string">&#x27;不及格&#x27;</span>;</span><br><span class="line">    endif;</span><br><span class="line"><span class="keyword">end</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">call</span> p3(<span class="number">81</span>,<span class="variable">@result</span>);</span><br><span class="line"><span class="keyword">select</span> <span class="variable">@result</span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> p4(<span class="keyword">in</span> <span class="keyword">month</span> <span class="type">int</span>)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">declare</span> <span class="keyword">result</span> <span class="type">varchar</span>(<span class="number">10</span>);</span><br><span class="line">	<span class="keyword">case</span></span><br><span class="line">		<span class="keyword">when</span> <span class="keyword">month</span> <span class="operator">&gt;=</span><span class="number">1</span> <span class="keyword">and</span> <span class="keyword">month</span> <span class="operator">&lt;=</span><span class="number">3</span> <span class="keyword">then</span></span><br><span class="line">			<span class="keyword">set</span> <span class="keyword">result</span> :<span class="operator">=</span><span class="string">&#x27;第一季度&#x27;</span>;</span><br><span class="line">		<span class="keyword">else</span> </span><br><span class="line">			<span class="keyword">set</span> <span class="keyword">result</span> :<span class="operator">=</span><span class="string">&#x27;非法参数&#x27;</span>;</span><br><span class="line">	<span class="keyword">end</span> <span class="keyword">case</span>;</span><br><span class="line">	<span class="keyword">select</span> concat(<span class="string">&#x27;您输入的月份&#x27;</span>,<span class="keyword">month</span>,<span class="string">&#x27;所属的季度为&#x27;</span>,<span class="keyword">result</span>);</span><br><span class="line"><span class="keyword">end</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">call</span> p4(<span class="number">12</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> p5(<span class="type">int</span> n <span class="type">int</span>)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">declare</span> total <span class="type">int</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line">	while n<span class="operator">&gt;</span><span class="number">0</span> do</span><br><span class="line">		<span class="keyword">set</span> total<span class="operator">=</span>total<span class="operator">+</span>n;</span><br><span class="line">		<span class="keyword">set</span> n<span class="operator">=</span>n<span class="number">-1</span>;</span><br><span class="line">	<span class="keyword">end</span> while;</span><br><span class="line">	<span class="keyword">select</span> total;</span><br><span class="line"><span class="keyword">end</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">call</span> p5(<span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> p6(<span class="keyword">in</span> n <span class="type">int</span>)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">declare</span> total <span class="type">int</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line">	repeat</span><br><span class="line">		<span class="keyword">set</span> total<span class="operator">=</span>total<span class="operator">+</span>n;</span><br><span class="line">		<span class="keyword">set</span> n<span class="operator">=</span>n<span class="number">-1</span>;</span><br><span class="line">	until n<span class="operator">&lt;=</span><span class="number">0</span></span><br><span class="line">	<span class="keyword">end</span> repeat;</span><br><span class="line">	<span class="keyword">select</span> total;</span><br><span class="line"><span class="keyword">end</span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> p7(<span class="keyword">in</span> n <span class="type">int</span>)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">declare</span> total <span class="type">int</span> dafault <span class="number">0</span>;</span><br><span class="line">	sum:loop</span><br><span class="line">		if n<span class="operator">&lt;=</span><span class="number">0</span> <span class="keyword">then</span></span><br><span class="line">			leave sum;</span><br><span class="line">		<span class="keyword">end</span> if;</span><br><span class="line">		<span class="keyword">set</span> total<span class="operator">=</span>total<span class="operator">+</span>n;</span><br><span class="line">		<span class="keyword">set</span> n<span class="operator">=</span>n<span class="number">-1</span>;</span><br><span class="line">	<span class="keyword">end</span> loop sum;</span><br><span class="line">	<span class="keyword">select</span> total;</span><br><span class="line"><span class="keyword">end</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>游标 cursor:存储的是查询得到的一组数据<code>declare u_cursor cursor for select name,profession from tb_user where age &lt;= 27;</code></p>
+</li>
+<li><p>条件处理程序 handler:定义在流程控制结构执行过程中遇到问题相应的处理步骤<code>declare exit handler</code> for SQLATATE ‘02000’ close u_cursor; 02开头就是 not found</p>
+</li>
+</ul>
+</li>
+<li><p>存储函数:有返回值的存储过程 <code>create function fun1(in n int) return int result;</code></p>
+</li>
+</ul>
+<h2 id="触发器"><a href="#触发器" class="headerlink" title="触发器"></a>触发器</h2><ul>
+<li><p>insert&#x2F;update&#x2F;delete 用来记录数据的增删改,写入日志,只支持行级触发</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">trigger</span> tb_user_insert_trigger after <span class="keyword">insert</span> <span class="keyword">on</span> tb_user <span class="keyword">for</span> <span class="keyword">each</span> <span class="type">row</span></span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">	<span class="keyword">insert</span> <span class="keyword">into</span> user_log(id,operation,operation_time,operate_id,operate_params) <span class="keyword">values</span> (<span class="keyword">null</span>,<span class="string">&#x27;insert&#x27;</span>,now(),new.id,concat(<span class="string">&#x27;插入的数据为:&#x27;</span>,new.id,new.name,new.phine));</span><br><span class="line"><span class="keyword">end</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">show</span> triggers;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="锁："><a href="#锁：" class="headerlink" title="锁："></a>锁：</h2><ul>
+<li>保证数据并发读取的一致性、有效性</li>
+</ul>
+<ul>
+<li><p>全局锁：对整个数据库加锁，常用于数据库备份。<code>flush tables with read lock;</code>此时只能执行DQL语句</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708144742081.png" alt="image-20220708144742081"> <code>mysqldump -uroot -p1234 itcast &gt; itcast.sql</code>执行备份，这是一条命令行语句，不是sql语句  <code>unlock tables；</code>释放全局锁。    如果对数据库备份时不想使用全局锁，可以 <code>mysqldump --single-transaction -uroot -p1234 database_name &gt; database_name.sql;</code></p>
+<ul>
+<li>全局锁问题:如果在主库上备份,那么在备份期间业务停摆;如果在从库上备份,那么备份期间从库不能执行主库同步过来的二进制日志(binlog),会导致主从延迟</li>
+</ul>
+</li>
+<li><p>表级锁</p>
+<ul>
+<li><p>表锁：共享锁-读锁，此时另一个用户可以读但不可以写</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708145323247.png" alt="image-20220708145323247">排他锁-写锁，此时另一个用户不能读也不能写</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708145339262.png" alt="image-20220708145339262"></p>
+</li>
+<li><p>元数据锁：系统自动添加.元数据也就是表结构，元数据锁是为了阻止DML和DDL的冲突，也就是在有事务未提交时，是不能修改表结构的。</p>
+</li>
+<li><p>意向锁：防止行锁和表锁的冲突，也就是假设用户一在对表做DML,此时会对执行的那一行加行锁,此时如果用户二想要对该表加表锁如果没有意向锁，需要逐行判断是否有行锁，而当用户一在添加行锁的同时还添加了意向锁,那用户二就不用检查行锁了。如果此时的意向锁是共享意向锁（select…lock in share mode），则与read表锁兼容，与write表锁互斥；如果意向锁是排他意向锁(insert&#x2F;update&#x2F;delete&#x2F;select…for update)，与所有的表锁都互斥，但意向锁之间兼容。</p>
+</li>
+</ul>
+</li>
+<li><p>行级锁(用在InnoDB中)：对索引上的索引项加锁</p>
+<ul>
+<li>行锁：锁住一条记录</li>
+<li>间隙锁：锁住索引记录之间的间隙,不含记录,防止其他事务在这个间隙进行insert,产生幻读<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708150550475.png" alt="image-20220708150550475"></li>
+<li>临键锁：锁住数据和数据之前的间隙。 间隙锁和临键锁用来防止幻读，用于repeatable read。</li>
+<li>InnoDB是在repeatable read事务隔离级别运行,使用临建锁进行搜索和索引扫描的.如果不通过索引检索数据,那会对表中所有记录加锁,行锁升级为表锁</li>
+</ul>
+</li>
+</ul>
+<h1 id="MySQL运维"><a href="#MySQL运维" class="headerlink" title="MySQL运维"></a><strong>MySQL运维</strong></h1><hr>
+<h2 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h2><ul>
+<li>错误日志：默认地址 &#x2F;var&#x2F;log&#x2F;mysqld.log</li>
+<li>二进制日志binlog.00000x：记录所有的DML语句和DDL语句但不记录数据查询语句，可以用于数据的恢复&#x2F;主从复制。<ul>
+<li>二进制日志的格式包括: statement(记录的是所有的sql语句)&#x2F;row(记录的是每一行的数据变更)</li>
+<li>二进制日志的读取：<code>mysqlbinlog \-v name;</code>(-v：把row格式转为SQL语句来读，-vv把注释也读取出来)</li>
+<li>二进制日志的删除：<ul>
+<li><code>reset master</code>：全部删除，日志从binlog.000001开始编号</li>
+<li><code>purge master logs to ‘binlog.*’</code>：把name之前的日志删除</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>查询日志mysql_query.log：记录了包括查询语句在内的所有语句</li>
+<li>慢查询日志</li>
+</ul>
+<h2 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h2><ul>
+<li>即将主库master中的DDL&#x2F;DML语句复制一份到从库slave执行，使得从库数据与主库保持一致。</li>
+</ul>
+<ul>
+<li><p>作用： 1）对主库发生错误后进行数据恢复 2）实现读写分离，（主库读写，从库只读）降低主库访问压力 3）数据备份时由从库执行，避免影响主库的服务</p>
+</li>
+<li><p>原理：master将每条DDL&#x2F;DML语句记录在binlog日志中，slave读取主库的binlog并写入从库的中继日志relay log，重做relay log中的事件</p>
+</li>
+<li><p>实现：</p>
+<ul>
+<li><p>配置主库：修改主库的配置文件，增加sever_id和read_only&#x3D;0后重启MySQL<code>systemctl restart mysql</code></p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708152820817.png" alt="image-20220708152820817">在主库中创建拥有主从复制权限的用户</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">user</span> <span class="string">&#x27;wyt&#x27;</span>@<span class="string">&#x27;%&#x27;</span> identified <span class="keyword">with</span> mysql_native_password <span class="keyword">by</span> <span class="string">&#x27;123456&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">grant</span> replication slave <span class="keyword">on</span> <span class="operator">*</span>.<span class="operator">*</span> <span class="keyword">to</span> <span class="string">&#x27;wyt&#x27;</span>@<span class="string">&#x27;%&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>查看主库状态得到二进制日志的坐标<code>show master status;</code></p>
+</li>
+<li><p>配置从库：修改从库的配置文件，新增server_id和read_only&#x3D;1后重启MySQL</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708153648818.png" alt="image-20220708153648818"></p>
+<p>在从库中建立与主库的主从复制,在从库中开启主从复制</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">change replication source <span class="keyword">to</span> source_host<span class="operator">=</span><span class="string">&#x27;主库IP地址&#x27;</span>,source_user<span class="operator">=</span><span class="string">&#x27;主库用户名&#x27;</span>,source_password<span class="operator">=</span><span class="string">&#x27;主库密码&#x27;</span>,source_log_file<span class="operator">=</span><span class="string">&#x27;binlog.*&#x27;</span>,master_log_pos<span class="operator">=</span><span class="string">&#x27;主库坐标&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 开启同步</span></span><br><span class="line"><span class="keyword">start</span> slave;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看主从同步状态</span></span><br><span class="line"><span class="keyword">show</span> slave status;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><ul>
+<li>将数据分散存储,使得单一数据库&#x2F;表的数据量变小来缓解单一数据库的性能问题,从而达到提升数据库性能的目的</li>
+</ul>
+<h3 id="拆分策略"><a href="#拆分策略" class="headerlink" title="拆分策略"></a>拆分策略</h3><ul>
+<li>垂直分库：按照表分，不同的表分到不同的数据库<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708160314660.png" alt="image-20220708160314660"></li>
+<li>垂直分表：按照表中的字段分，同一张表不同字段分在不同的表中,一般通过主键&#x2F;外键关联<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708160330697.png" alt="image-20220708160330697"></li>
+<li>水平分库、水平分表：以字段为依据，分的是表中的数据，每个库&#x2F;表的表结构是一样的。<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708160408626.png" alt="image-20220708160408626"></li>
+</ul>
+<h3 id="MyCat"><a href="#MyCat" class="headerlink" title="MyCat"></a>MyCat</h3><ul>
+<li>整体结构<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708160711000.png" alt="image-20220708160711000"></li>
+<li>启动MyCat:<code>bin/mycat start/stop</code></li>
+<li>连接MyCat:<code>mysql -h 192.168.200.210 -P 8066 -uroot -p123456</code>,即使用MySQL指令来连接</li>
+</ul>
+<ul>
+<li><p>schema.xml ：配置逻辑库、逻辑表（在分表的时候有分表的规则）</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572676745352.png" alt="Image"></p>
+<ul>
+<li><p>schema定义逻辑库，就是要对哪个库进行操作,其中table是逻辑库中的逻辑表,所有需要拆分的表都要在table中定义,datanode是定义逻辑表所属的节点,比如要分到三个数据库中就要有三个datanode,想要设置当前逻辑表为全局表,需要在table中添加<code>type=&quot;global&quot;,如&lt;table name=&#39;tb_provinces&#39; datanode=&quot;dn1,dn2,dn3&quot; primarykey=&#39;id&#39; type=&quot;global&quot;&gt;</code>,使得所有涉及的数据库中都有该表,全局表的作用是:当在查询时想查的数据在两台服务器上就会查询失败,这时应该把都会用到的表设成全局表让他在那台服务器中都有</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572676897963.png" alt="Image"></p>
+</li>
+<li><p>datanode标签用来定义数据节点,其中name是节点的名字,应该与table中对应,datahost是数据库实际主机的名称,database用来定义这个分片属于哪个数据库</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572679498414.png" alt="Image"></p>
+</li>
+<li><p>datahost标签直接定义了数据库实例、读写分离,其中name是实际数据库的名字,balance用于读写分离时的负载均衡</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572680380405.png" alt="Image"></p>
+</li>
+</ul>
+</li>
+<li><p>server.xml：配置用户名、密码、访问权限</p>
+<ul>
+<li><p>system标签</p>
+</li>
+<li><p>user标签</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572681699636.png" alt="Image"></p>
+</li>
+</ul>
+</li>
+<li><p>rule.xml：分表规则，包含tableRule\Function</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572683353347.png" alt="Image"></p>
+<ul>
+<li>范围分片auto-sharding-long：可以指定按照id字段，从多少到多少分到哪一个数据节点中</li>
+<li>取模分片mod-long：根据字段值对节点数量取模，模几就放在第几个节点</li>
+<li>一致性hash sharding-by-murmur：相同的哈希因子计算值被划到相同的分区表中</li>
+<li>枚举sharding-by-intfile-enumstatua ：按照省份&#x2F;性别&#x2F;状态等指定数据分布在哪个节点上</li>
+<li>应用指定算法：如截取某字段的前多少位，用来判断应该放在哪个节点</li>
+<li>固定分片hash算法：使用二进制1111111111与某个数值字段按位与；这样得到的分片结果，连续的值可以被分到相同的分片上</li>
+<li>字符串哈希解析算法</li>
+<li>按天分片：如 2022-01-02 — 2022-01-10：0</li>
+<li>按自然月分片：如有三个节点，那么begin设置为2022-01-01，end设置为2022-03-31。到达结束时间以后，再重复开始分片插入</li>
+</ul>
+</li>
+<li><p>管理:</p>
+<ul>
+<li>MyCat有两个端口:8066是进行DML&#x2F;DDL操作的数据访问端口;9066是数据库管理端口,用于管理整个集群状态</li>
+</ul>
+</li>
+</ul>
+<h3 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h3><ul>
+<li><p>一主一从：基于binlog日志，mycat进行主从复制时，要在datahost标签处添加写节点、读节点的信息</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572702440558.png" alt="Image"></p>
+<p>其中balance的选择规则为<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-16572703564209.png" alt="Image"></p>
+<ul>
+<li>缺点:当master不能用了那么从库也就不能读了,双主双从解决了这个问题</li>
+</ul>
+</li>
+<li><p>双主双从：master1和master2互为备用机，如果master1可以用，那么master2，slave1，slave2都用来读；如果master1不能用，那么master2负责写。 主从复制时,slave1&#x2F;2要复制master1&#x2F;2,master1和master2之间也要互相复制<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/Image-165727054169710.png" alt="Image"></p>
+</li>
+<li><p>双主双从+读写分离实现过程:</p>
+<ul>
+<li><p>首先要进行两个主库和两个从库的搭建,对于主库:修改配置文件<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708170217222.png" alt="image-20220708170217222"></p>
+<p>创建账户并授权</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">user</span> <span class="string">&#x27;wyt&#x27;</span>@<span class="string">&#x27;%&#x27;</span> identified <span class="keyword">with</span> mysql_native_password <span class="keyword">by</span> <span class="string">&#x27;1234&#x27;</span>;</span><br><span class="line"><span class="keyword">grant</span> replication slave <span class="keyword">on</span> <span class="operator">*</span>.<span class="operator">*</span> <span class="keyword">to</span> <span class="string">&#x27;wyt&#x27;</span>@<span class="string">&#x27;%&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>查看坐标<code>show master status;</code></p>
+<p>对于从库,首先修改配置文件:</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/image-20220708170513059.png" alt="image-20220708170513059"></p>
+<p>建立与主库关联,主库之间也要关联</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">change master <span class="keyword">to</span> master_host<span class="operator">=</span><span class="string">&#x27;192.168.200.211&#x27;</span>,master_user<span class="operator">=</span><span class="string">&#x27;wyt&#x27;</span>,master_password<span class="operator">=</span><span class="string">&#x27;1234&#x27;</span>,master_log_file<span class="operator">=</span><span class="string">&#x27;binlog.000001&#x27;</span>,master_log_pos<span class="operator">=</span><span class="number">663</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>读写分离实现,就要对schema.xml和server.xml配置</p>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/" rel="prev" title="MySQL基础">
+      <i class="fa fa-chevron-left"></i> MySQL基础
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/06/27/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/" rel="next" title="测试工具">
+      测试工具 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL-%E8%BF%9B%E9%98%B6"><span class="nav-text">MySQL 进阶</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mysql%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="nav-text">mysql体系结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">存储引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95"><span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E7%B4%A2%E5%BC%95%E7%BB%93%E6%9E%84"><span class="nav-text">常见的索引结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E5%88%86%E7%B1%BB%EF%BC%9AInnoDB%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">索引分类：InnoDB存储引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E5%88%9B%E5%BB%BA"><span class="nav-text">索引创建</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-text">SQL性能分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E4%BD%BF%E7%94%A8"><span class="nav-text">索引使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-text">索引设计原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sql%E4%BC%98%E5%8C%96"><span class="nav-text">sql优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE"><span class="nav-text">视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B"><span class="nav-text">存储过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-text">触发器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%81%EF%BC%9A"><span class="nav-text">锁：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL%E8%BF%90%E7%BB%B4"><span class="nav-text">MySQL运维</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%BF%97"><span class="nav-text">日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="nav-text">主从复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8"><span class="nav-text">分库分表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%86%E5%88%86%E7%AD%96%E7%95%A5"><span class="nav-text">拆分策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MyCat"><span class="nav-text">MyCat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="nav-text">读写分离</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

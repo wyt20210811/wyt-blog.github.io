@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="包括数据库概述、SQL语句、函数、约束、多表查询、事务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL基础">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="包括数据库概述、SQL语句、函数、约束、多表查询、事务">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708172253457.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708174234199.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708174324020.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708174408649.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708174515528.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708180530761.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708181521247.png">
+<meta property="article:published_time" content="2021-09-21T08:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-08T10:20:26.796Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708172253457.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL基础 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-21 16:42:38" itemprop="dateCreated datePublished" datetime="2021-09-21T16:42:38+08:00">2021-09-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-08 18:20:26" itemprop="dateModified" datetime="2022-07-08T18:20:26+08:00">2022-07-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>包括数据库概述、SQL语句、函数、约束、多表查询、事务<br><em><span id="more"></span></em></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<li>数据库：有组织的存储数据的仓库</li>
+<li>数据库管理系统：操纵和管理数据库的大型软件</li>
+<li>SQL ：操作关系型数据库的编程语言</li>
+<li>启动：<code>net start mysql80</code></li>
+<li>连接：<code>mysql -h 127.0.0.1 -P 3306 -u root -p</code></li>
+<li>数据模型：<ul>
+<li>关系型数据库：建立在关系模型基础上，由多张互相连接的二维表组成的数据库。</li>
+</ul>
+</li>
+</ul>
+<h2 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h2><ul>
+<li><p>DDL：定义数据库、表、字段</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> databases<span class="operator">/</span>tables;</span><br><span class="line"><span class="keyword">select</span> database();</span><br><span class="line"><span class="keyword">drop</span> database if exit name;</span><br><span class="line">use database_name<span class="operator">/</span>table_name;</span><br><span class="line"><span class="keyword">desc</span> 表明； 查看表结构</span><br><span class="line"><span class="comment">-- 表修改,增加/修改/替换/删除字段</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> tb_user <span class="keyword">add</span> name <span class="type">varchar</span>(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> tb_user modify name <span class="type">varchar</span>(<span class="number">20</span>);</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> tb_user change name username <span class="type">varchar</span>(<span class="number">20</span>);</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> tb_user <span class="keyword">drop</span> name;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>数据类型：数值型、字符串型（char定长字符串，varchar变长字符串）、日期时间型<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708172253457.png" alt="image-20220708172253457"></li>
+</ul>
+</li>
+<li><p>DML：对数据库中的数据进行增删改</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb_user(id,name,age) <span class="keyword">values</span>(<span class="number">1</span>,<span class="string">&#x27;a&#x27;</span>,<span class="number">12</span>);</span><br><span class="line"><span class="keyword">update</span> tb_user <span class="keyword">set</span> name<span class="operator">=</span><span class="string">&#x27;b&#x27;</span> <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> tb_user <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>DQL：查询数据库中的记录</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tb_user <span class="keyword">where</span> id<span class="operator">=</span><span class="number">2</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">distinct</span> name <span class="keyword">from</span> tb_user;</span><br><span class="line"><span class="comment">-- 条件查询，包括between and(包含最小、最大值)，in(...)在列表中多选一，like模糊匹配，is null</span></span><br><span class="line"><span class="comment">-- 聚合函数，包括count,min,max,avg,sum</span></span><br><span class="line"><span class="comment">-- 分组查询group by +having 分组过滤后的条件</span></span><br><span class="line"><span class="keyword">select</span> workadress,<span class="built_in">count</span>(<span class="operator">*</span>) address_count <span class="keyword">from</span> emp <span class="keyword">where</span> age<span class="operator">&lt;</span><span class="number">45</span> <span class="keyword">group</span> <span class="keyword">by</span> workaddress <span class="keyword">having</span> address_count <span class="operator">&gt;=</span><span class="number">3</span></span><br><span class="line"><span class="comment">-- 排序查询 ，order by，asc递增，desc递减</span></span><br><span class="line"><span class="comment">-- 分页查询，limit 起始索引=（查询页码-1）*每页显示的记录数，查询记录数</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>DCL：创建数据库用户、控制数据库访问权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">create user &#x27;name&#x27;@&#x27;主机名&#x27; indentified with mysql_native_password by &#x27;密码&#x27;;</span><br><span class="line">drop user &#x27;name&#x27;@&#x27;主机名&#x27;;</span><br><span class="line">show grants for &#x27;name&#x27;@&#x27;主机名&#x27;;</span><br><span class="line">grant all on itcast.* to &#x27;wyt&#x27;@&#x27;%&#x27;;</span><br><span class="line">   revoke all on itcast.* from &#x27;wyt&#x27;@&#x27;%&#x27;;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><ul>
+<li>字符串函数</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708174234199.png" alt="image-20220708174234199"></p>
+<ul>
+<li>数值函数<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708174324020.png" alt="image-20220708174324020"></li>
+<li>日期函数<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708174408649.png" alt="image-20220708174408649"></li>
+</ul>
+<h2 id="约束"><a href="#约束" class="headerlink" title="约束"></a>约束</h2><ul>
+<li>作用于表中字段上的规则，用于限制存储在表中的数据<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708174515528.png" alt="image-20220708174515528"></li>
+<li>外键约束：用来让两张表的数据之间建立连接，从而保证数据的一致性和完整性<code>alter table emp add constraint fk_emp_dept_id foreign key (dept_id) reference dept(id);</code><ul>
+<li>删除&#x2F;更新行为：由于添加了外键，再删除&#x2F;更新父表数据就会产生约束行为，默认是 no action，也就是如果有foreign key，就不允许删除&#x2F;更新父表；使用 cascade 时，子表会和父表一起更新</li>
+</ul>
+</li>
+</ul>
+<h2 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h2><ul>
+<li><p>从多张表中查询数据</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 基本查询</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> emp,dept <span class="keyword">where</span> dept.id<span class="operator">=</span>emp.dept_id;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分类</p>
+<ul>
+<li><p>内连接 inner join … on：交集</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 隐式</span></span><br><span class="line"><span class="keyword">select</span> emp.name,dept.name <span class="keyword">from</span> emp,dept <span class="keyword">where</span> emp.dept_id<span class="operator">=</span>dept.id;</span><br><span class="line"><span class="comment">-- 显示</span></span><br><span class="line"><span class="keyword">select</span> e.name,d.name <span class="keyword">from</span> emp e <span class="keyword">inner</span> <span class="keyword">join</span> dept d <span class="keyword">on</span> e.dept_id<span class="operator">=</span>dept_id;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>外连接</p>
+<ul>
+<li>左外连接：左表所有数据+两张表交集<code>select e.name,d.name from emp e left join dept d on e.dept_id=d.id;</code></li>
+<li>右外连接：右表所有数据+两张表交集</li>
+</ul>
+</li>
+<li><p>自连接：与自身的连接，自连接必须使用表别名<code>select a.name,b.name from emp a,emp b where a.managerid=b.id;</code></p>
+</li>
+</ul>
+</li>
+<li><p>联合查询 union ：多次查询结果合并得到一个结果集</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> emp <span class="keyword">where</span> salary<span class="operator">&lt;</span><span class="number">5000</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> emp <span class="keyword">where</span> age<span class="operator">&gt;</span><span class="number">50</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>子查询：sql 语句嵌套 select 语句，用一个查询的结果作为外部操作的数据集合</p>
+<ul>
+<li>标量子查询：返回单个值</li>
+<li>列子查询：返回若干列，使用 in\not in\any\some\all等<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708180530761.png" alt="image-20220708180530761"></li>
+<li>行子查询：&#x3D;&#x2F;&gt;&#x2F;&lt;&#x2F;In&#x2F;not in</li>
+<li>表子查询</li>
+</ul>
+</li>
+</ul>
+<h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><ul>
+<li><p>一组操作的集合，不可分割的一个工作单位</p>
+</li>
+<li><p>MySQL默认自动提交事务，即执行完一条DML就会立刻提交</p>
+</li>
+<li><p>事务操作</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 关闭事务自动提交</span></span><br><span class="line"><span class="keyword">select</span> @<span class="variable">@autocommit</span>;</span><br><span class="line"><span class="keyword">set</span> @<span class="variable">@autocmmit</span><span class="operator">=</span><span class="number">0</span>;</span><br><span class="line"><span class="comment">-- 开启事务</span></span><br><span class="line"><span class="keyword">start</span> transaction;</span><br><span class="line"><span class="comment">-- 提交事务</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br><span class="line"><span class="comment">--回滚</span></span><br><span class="line">rooback;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>事务四大特性</p>
+<ul>
+<li>原子性：是不可分割的最小操作单元，要么同时成功，要么同时失败</li>
+<li>一致性：事务完成后，所有数据保持一致状态</li>
+<li>持久性：事务在提交或回滚后，在数据库中的改变是永久的</li>
+<li>隔离性：并发事务互相之间不受影响，独立环境运行</li>
+</ul>
+</li>
+<li><p>并发事务问题：</p>
+<ul>
+<li>脏读：一个事务都到另一个事务还没提交的数据</li>
+<li>不可重复读：一个事务先后两次读取同一条记录的结果不同</li>
+<li>幻读：一个事务再查询数据时没有对应的数据行，但在插入时又发现这行好像已经存在（实际是由于另一个事务插入数据但没提交导致的）</li>
+</ul>
+</li>
+<li><p>事务隔离级别</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/09/21/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/image-20220708181521247.png" alt="image-20220708181521247"></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/08/21/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="prev" title="内存管理">
+      <i class="fa fa-chevron-left"></i> 内存管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9B%E9%98%B6/" rel="next" title="MySQL进阶">
+      MySQL进阶 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL"><span class="nav-text">SQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0"><span class="nav-text">函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%A6%E6%9D%9F"><span class="nav-text">约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%A1%A8%E6%9F%A5%E8%AF%A2"><span class="nav-text">多表查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1"><span class="nav-text">事务</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
