@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="包含单元测试（白盒测试）、集成测试、系统测试（功能测试、黑盒测试、协议测试、性能测试、安全测试、界面测试）、回归测试、验收测试等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="测试方法">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="包含单元测试（白盒测试）、集成测试、系统测试（功能测试、黑盒测试、协议测试、性能测试、安全测试、界面测试）、回归测试、验收测试等">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/1b69a2f717e684e5ed4965329436a121.jfif">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/d390837176cbdeea171a0692265dff58.jfif">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/8b9b8be48a06356dc33c3b60e92906f4.jfif">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/a07986e047811391bf8c507e293ec032.png">
+<meta property="article:published_time" content="2022-03-27T08:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-09T09:44:57.945Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="测试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/1b69a2f717e684e5ed4965329436a121.jfif">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>测试方法 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          测试方法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-27 16:42:38" itemprop="dateCreated datePublished" datetime="2022-03-27T16:42:38+08:00">2022-03-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-09 17:44:57" itemprop="dateModified" datetime="2022-07-09T17:44:57+08:00">2022-07-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">测试</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>包含单元测试（白盒测试）、集成测试、系统测试（功能测试、黑盒测试、协议测试、性能测试、安全测试、界面测试）、回归测试、验收测试等<br><em><span id="more"></span></em></p>
+<h2 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a><strong>单元测试</strong></h2><ul>
+<li>软件中的最小可测试单元，与其他部分相隔离的情况下测试</li>
+</ul>
+<p> </p>
+<ul>
+<li>测试对象：单独的模块</li>
+<li>测试依据：代码+注释+详细设计文档</li>
+</ul>
+<h3 id="测试方法之白盒测试"><a href="#测试方法之白盒测试" class="headerlink" title="测试方法之白盒测试"></a><strong>测试方法之白盒测试</strong></h3><ul>
+<li><strong>逻辑覆盖：语句覆盖（每个可执行语句至少执行一次）、判定覆盖（每个判断的取真分支和取假分支至少经历一次）、条件覆盖（每个判断中每个条件的可能取值至少满足一次）、判定-条件覆盖（所有条件可能取值至少执行一次，同时，所有判断的可能结果至少执行一次）、条件组合覆盖（每个判断的所有可能的条件取值组合都至少出现一次）、路径覆盖（可以对程序进行彻底的测试，比前面五种的覆盖面都广）</strong></li>
+<li><strong>基本路径测试：在程序控制流程的基础上，分析控制构造的环路复杂性，导出基本可执行路径集合。绘制流程图，保证每条基本路径被执行一次</strong></li>
+<li>测试要求：正确性（保证基础的功能可以正确实现）、清晰（可以便于其他人理解这个单元的实现）、完整（考虑各种输入输出的场景、确保测试覆盖率）、健壮（即如果修改了内部的实现或者添加功能，应该不需要或者进需要修改单测的极少部分。如测试排序函数的单元测试不能因为排序算法的不同而不同）</li>
+<li>测试内容：模块接口测试（看模块的参数传递是否正确）、局部数据结构测试（看变量的作用域）、路径测试（检查条件判断是否覆盖了所有的分支路径）、错误处理测试、边界测试（循环的边界）</li>
+</ul>
+<h3 id="测试框架"><a href="#测试框架" class="headerlink" title="测试框架"></a>测试框架</h3><ul>
+<li><strong>CppUnit\btest\gtest</strong></li>
+</ul>
+<ul>
+<li>测试代码结构：<ul>
+<li>准备：准备好调用所需的外部环境，数据、Stub（桩代码），Mock，临时变量、调用请求、环境变量等<ul>
+<li>驱动程序：就是要写一个main函数，模拟上级模块，来调用需要测试的模块</li>
+<li>桩代码：模拟被测模块运行时需要调用的下层模块，一般可以硬编码一些输入输出，代替关联代码</li>
+<li><strong>Mock：深入模拟对象之间的交互方式，模拟一些不宜构造或者比较复杂的对象，从而把测试和测试边界以外的对象分开。即在测试一个对象A时，构造一些假的对象来模拟与A之间的交互，这些假对象的行为是我们预先设定好并且符合预期的。（工具GoogleMock）</strong><ol>
+<li><strong>Mock的好处：隔绝其他模块错误引起本模块错误、隔绝其他模块的开发状态，只要定义好接口即使其他模块没有写完也可以测试、可以将一些分布式测试转为本地测试、用于压力测试可以解决测试集群无法模拟线上集群大规模下的压力</strong></li>
+<li><strong>应用场景：真实对象行为不确定、很难被创建、自然逻辑下很难被触发，执行时间过长（如需要大文件的写操作、数据更新等）</strong></li>
+<li><strong>使用：见工具笔记</strong></li>
+</ol>
+</li>
+</ul>
+</li>
+<li>调用：调用需要测试的函数本身</li>
+<li>断言：调用返回的结果是否正确</li>
+</ul>
+</li>
+<li>基本过程：在桩函数中可以直接写死输入输出，把输出直接传递给被测函数；在mock代码中可以直接提供被测函数不同参数输入时的断言数据（也就是应该得到的、正确的结果）；在被测函数中接收桩代码传来的数据以及mock中的结果；在驱动函数也就是主函数中调用被测函数来测试结果</li>
+</ul>
+<h2 id="集成测试"><a href="#集成测试" class="headerlink" title="集成测试"></a><strong>集成测试</strong></h2><ul>
+<li>联合测试，将程序代码块组装起来，检查模块之间的接口是否正确</li>
+</ul>
+<ul>
+<li>测试阶段：单元测试以后</li>
+<li>测试对象：模块之间的接口</li>
+<li>测试依据：单元测试的模块+概要设计文档</li>
+<li>测试方法：黑盒+白盒</li>
+<li>测试内容：模块之间的数据传输、模块之间的功能冲突、组装正确性、全局数据结构、单模块缺陷对系统的影响</li>
+</ul>
+<ul>
+<li>测试层次：模块内集成测试、子系统内集成测试、子系统间集成测试<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/1b69a2f717e684e5ed4965329436a121.jfif" alt="1b69a2f717e684e5ed4965329436a121.jfif"></li>
+</ul>
+<h3 id="测试策略"><a href="#测试策略" class="headerlink" title="测试策略"></a><strong>测试策略</strong></h3><ul>
+<li>大爆炸法：当所有组件都完成以后，立即集成在一起作为一个单元进行测试。适用于小型系统、项目维护、新增的项目只有少数组件被修改，便于排查错误；缺点：故障定位困难、可能会漏掉一些测试的接口连接、所有模块一起测试高风险模块无法被隔离和优先测试</li>
+<li>增量测试：先集成两个或多个逻辑相关的模块测试，然后测试应用程序的正常功能，不断增加其他相关模块，直到所有逻辑相关模块成功集成和测试<ul>
+<li>自上而下集成：深度优先集成，如下，即给A加一个驱动调用A，先给A加一个B，其他使用桩代码，再给B加个E，以此类推观察各单元功能是否正常，核心是先保证一条流程走完</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/d390837176cbdeea171a0692265dff58.jfif" alt="d390837176cbdeea171a0692265dff58.jfif"></p>
+<ul>
+<li>自上而下集成：广度优先集成，核心是先完成同一级别的测试</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/8b9b8be48a06356dc33c3b60e92906f4.jfif" alt="8b9b8be48a06356dc33c3b60e92906f4.jfif"></p>
+<p>自上而下集成的优点：最多只需要一个驱动，较早验证了主要的控制点和判断点，支持故障隔离；缺点：桩代码成本高、底层组件验证晚且测试不够充分；适用范围：产品控制结构清晰稳定、高层接口变化小、底层接口未定义或经常修改、产品的控制组件需要较早被验证</p>
+<ul>
+<li>自下而上集成策略：先集成和测试结构最底层的代码，再不断融入上级代码和模块，不需要桩代码。优点：对底层组件验证较早、最初需要并行集成，效率高、减少了桩的工作量、支持故障隔离；缺点：驱动要求高，每次组装都需要设计新的驱动、对高层验证晚，不容易发现设计上的错误；适用范围：底层接口稳定，变动少、高层接口变化频繁、底层组件完成早</li>
+</ul>
+<ul>
+<li>三明治集成策略：将系统划分为三层，中间一层为目标层，目标层以下使用自下而上集成，目标层以上使用自上而下集成，最后在目标层会合</li>
+</ul>
+<h2 id="系统测试"><a href="#系统测试" class="headerlink" title="系统测试"></a><strong>系统测试</strong></h2><ul>
+<li>将已经确认的软件、计算机硬件、外设、网络等元素组合在一起，包含对功能、性能、软件运行的软硬件环境测试（包含回归测试和冒烟测试）</li>
+</ul>
+<ul>
+<li> 测试对象：整个系统</li>
+<li> 测试依据：需求说明文档</li>
+<li> 测试方法：黑盒测试</li>
+<li> 测试内容：功能、界面、可靠性、易用性、性能、兼容性、安全性等，包括功能性和非功能性测试，模拟真实的测试用例</li>
+<li> 测试过程：<ul>
+<li>测试计划阶段：根据软件需求说明、开发计划等设计测试目标、测试时里程碑点、风险信息等</li>
+<li>测试设计阶段：完成测试方案，确定测试策略（功能、性能、自动化策略）、测试环境搭建、测试数据准备、测试工具使用、优先级信息等</li>
+<li>测试实现阶段：完成测试用例、测试规程、测试的预测试项</li>
+<li>测试执行阶段：执行系统测试测试用例，修改发现的问题并进行回归测试，提交系统预测试报告、系统测试报告、缺陷报告</li>
+</ul>
+</li>
+<li> 测试分析：<ul>
+<li>用户层：测试用户界面的规范性、友好型、可操作性，数据安全等，可维护性测试和安全性测试</li>
+<li>应用层：模拟实际环境，对系统的兼容性、可靠性做测试，包含并发性能测试、负载测试、压力测试、强度测试、破坏性测试</li>
+<li>功能层：检查系统是否已经实现了需求规格中定义的功能</li>
+<li>子系统层：产品内部结构测试</li>
+<li>协议&#x2F;指标层：针对系统所支持的协议，进行协议一致性测试和协议互通测试</li>
+</ul>
+</li>
+</ul>
+<h3 id="系统测试方法"><a href="#系统测试方法" class="headerlink" title="系统测试方法"></a>系统测试方法</h3><h4 id="功能测试即黑盒测试方法"><a href="#功能测试即黑盒测试方法" class="headerlink" title="功能测试即黑盒测试方法"></a><strong>功能测试即黑盒测试方法</strong></h4><ul>
+<li>等价类划分法：<ol>
+<li>需要划分有效等价类（合理的、有意义的输入数据构成的集合，可以检验程序是否已经实现了规格说明中所规定的功能和性能）和无效等价类（不合理或无意义的输入集合，检查软件的可靠性，是否能接受意外的考验）。同一个等价类中的测试要映射到相同的执行路径中</li>
+<li>划分等价类的方法：如果输入有取值范围或个数，可以确定一个有效等价类+两个无效等价类；如果输入规定了输入条件&#x2F;bool类型，可以确定一个有效+一个无效；如果输入是一组值（n个），可以确定n个有效+一个无效；如果输入必须遵守某个规则，可以确定一个有效+n个无效（从不同角度来违反规则）；如果直到已划分的等价类中个元素在程序中的处理方式不同，应该再继续划分</li>
+</ol>
+</li>
+<li>边界值分析法：用每个等价类的边界作为测试条件，边界应该选取“正好”“刚刚大于”“刚刚小于”，如：16位整数32767和-32768、光标在屏幕上最左上右下、数组的第一个和最后一个数、报表的第一行和最后一行、循环的第0次第一次倒数第二次和最后一次<ol>
+<li>边界检验：数字、字符、位置、重量、大小、速度、方位、尺寸、空间</li>
+<li>内部边界值：二进制值、ascII码</li>
+</ol>
+</li>
+<li>错误推测法：基于经验和直觉，有针对性的设计测试用例方法</li>
+<li>因果图法：等价类划分和边界值都只考虑输入的条件，但没有考虑输入之间的关系，因果图考虑输入条件的各种组合、输入条件之间的制约关系<ol>
+<li>关系：恒等：输入与输出相等（1-1，0-0）；非：输入与输出相异（1-0，0-1）；或（V）：有一个输入是1，输出就是1；与（A）：所有输入都是1，输出才是1</li>
+<li>约束：输入状态之间的依赖关系、输出状态之间的依赖关系。E约束（异）：两个输入之间至多只有一个1，即不能同时为1；I约束（或）：输入之间至少有一个1，不能同时为0；O约束（唯一）：输入之间有且只有一个1；R约束（要求）：不可能出现一个是1另一个是0；M约束（强制）如果某一个结果是1，那么另一个结果强制为0</li>
+<li>使用过程：首先列出所有的原因和结果，再根据需求说明分析原因与结果之间的关系话因果图，因果图中要包含由于条件限制导致的约束，最后把因果图转为判定表</li>
+</ol>
+</li>
+<li>判定表驱动法：分析和表达堕落及条件下执行不同操作<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/a07986e047811391bf8c507e293ec032.png" alt="a07986e047811391bf8c507e293ec032.png"><br>条件桩：问题的所有条件；动作桩：问题规定可能采取的操作；条件项：针对左列条件的取值，真或假；动作项：在条件项的取值情况下应采取的动作；规则：每一列条件项+动作项就是一条规则</li>
+<li>正交实验设计法：把整体功能要求不断分解，分解为可以相互独立的功能要求，找到影响该功能实现的因子，并把因子的取值作为状态，同时给每个因子及其状态按照作用大小、出现频率等赋予权值</li>
+</ul>
+<h4 id="协议测试"><a href="#协议测试" class="headerlink" title="协议测试"></a><strong>协议测试</strong></h4><ul>
+<li>包含一致性测试（检测所实现的系统与协议规范符合程度）、性能测试（数据传输率、连接时间、执行速度、吞吐量、并发度等）、互操作性测试（同一协议不同版本之间、同一类协议不同实现版本之间的互通能力和互联操作能力）、坚固性测试（在各种恶劣环境下运行的能力，如信道被切断、通信技术掉电、注入干扰报文等）</li>
+</ul>
+<h4 id="性能测试"><a href="#性能测试" class="headerlink" title="性能测试"></a>性能测试</h4><ul>
+<li>通过自动化的测试工具模拟多种正常、峰值以及异常条件来对系统的各项性能指标进行测试（响应时间测试、压迫测试、负重测试），常用工具：jmeter</li>
+<li>指标：服务器的各项指标（CPU、内存占用率等）、后台数据库的各项指标、网络流量、响应时间</li>
+<li>响应时间：应用系统从请求发出开始到客户端接收到最后一个字节数据所消耗的时间，是作为用户视角的软件性能的主要体现。</li>
+<li>并发用户数：系统用户数、同时在线用户人数。</li>
+<li>吞吐量：单位时间内系统处理的客户请求的数量，直接体现软件系统的性能承载能力。 表示方法：请求数&#x2F;秒、页面数&#x2F;秒、人数&#x2F;天、处理的业务数&#x2F;小时。</li>
+<li>资源占用率：体现软件的面向用户特性。</li>
+</ul>
+<h4 id="安全性测试"><a href="#安全性测试" class="headerlink" title="安全性测试"></a><strong>安全性测试</strong></h4><ul>
+<li><p>包含软件在设计上的缺陷漏洞和数据库的安全性</p>
+</li>
+<li><p>用户认证安全性测试：系统中不同用户权限、用户是否冲突、用户密码是否加密、系统是否会因为改变用户权限而混乱、用户退出后是否删除登录信息</p>
+</li>
+<li><p>网络安全性测试：防护措施是否正确配置、采用NBSI等工具检查系统相关漏洞、采集木马工具及各种防外挂工具检查外挂漏洞</p>
+</li>
+<li><p>数据库安全测试：数据库是否具备恢复和备份功能、是否对数据加密、是否有安全日志文件、用户密码是否使用强口令、不同用户赋予不同权限、是否使用视图和存储过程</p>
+</li>
+<li><p>Web安全性测试：输入验证、身份验证、授权、配置管理、会话加密、审核和日志记录等</p>
+</li>
+</ul>
+<h4 id="界面测试"><a href="#界面测试" class="headerlink" title="界面测试"></a>界面测试</h4><ul>
+<li><p>一个控件叠在另一个控件上</p>
+</li>
+<li><p>一个控件被另一个控件截断， 导致控件部分不可见</p>
+</li>
+<li><p>文字自动换行，应该显示为一行的句子， 被截断，显示为两行</p>
+</li>
+<li><p>缺失快捷键(lost shortcut)</p>
+</li>
+<li><p>界面设计中有个规则，就是任何UI都应该可以被键盘操作， 这就需要有快捷键比如 alt+O, 如果缺失了快捷键，没有鼠标的人，就操作不了。</p>
+</li>
+<li><p>重复的快捷键</p>
+</li>
+<li><p>不合适的快捷键(Improper Shortkey)</p>
+</li>
+<li><p>有些字母不合适做快捷捷，有些字母下面加个下划线，字母就容易被认为误认为别的字母</p>
+</li>
+<li><p>丢失文字</p>
+</li>
+<li><p>没有对齐，控件应该对齐， 才美观</p>
+</li>
+<li><p>Tab键顺序不准确(Tab Order)，Tab键的顺序与控件排列顺序要一致，目前流行总体从上到下，同时行间从左到右的方式</p>
+</li>
+</ul>
+<h2 id="回归测试"><a href="#回归测试" class="headerlink" title="回归测试"></a>回归测试</h2><ul>
+<li>确认新的程序或代码更改未对现有功能产生影响，把全部或者部分已执行过的测试用例再重新执行以确保现有功能正常运行（Selenium用于web，Quick Test Profession功能测试+回归测试，Rational Functional Tester）</li>
+<li>重新测试：重新执行现有测试套件或套件中的所有测试</li>
+<li>选择回归测试：测试用例分为两类，一类可以重复使用，一类不能，选择可以重复使用的测试用例在回归周期中进行测试</li>
+<li>优先级回归测试：根据业务影响，关键和常用功能对测试用例进行优先级排序，根据优先级选择测试用例</li>
+<li>用例选择：经常有缺陷的、对用户更可见的、验证产品核心功能的、经历了更多变化的功能测试用例、所有集成测试、边界值测试、成功、失败的测试用例</li>
+</ul>
+<h2 id="验收测试"><a href="#验收测试" class="headerlink" title="验收测试"></a><strong>验收测试</strong></h2><ul>
+<li>  测试内容：系统是否达到了用户需求规格说明书的要求，包括易用性测试、兼容性测试、安装测试、用户手册操作手册等文档测试，包含α测试（公司内部模拟用户），β测试（用户测试）</li>
+<li>  产品规格说明书测试：同行评审、走查、正式会议评审，属于功能性测试范畴</li>
+<li>  用户界面和可用性测试：符合标准和规范（何时使用复选框、何时用单选、何时使用提示信息、警告信息等）、灵活（软件可以选择不同的状态和方式）、直观（组织布局是否合理、整洁，操作界面、结果是否直观显著）、一致（字体、元素风格、平台标准、与公司其他软件）、正确、舒适、实用 </li>
+<li>  兼容性测试：包含软件兼容测试（向前和向后兼容）多版本测试（测试新版本操作系统是否兼容各类软件、数据共享兼容性，如剪切、复制、粘贴、文件存取、导入导出）和硬件兼容测试（硬件配置测试：判断一个缺陷是否是配置缺陷，常用方法是在另一台不同配置的计算机上执行相同操作，如果缺陷没有出现，就可以是配置缺陷）  </li>
+<li>  安装测试和可恢复性测试：检查安装的多种方式、能否正确安装、安装步骤是否清晰、能否卸载、写在是否破坏用户数据、能否正常升级；可恢复性用于测试系统的容错能力，系统出错时能否恢复数据</li>
+<li>  文档测试：检查文档的正确性、完备性、易理解性、一致性</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/%E6%B5%8B%E8%AF%95/" rel="tag"># 测试</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/03/25/%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95/" rel="prev" title="软件测试">
+      <i class="fa fa-chevron-left"></i> 软件测试
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/" rel="next" title="测试工具">
+      测试工具 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-text">单元测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95%E4%B9%8B%E7%99%BD%E7%9B%92%E6%B5%8B%E8%AF%95"><span class="nav-text">测试方法之白盒测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6"><span class="nav-text">测试框架</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E6%88%90%E6%B5%8B%E8%AF%95"><span class="nav-text">集成测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%AD%96%E7%95%A5"><span class="nav-text">测试策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E6%B5%8B%E8%AF%95"><span class="nav-text">系统测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="nav-text">系统测试方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%E5%8D%B3%E9%BB%91%E7%9B%92%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95"><span class="nav-text">功能测试即黑盒测试方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E6%B5%8B%E8%AF%95"><span class="nav-text">协议测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="nav-text">性能测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E6%B5%8B%E8%AF%95"><span class="nav-text">安全性测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%95%8C%E9%9D%A2%E6%B5%8B%E8%AF%95"><span class="nav-text">界面测试</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95"><span class="nav-text">回归测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E6%94%B6%E6%B5%8B%E8%AF%95"><span class="nav-text">验收测试</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="包括cppunit&#x2F;googletest&#x2F;googlemock&#x2F;jmeter&#x2F;QTP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="测试工具">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="包括cppunit&#x2F;googletest&#x2F;googlemock&#x2F;jmeter&#x2F;QTP">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573555275041.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573558114982.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573558269543.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573558363904.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573559491725.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573559567186.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573559743907.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573560052948.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573560129699.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735601953210.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735603701011.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735605473912.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735606402113.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735606984614.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735608113715.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735609565116.png">
+<meta property="article:published_time" content="2022-03-30T08:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-09T09:49:20.268Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="测试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>测试工具 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          测试工具
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-30 16:42:38" itemprop="dateCreated datePublished" datetime="2022-03-30T16:42:38+08:00">2022-03-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-09 17:49:20" itemprop="dateModified" datetime="2022-07-09T17:49:20+08:00">2022-07-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">测试</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>包括cppunit&#x2F;googletest&#x2F;googlemock&#x2F;jmeter&#x2F;QTP<br><em><span id="more"></span></em></p>
+<h1 id="测试工具"><a href="#测试工具" class="headerlink" title="测试工具"></a>测试工具</h1><h2 id="cppunit"><a href="#cppunit" class="headerlink" title="cppunit"></a>cppunit</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wyyy2088511/article/details/80107131">(16条消息) CppUnit快速入门_jena_wy的博客-CSDN博客_cppunit</a></li>
+</ul>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://sourceforge.net/projects/cppunit/">CppUnit - C++ port of JUnit download | SourceForge.net</a></li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image.png" alt="Image"></p>
+<h3 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h3><ul>
+<li><p>Fixture：一个或一组测试用例的测试对象。可以是要测试的对象或者函数。</p>
+</li>
+<li><p>TestCase：测试用例。是对测试对象的某个功能或流程编写的测试代码。对一个Fixture，可能有多个测试用例。通过继承它来实现测试用例。继承自Test和TestFixture，用户需要从TestCase派生出子类并实现runTest以开发自己所需的测试用例。</p>
+</li>
+<li><p>TestSuite：同时运行的测试用例的集合。可以是一个fixture的多个测试函数、也可以是多个fixture的所有测试用例。</p>
+</li>
+<li><p>TestFixture：测试固件。用来建立测试基准或构建测试用例的先决条件。用于维护一组测试用例的上下文环境。在实际应用中，经常会开发一组测试用例来对某个类的接口加以测试，而这些测试用例很可能具有相同的初始化和清理代码，所以引入TestFixture实现这一机制。它通常具有两个接口，分别用于测试环境的初始化与清理<code>virtual void setUp()</code> <code>virtual void tearDown()</code></p>
+</li>
+<li><p>TestRunner：用来运行测试用例。接口为：<code>virtual void addTest(Test *test)，virtual void run( TestResult &amp;controller, const std::string &amp;testPath = &quot;&quot; );</code>TestRunner可以自行管理测试对象的生命周期，不用我们自己delete掉new的对象</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">TestRunner::run</span><span class="params">(TestResult* result)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    result-&gt;<span class="built_in">startTest</span>(<span class="keyword">this</span>);	<span class="comment">//通知result开始测试</span></span><br><span class="line">    <span class="keyword">if</span>(result-&gt;<span class="built_in">protect</span>(<span class="keyword">this</span>,&amp;TestCase::setUp))	<span class="comment">//调用SetUp，初始化环境</span></span><br><span class="line">        result-&gt;<span class="built_in">protect</span>(<span class="keyword">this</span>,&amp;TestCase::runTest)	<span class="comment">//执行runTest，即真正的测试代码</span></span><br><span class="line">     result-&gt;<span class="built_in">protect</span>(<span class="keyword">this</span>,&amp;TestCase::tearDowm)	<span class="comment">//调用tearDown，清理环境</span></span><br><span class="line">     result-&gt;<span class="built_in">endTest</span>(<span class="keyword">this</span>);	<span class="comment">//通知result结束测试</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>TestListener：用来接收执行测试用例过程中产生的结果。</p>
+</li>
+<li><p>TestResult：用来管理TestListener。TestResult中的protect方法，作用是对执行函数的错误信息进行捕获，从而实现对测试结果的统计 </p>
+</li>
+<li><p>TestCaller：TestCase适配器（Adapter），它将成员函数转换成测试用例。解决TestCase只能支持一个测试用例的问题，可以支持一组测试用例,如下</p>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/TestCase.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/TestResult.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/TestResultCollector.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/TextOutputter.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/TestCaller.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/TestRunner.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义测试类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">StringTest</span> :  <span class="keyword">public</span> CppUnit::TestFixture</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">     <span class="function"><span class="type">void</span> <span class="title">setUp</span><span class="params">()</span>  <span class="comment">// 初始化</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        m_str1 =  <span class="string">&quot;Hello, world&quot;</span>;</span><br><span class="line">        m_str2 =  <span class="string">&quot;Hi, cppunit&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="function"><span class="type">void</span> <span class="title">tearDown</span><span class="params">()</span>  <span class="comment">// 清理</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="function"><span class="type">void</span> <span class="title">testSwap</span><span class="params">()</span>  <span class="comment">// 测试方法1</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">         std:: string str1 = m_str1;</span><br><span class="line">         std:: string str2 = m_str2;</span><br><span class="line">        m_str1.<span class="built_in">swap</span>(m_str2);</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">CPPUNIT_ASSERT</span>(m_str1 == str2);</span><br><span class="line">        <span class="built_in">CPPUNIT_ASSERT</span>(m_str2 == str1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="function"><span class="type">void</span> <span class="title">testFind</span><span class="params">()</span>  <span class="comment">// 测试方法2</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">         <span class="type">int</span> pos1 = m_str1.<span class="built_in">find</span>(<span class="string">&#x27;,&#x27;</span>);</span><br><span class="line">         <span class="type">int</span> pos2 = m_str2.<span class="built_in">rfind</span>(<span class="string">&#x27;,&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">CPPUNIT_ASSERT_EQUAL</span>(<span class="number">5</span>, pos1);</span><br><span class="line">        <span class="built_in">CPPUNIT_ASSERT_EQUAL</span>(<span class="number">2</span>, pos2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">     std:: string     m_str1;</span><br><span class="line">     std:: string     m_str2;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">( <span class="type">int</span> argc,  <span class="type">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    CppUnit::TestResult r;</span><br><span class="line">    CppUnit::TestResultCollector rc;</span><br><span class="line">    r.<span class="built_in">addListener</span>(&amp;rc);  <span class="comment">// 准备好结果收集器</span></span><br><span class="line"></span><br><span class="line">    CppUnit::TestRunner runner;  <span class="comment">// 定义执行实体</span></span><br><span class="line">    runner.<span class="built_in">addTest</span>( <span class="keyword">new</span> CppUnit::<span class="built_in">TestCaller</span>&lt;StringTest&gt;( <span class="string">&quot;testSwap&quot;</span>, &amp;StringTest::testSwap));  </span><br><span class="line">    <span class="comment">// 构建测试用例1,以实现了TestFixture接口的类为模板参数，将目标类中某个符合runTest原型的测试方法适配成TestCase的子类。</span></span><br><span class="line">    runner.<span class="built_in">addTest</span>( <span class="keyword">new</span> CppUnit::<span class="built_in">TestCaller</span>&lt;StringTest&gt;( <span class="string">&quot;testFind&quot;</span>, &amp;StringTest::testFind));  <span class="comment">// 构建测试用例2</span></span><br><span class="line">    runner.<span class="built_in">run</span>(r);  <span class="comment">// 运行测试</span></span><br><span class="line"></span><br><span class="line">    <span class="function">CppUnit::TextOutputter <span class="title">o</span><span class="params">(&amp;rc,  std::cout)</span></span>;</span><br><span class="line">    o.<span class="built_in">write</span>();  <span class="comment">// 将结果输出</span></span><br><span class="line"></span><br><span class="line">     <span class="keyword">return</span> rc.<span class="built_in">wasSuccessful</span>() ? <span class="number">0</span> : <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用时，在测试的主文件中将TestCase注册到TestSuite中，并运行，示例：<br>Outputter：结果输出，可以定制不同输出格式</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;cppunit/TestCase.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;cppunit/TestRunner.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;cppunit/TestResult.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;cppunit/TestResultCollector.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;cppunit/TextOutputter.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Calculator.h&quot;</span></span></span><br><span class="line"><span class="comment">// 自定义的测试用例需要继承 CppUnit::TestCase</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CalculatorTest</span> : <span class="keyword">public</span> CppUnit::TestCase</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"><span class="comment">// 重写 runTest() 方法,从TestCase派生出子类CalculatorTest并实现runTest</span></span><br><span class="line">     <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">runTest</span><span class="params">()</span> <span class="keyword">override</span></span></span><br><span class="line"><span class="function">     </span>&#123;</span><br><span class="line">         Calculator calculator;</span><br><span class="line">        <span class="comment">// 使用 CPPUNIT_ASSERT 进行断言</span></span><br><span class="line">         <span class="built_in">CPPUNIT_ASSERT</span>(<span class="number">3</span> == calculator.<span class="built_in">add</span>(<span class="number">1</span>, <span class="number">2</span>));</span><br><span class="line">         <span class="built_in">CPPUNIT_ASSERT</span>(<span class="number">1</span> == calculator.<span class="built_in">sub</span>(<span class="number">2</span>, <span class="number">1</span>));</span><br><span class="line">     &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* 创建 TestCase */</span></span><br><span class="line">    <span class="comment">// 不需要调用 delete 销毁 TestCase 对象，该对象由 CppUnit 框架自动销毁</span></span><br><span class="line">    CalculatorTest *testCase = <span class="keyword">new</span> CalculatorTest;</span><br><span class="line">     <span class="comment">/* 创建 TestRunner */</span></span><br><span class="line">    CppUnit::TestRunner runner;</span><br><span class="line">     <span class="comment">/* 注册 TestCase 到 TestRunner */</span></span><br><span class="line">    runner.<span class="built_in">addTest</span>(testCase);</span><br><span class="line">     <span class="comment">/* 创建 TestResult */</span></span><br><span class="line">    CppUnit::TestResult result;</span><br><span class="line">     <span class="comment">/* 创建 TestListener */</span></span><br><span class="line">     <span class="comment">// TestResultCollector 用来接收测试用例执行结果</span></span><br><span class="line">    CppUnit::TestResultCollector resultCollector;</span><br><span class="line">     <span class="comment">/* 注册 TestListener 到 TestResult */</span></span><br><span class="line">    result.<span class="built_in">addListener</span>(&amp;resultCollector);</span><br><span class="line">     <span class="comment">/* 执行测试用例 */</span></span><br><span class="line">    runner.<span class="built_in">run</span>(result);</span><br><span class="line">     <span class="comment">/* 处理结果 */</span></span><br><span class="line">     <span class="comment">// TextOutputter 用来以文本的形式打印执行结果</span></span><br><span class="line">     <span class="comment">// 第二个参数为输出设备，类型为 std::ostream，这里传入std::cout，将结果打印到标准输出</span></span><br><span class="line">    <span class="function">CppUnit::TextOutputter <span class="title">outputter</span><span class="params">(&amp;resultCollector, std::cout)</span></span>;</span><br><span class="line">    outputter.<span class="built_in">write</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>CppUnit定义一组宏用于检测错误，断言失败时，就会把错误信息报告给TestResult<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573555275041.png" alt="Image"></li>
+<li>TestFactory：测试工厂，这是一个辅助类，通过借助一系列宏定义让测试用例的组织管理变得自动化</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/TestResult.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/TestResultCollector.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/TextOutputter.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/TestRunner.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cppunit/extensions/HelperMacros.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义测试类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">StringTest</span> :  <span class="keyword">public</span> CppUnit::TestFixture</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">CPPUNIT_TEST_SUITE</span>(StringTest);   <span class="comment">// 定义测试包</span></span><br><span class="line">    <span class="built_in">CPPUNIT_TEST</span>(testSwap);   <span class="comment">// 添加测试用例1</span></span><br><span class="line">    <span class="built_in">CPPUNIT_TEST</span>(testFind);   <span class="comment">// 添加测试用例2</span></span><br><span class="line">    <span class="built_in">CPPUNIT_TEST_SUITE_END</span>();   <span class="comment">// 结束测试包定义</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">     <span class="function"><span class="type">void</span> <span class="title">setUp</span><span class="params">()</span>  <span class="comment">// 初始化</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        m_str1 =  <span class="string">&quot;Hello, world&quot;</span>;</span><br><span class="line">        m_str2 =  <span class="string">&quot;Hi, cppunit&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="function"><span class="type">void</span> <span class="title">tearDown</span><span class="params">()</span>  <span class="comment">// 清理</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="function"><span class="type">void</span> <span class="title">testSwap</span><span class="params">()</span>  <span class="comment">// 测试方法1</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">         std:: string str1 = m_str1;</span><br><span class="line">         std:: string str2 = m_str2;</span><br><span class="line">        m_str1.<span class="built_in">swap</span>(m_str2);</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">CPPUNIT_ASSERT</span>(m_str1 == str2);</span><br><span class="line">        <span class="built_in">CPPUNIT_ASSERT</span>(m_str2 == str1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="function"><span class="type">void</span> <span class="title">testFind</span><span class="params">()</span>  <span class="comment">// 测试方法2</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">         <span class="type">int</span> pos1 = m_str1.<span class="built_in">find</span>(<span class="string">&#x27;,&#x27;</span>);</span><br><span class="line">         <span class="type">int</span> pos2 = m_str2.<span class="built_in">rfind</span>(<span class="string">&#x27;,&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">CPPUNIT_ASSERT_EQUAL</span>(<span class="number">5</span>, pos1);</span><br><span class="line">        <span class="built_in">CPPUNIT_ASSERT_EQUAL</span>(<span class="number">2</span>, pos2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">     std:: string     m_str1;</span><br><span class="line">     std:: string     m_str2;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">CPPUNIT_TEST_SUITE_REGISTRATION</span>(StringTest);  <span class="comment">// 自动注册测试包</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">( <span class="type">int</span> argc,  <span class="type">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    CppUnit::TestResult r;</span><br><span class="line">    CppUnit::TestResultCollector rc;</span><br><span class="line">    r.<span class="built_in">addListener</span>(&amp;rc);  <span class="comment">// 准备好结果收集器</span></span><br><span class="line"></span><br><span class="line">    CppUnit::TestRunner runner;  <span class="comment">// 定义执行实体</span></span><br><span class="line">    runner.<span class="built_in">addTest</span>(CppUnit::TestFactoryRegistry::<span class="built_in">getRegistry</span>().<span class="built_in">makeTest</span>());</span><br><span class="line">    runner.<span class="built_in">run</span>(r);  <span class="comment">// 运行测试</span></span><br><span class="line"></span><br><span class="line">    <span class="function">CppUnit::TextOutputter <span class="title">o</span><span class="params">(&amp;rc,  std::cout)</span></span>;</span><br><span class="line">    o.<span class="built_in">write</span>();  <span class="comment">// 将结果输出</span></span><br><span class="line"></span><br><span class="line">     <span class="keyword">return</span> rc.<span class="built_in">wasSuccessful</span>() ? <span class="number">0</span> : <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="googletest"><a href="#googletest" class="headerlink" title="googletest"></a>googletest</h2><ul>
+<li>将相关的测试分组为测试套件，可以共享数据和子例程；不会在第一个失败时停止当前测试，而继续运行下一个</li>
+</ul>
+<h3 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/google/googletest.git</span><br><span class="line">$ cd googletest</span><br><span class="line">$ mkdir mybuild</span><br><span class="line">$ cd mybuild</span><br><span class="line">$ cmake -Dgtest_build_tests=on -DCMAKE_INSTALL_PREFIX=. ..</span><br><span class="line">$ make; make install</span><br></pre></td></tr></table></figure>
+
+<h3 id="断言"><a href="#断言" class="headerlink" title="断言"></a>断言</h3><ul>
+<li>包括assert_*（产生的是致命失败，只有当失败以后执行没有意义才会使用，并且assert产生失败会立刻返回，可能会跳过清理代码，造成内存泄露），expect_*（产生的是不致命的失败，不终止当前函数，允许在一个测试报告中报告更多失败），注：任何可以被传进ostream东西都可以被传进断言的宏，如：</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ASSERT_EQ</span>(x.<span class="built_in">size</span>(), y.<span class="built_in">size</span>()) &lt;&lt; <span class="string">&quot;Vectors x and y are of unequal length&quot;</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; x.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(x[i], y[i]) &lt;&lt; <span class="string">&quot;Vectors x and y differ at index &quot;</span> &lt;&lt; i;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>基本断言<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573558114982.png" alt="Image"></p>
+</li>
+<li><p>二元比较<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573558269543.png" alt="Image"></p>
+</li>
+<li><p>字符串比较<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573558363904.png" alt="Image"></p>
+</li>
+</ul>
+<ul>
+<li>测试：使用断言验证被测代码的行为，如果一个测试崩溃或有失败的断言，则失败</li>
+<li>测试套件：包含一个或多个测试。需要把测试分组到反应被测代码结构的测试套件中。</li>
+</ul>
+<h3 id="简单测试-TEST"><a href="#简单测试-TEST" class="headerlink" title="简单测试 TEST"></a>简单测试 TEST</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">Factorial</span><span class="params">(<span class="type">int</span> n)</span></span>;  <span class="comment">// Returns the factorial of n</span></span><br><span class="line"><span class="comment">// Tests factorial of 0，TEST(TestSuitName（测试套件的名字）,TestName（测试用例中测试的名字：测试套件名+自己的独立名字）)</span></span><br><span class="line"><span class="built_in">TEST</span>(FactorialTest, HandlesZeroInput) &#123;	</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(<span class="built_in">Factorial</span>(<span class="number">0</span>), <span class="number">1</span>);&#125;</span><br><span class="line"><span class="comment">// Tests factorial of positive numbers.</span></span><br><span class="line"><span class="built_in">TEST</span>(FactorialTest, HandlesPositiveInput) &#123;</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(<span class="built_in">Factorial</span>(<span class="number">1</span>), <span class="number">1</span>);</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(<span class="built_in">Factorial</span>(<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(<span class="built_in">Factorial</span>(<span class="number">3</span>), <span class="number">6</span>);</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(<span class="built_in">Factorial</span>(<span class="number">8</span>), <span class="number">40320</span>);&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试夹具-TEST-F"><a href="#测试夹具-TEST-F" class="headerlink" title="测试夹具 TEST_F()"></a>测试夹具 TEST_F()</h3><ul>
+<li>为多个不同的测试复用相同的对象配置。在使用TSET_F()之前，必须先定义一个测试夹具类（该夹具类继承自::testing::Test），并且需要重载默认构造函数SetUp()和析构函数。对于通过 TEST_F() 定义的每个测试，googletest 将在运行时创建一个全新的测试夹具，立即通过 SetUp() 初始化它，运行测试，通过调用 TearDown() 清理资源，然后删除测试夹具。注意相同测试套件中的不同测试夹具具有不同的测试夹具类，且 googletest 总是在创建下一个之前删除测试夹具。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">TEST_F</span>(TestFixtureName夹具类, TestName测试名) &#123;</span><br><span class="line">  ... test body ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//被测类</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> E&gt;  <span class="comment">// E is the element type.</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Queue</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">Queue</span>();</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">Enqueue</span><span class="params">(<span class="type">const</span> E&amp; element)</span></span>;</span><br><span class="line">  <span class="function">E* <span class="title">Dequeue</span><span class="params">()</span></span>;  <span class="comment">// Returns NULL if the queue is empty.</span></span><br><span class="line">  <span class="function"><span class="type">size_t</span> <span class="title">size</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">  ...&#125;;</span><br><span class="line"><span class="comment">//定义夹具类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">QueueTest</span> : <span class="keyword">public</span> ::testing::Test &#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">SetUp</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">     q1_.<span class="built_in">Enqueue</span>(<span class="number">1</span>);</span><br><span class="line">     q2_.<span class="built_in">Enqueue</span>(<span class="number">2</span>);</span><br><span class="line">     q2_.<span class="built_in">Enqueue</span>(<span class="number">3</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="title">TearDown</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;&#125;</span><br><span class="line">  Queue&lt;<span class="type">int</span>&gt; q0_;</span><br><span class="line">  Queue&lt;<span class="type">int</span>&gt; q1_;</span><br><span class="line">  Queue&lt;<span class="type">int</span>&gt; q2_;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//测试夹具类</span></span><br><span class="line"><span class="built_in">TEST_F</span>(QueueTest, IsEmptyInitially) &#123;</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(q0_.<span class="built_in">size</span>(), <span class="number">0</span>);&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">TEST_F</span>(QueueTest, DequeueWorks) &#123;</span><br><span class="line">  <span class="type">int</span>* n = q0_.<span class="built_in">Dequeue</span>();</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(n, <span class="literal">nullptr</span>);</span><br><span class="line"></span><br><span class="line">  n = q1_.<span class="built_in">Dequeue</span>();</span><br><span class="line">  <span class="built_in">ASSERT_NE</span>(n, <span class="literal">nullptr</span>);</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(*n, <span class="number">1</span>);</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(q1_.<span class="built_in">size</span>(), <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">delete</span> n;</span><br><span class="line"></span><br><span class="line">  n = q2_.<span class="built_in">Dequeue</span>();</span><br><span class="line">  <span class="built_in">ASSERT_NE</span>(n, <span class="literal">nullptr</span>);</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(*n, <span class="number">2</span>);</span><br><span class="line">  <span class="built_in">EXPECT_EQ</span>(q2_.<span class="built_in">size</span>(), <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">delete</span> n;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> </span>&#123;</span><br><span class="line">  ::testing::<span class="built_in">InitGoogleTest</span>(&amp;argc, argv);</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">RUN_ALL_TESTS</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="googlemock"><a href="#googlemock" class="headerlink" title="googlemock"></a>googlemock</h2><ul>
+<li>模拟接口的工具</li>
+</ul>
+<h3 id="定义Mock接口类"><a href="#定义Mock接口类" class="headerlink" title="定义Mock接口类"></a>定义Mock接口类</h3><ul>
+<li>使用MOCK_METHOD后加一个数字，表明需要mock的函数有几个参数，MOCK_METHOD宏的第一个参数是函数名，第二个参数是函数指针类型。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//被测试部分接口</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">User</span>() &#123;&#125;;</span><br><span class="line">    ~<span class="built_in">User</span>() &#123;&#125;;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 登录</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">Login</span><span class="params">(<span class="type">const</span> std::string&amp; username, <span class="type">const</span> std::string&amp; password)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 支付</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">Pay</span><span class="params">(<span class="type">int</span> money)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 是否登录</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">Online</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//业务模块 </span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Biz</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">SetUser</span><span class="params">(User* user)</span> </span>&#123;</span><br><span class="line">        _user = user;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">std::string <span class="title">pay</span><span class="params">(<span class="type">const</span> std::string&amp; username, <span class="type">const</span> std::string&amp; password, <span class="type">int</span> money)</span> </span>&#123;</span><br><span class="line">        std::string ret;</span><br><span class="line">        <span class="keyword">if</span> (!_user) &#123;</span><br><span class="line">            ret = <span class="string">&quot;pointer is null.&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span> ret;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (!_user-&gt;<span class="built_in">Online</span>()) &#123;</span><br><span class="line">            ret = <span class="string">&quot;logout status.&quot;</span>;</span><br><span class="line">            <span class="comment">// 尚未登录，要求登录</span></span><br><span class="line">            <span class="keyword">if</span> (!_user-&gt;<span class="built_in">Login</span>(username, password)) &#123;</span><br><span class="line">                <span class="comment">// 登录失败</span></span><br><span class="line">                ret += <span class="string">&quot;login error.&quot;</span>;</span><br><span class="line">                <span class="keyword">return</span> ret;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 登录成功</span></span><br><span class="line">                ret += <span class="string">&quot;login success.&quot;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 已登录</span></span><br><span class="line">            ret = <span class="string">&quot;login.status&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!_user-&gt;<span class="built_in">Pay</span>(money)) &#123;</span><br><span class="line">            ret += <span class="string">&quot;pay error.&quot;</span>;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            ret += <span class="string">&quot;pay success.&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    User* _user;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//定义mock接口类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TestUser</span> : <span class="keyword">public</span> User &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">MOCK_METHOD2</span>(Login, <span class="built_in">bool</span>(<span class="type">const</span> std::string&amp;, <span class="type">const</span> std::string&amp;));</span><br><span class="line">    <span class="built_in">MOCK_METHOD1</span>(Pay, <span class="built_in">bool</span>(<span class="type">int</span>));</span><br><span class="line">    <span class="built_in">MOCK_METHOD0</span>(Online, <span class="built_in">bool</span>());</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Gmock使用方法"><a href="#Gmock使用方法" class="headerlink" title="Gmock使用方法"></a>Gmock使用方法</h3><ul>
+<li><code>EXPECT_CALL(mock_object, Method(argument-matchers))</code>：声明一个调用期待，就是我们期待这个对象的这个方法按照什么逻辑去执行。mock_object是mock对象（如是TestUser的一个对象），Method是mock对象中的mock方法，其参数通过argument-matchers规则匹配<br>.With(multi-argument-matchers)：多个参数的匹配方式指定<br>.Times(cardinality)：这个方法可以被执行的次数，超过则按照默认值返回<br> .InSequence(sequences)：指定函数执行顺序，通过同一序列中声明期待的顺序确定<br> .After(expectations)：用于指定一个方法只能用在另一个方法以后<br>.WillOnce(action)：执行一次方法时，将执行其参数action的方法<br>.WillRepeatedly(action)：一直调用一个方法时，执行其参数action的方法<br> .RetiresOnSaturation();保证期待调用不会被相同的函数的期待所覆盖<br>where all clauses are optional, and .InSequence()&#x2F;.After()&#x2F;.WillOnce() can appear any number of times.</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*具体场景：希望用户第一次支付前处于在线状态，并可以支付成功，而第二次将因为处于不在线状态而触发登录并且登陆将失败。也就是online第一次调用返回true，之后都返回false。login一直返回false，pay一直返回true*/</span></span><br><span class="line">&#123;</span><br><span class="line">    TestUser test_user;</span><br><span class="line">    <span class="built_in">EXPECT_CALL</span>(test_user,<span class="built_in">Online</span>()).<span class="built_in">WillOnce</span>(testing::<span class="built_in">Return</span>(<span class="literal">true</span>));</span><br><span class="line">    <span class="built_in">EXPECT_CALL</span>(test_user,<span class="built_in">Login</span>(_,_)).<span class="built_in">WillRepeatedly</span>(testing::<span class="built_in">Return</span>(<span class="literal">false</span>));</span><br><span class="line"><span class="comment">//函数参数过滤，如果使用admin登录则失败  </span></span><br><span class="line">    <span class="built_in">EXPECT_CALL</span>(test_user,<span class="built_in">Login</span>(admin,_)).<span class="built_in">WillRepeatedly</span>(tseting::<span class="built_in">Return</span>(<span class="literal">false</span>));</span><br><span class="line"><span class="comment">//函数参数过滤，如果使用admin登录则失败，不使用则成功</span></span><br><span class="line"> <span class="built_in">EXPECT_CALL</span>(test_user,<span class="built_in">Login</span>(<span class="built_in">StrNe</span>(admin),_)).<span class="built_in">WillRepeatedly</span>(tseting::<span class="built_in">Return</span>(<span class="literal">true</span>));</span><br><span class="line">    <span class="built_in">EXPECT_CALL</span>(test_user,<span class="built_in">pay</span>(_)).<span class="built_in">WillRepeatedly</span>(testing::<span class="built_in">Return</span>(<span class="literal">true</span>));</span><br><span class="line"><span class="comment">//要求pay只能前两次成功</span></span><br><span class="line">    <span class="built_in">EXPECT_CALL</span>(test_user, <span class="built_in">Pay</span>(_)).<span class="built_in">Times</span>(<span class="number">5</span>).<span class="built_in">WillOnce</span>(testing::<span class="built_in">Return</span>(<span class="literal">true</span>)).<span class="built_in">WillOnce</span>(testing::<span class="built_in">Return</span>(<span class="literal">true</span>)).<span class="built_in">WillRepeatedly</span>(testing::<span class="built_in">Return</span>(<span class="literal">false</span>))；</span><br><span class="line"></span><br><span class="line"><span class="comment">//测试业务模块</span></span><br><span class="line">    Biz biz;</span><br><span class="line">    biz.<span class="built_in">SetUser</span>(&amp;tset_user);</span><br><span class="line">    std::string admin_ret=biz.<span class="built_in">pay</span>(<span class="string">&quot;user&quot;</span>,<span class="string">&quot; &quot;</span>,<span class="number">1</span>);</span><br><span class="line">    admin_ret=biz.<span class="built_in">pay</span>(<span class="string">&quot;user&quot;</span>,<span class="string">&quot; &quot;</span>,<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="jmeter"><a href="#jmeter" class="headerlink" title="jmeter"></a>jmeter</h2><ul>
+<li>用于接口测试和压力测试，基于JAVA，使用前需要先安装jdk。安装： <a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45629649/article/details/120270485">(16条消息) Jmeter的基本使用_M_Huayra的博客-CSDN博客_jmeter使用</a> 。</li>
+<li>组件包含：①、 测试计划是使用 JMeter 进行测试的起点，它是其它 JMeter 测试元件的容器。②、线程组：代表一定数量的并发用户，它可以用来模拟并发用户发送请求。③、取样器（ Sampler ）：模拟各种请求。所有实际的测试任务都由取样器承担，存在很多种请求。 如：HTTP 、 ftp 请求等等。④、监听器：负责收集测试结果，同时也被告知了结果显示的方式。功能是对取样器的请求结果显示、统计一些数据（吞吐量、 KB&#x2F;S…… ）等。⑤、断言：用于来判断请求响应的结果是否如用户所期望，是否正确，非常实用⑥、定时器：负责定义请求（线程）之间的延迟间隔，模拟对服务器的连续请求。⑦、逻辑控制器：允许自定义 JMeter 发送请求的行为逻辑，它与 Sampler 结合使用可以模拟复杂请求序列。⑧、 配置元件维护 Sampler 需要的配置信息，并根据实际的需要会修改请求的内容。⑨、 前置处理器和后置处理器负责在生成请求之前和之后完成工作。前置处理器常常用来修改请求的设置，后置处理器则常常用来处理响应的数据。</li>
+</ul>
+<h3 id="创建线程组"><a href="#创建线程组" class="headerlink" title="创建线程组"></a>创建线程组</h3><ul>
+<li>线程组就是按照线程性质进行分组。一个进程&#x3D;多个线程组，一个线程组&#x3D;多个线程 <img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573559491725.png" alt="Image"></li>
+</ul>
+<ul>
+<li>设置线程数来模拟用户数量： 线程数：就是虚拟用户的数量，一个虚拟用户占用一个线程；准备时常：这些个虚拟用户要多长时间全部启动；循环次数：每个用户（线程）发送的请求次数；调度器：设置线程组启动的开始时间和结束时间；持续时间：测试持续的时间；启动延迟：测试延迟启动时间<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573559567186.png" alt="Image"></li>
+</ul>
+<h3 id="sampler采样器"><a href="#sampler采样器" class="headerlink" title="sampler采样器"></a>sampler采样器</h3><ul>
+<li>向服务器发送请求，记录响应时间的最小单元和响应信息。如发送HTTP请求：名称：用于标识一个取样器；服务器名称或IP：HTTP请求发送的目标服务器名称或IP地址；端口号：目标服务器的端口号；方法：发送HTTP请求的方法；Content encoding：内容的编码方式 ；路径：目标URL路径（ <a target="_blank" rel="noopener" href="https://blog.csdn.net/luluoluoa/article/details/115616220">(16条消息) 简单介绍url的格式 协议、端口、路径、参数（params）、查询（query）、片段（frag）、url编码_luluoluoa的博客-CSDN博客_url参数格式</a>）<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573559743907.png" alt="Image"><img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573560052948.png" alt="Image"></li>
+</ul>
+<h3 id="监听器"><a href="#监听器" class="headerlink" title="监听器"></a>监听器</h3><ul>
+<li>动态监控JMeter测试执行的结果，实时查看测试结果 。包括结果树和聚合报告。<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-16573560129699.png" alt="Image"><img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735601953210.png" alt="Image"><ul>
+<li>结果树：可以看到每个请求的结果，红色出错、绿色通过 ，Thread Name ：线程组名称；Sample Start: 启动开始时间；Load time ：加载时长；Latency ：等待时长；Size in bytes ：发送的数据总大小；Headers size in bytes ：发送数据的其余部分大小；Sample Count ：发送统计；Error Count ：交互错误统计；Response code ：返回码；Response message ：返回信息；Response headers ：返回的头部信息<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735603701011.png" alt="Image"></li>
+<li>聚合报告： lable ：对应每一个 http 请求，显示的是 http 请求的 Name ，如百度 http 请求 name 为 baidu；#Samples ：表示这一次的测试中一共发出了多少请求；Average ：平均响应时间，指的是所有的请求的平均响应时间，默认的情况下是单个请求的平均响应时间，但当使用了 “ 事务控制器 ”时，则以事物为单位显示平均响应时间；Median ：中位数，也就是 50% 用户的响应时间；90%Line ： 90% 用户的响应时间；Min ：最小响应时间；Max ：最大的响应时；Error% ：本次测试中出现错误的请求的数量 &#x2F; 请求的总数；Throughput ：吞吐量，默认情况下表示每秒完成的请求数；Recived KB&#x2F;Sec ：每秒从服务器端接收到的数据量，以 kb 为计算的单位<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735605473912.png" alt="Image"></li>
+</ul>
+</li>
+</ul>
+<h3 id="断言-1"><a href="#断言-1" class="headerlink" title="断言"></a>断言</h3><ul>
+<li>assert，用来判断响应的数据是否符合预期 。包含响应断言，json断言（采用json数据格式），xml断言<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735606402113.png" alt="Image"><img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735606984614.png" alt="Image"></li>
+</ul>
+<h3 id="定时器"><a href="#定时器" class="headerlink" title="定时器"></a>定时器</h3><ul>
+<li>定义请求之间的延迟间隔，就是隔多久请求一次<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735608113715.png" alt="Image"> <img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/03/30/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/Image-165735609565116.png" alt="Image"></li>
+</ul>
+<h2 id="QTP"><a href="#QTP" class="headerlink" title="QTP"></a>QTP</h2><ul>
+<li>quick test profession，用于回归测试。需要录制脚本，可以录制以后在代码化脚本修改</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/%E6%B5%8B%E8%AF%95/" rel="tag"># 测试</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/03/27/%E6%B5%8B%E8%AF%95%E6%96%B9%E6%B3%95/" rel="prev" title="测试方法">
+      <i class="fa fa-chevron-left"></i> 测试方法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7"><span class="nav-text">测试工具</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#cppunit"><span class="nav-text">cppunit</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6"><span class="nav-text">组件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#googletest"><span class="nav-text">googletest</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85"><span class="nav-text">编译安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%AD%E8%A8%80"><span class="nav-text">断言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E6%B5%8B%E8%AF%95-TEST"><span class="nav-text">简单测试 TEST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%A4%B9%E5%85%B7-TEST-F"><span class="nav-text">测试夹具 TEST_F()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#googlemock"><span class="nav-text">googlemock</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89Mock%E6%8E%A5%E5%8F%A3%E7%B1%BB"><span class="nav-text">定义Mock接口类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gmock%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-text">Gmock使用方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jmeter"><span class="nav-text">jmeter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B%E7%BB%84"><span class="nav-text">创建线程组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sampler%E9%87%87%E6%A0%B7%E5%99%A8"><span class="nav-text">sampler采样器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E5%90%AC%E5%99%A8"><span class="nav-text">监听器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%AD%E8%A8%80-1"><span class="nav-text">断言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E6%97%B6%E5%99%A8"><span class="nav-text">定时器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QTP"><span class="nav-text">QTP</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
