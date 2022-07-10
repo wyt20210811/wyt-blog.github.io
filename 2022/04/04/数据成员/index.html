@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="包括C++字节对齐，类大小计算和数据成员的布局">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据成员">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="包括C++字节对齐，类大小计算和数据成员的布局">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220710171818558.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220710181634609.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220710181800855.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220710182014431.png">
+<meta property="article:published_time" content="2022-04-04T11:24:38.000Z">
+<meta property="article:modified_time" content="2022-07-10T10:58:48.324Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="C++多态与继承">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220710171818558.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数据成员 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据成员
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-04 19:24:38" itemprop="dateCreated datePublished" datetime="2022-04-04T19:24:38+08:00">2022-04-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-10 18:58:48" itemprop="dateModified" datetime="2022-07-10T18:58:48+08:00">2022-07-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/C-%E5%A4%9A%E6%80%81%E4%B8%8E%E7%BB%A7%E6%89%BF/" itemprop="url" rel="index"><span itemprop="name">C++多态与继承</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>包括C++字节对齐，类大小计算和数据成员的布局<br><em><span id="more"></span></em></p>
+<h2 id="C-字节对齐"><a href="#C-字节对齐" class="headerlink" title="C++字节对齐"></a>C++字节对齐</h2><h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><ul>
+<li>一些平台对某些特定数据类型的数据只能从某些特定地址开始存取，比如有些平台每次读都是从偶数地址开始，那么如果一个int 数据存在偶数地址开始的地方，俺么一个周期就可以读出这32位数据，而如果时在奇地址开始存放，就需要读两个周期，并且需要对读出的高低字节进行拼凑。</li>
+</ul>
+<h3 id="方式"><a href="#方式" class="headerlink" title="方式"></a>方式</h3><ul>
+<li><code>pragma pack(n)</code>指定以n字节对齐，不指定以默认方式对齐</li>
+<li>字节对齐要看变量所在偏移地址是否是变量字节数（或指定的对齐字节数n，取二者较小值）的整数倍</li>
+<li>对于结构成员，要按照结构成员中对齐长度最大的一个对齐</li>
+<li>对齐后还要看结构或类的总大小是否为其中最长变量（或n）的整数倍</li>
+</ul>
+<h2 id="C-类大小计算"><a href="#C-类大小计算" class="headerlink" title="C++类大小计算"></a>C++类大小计算</h2><h3 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h3><ul>
+<li>类的大小指的是类对象实体的大小，计算遵循字节对齐原则</li>
+<li>类的大小只与普通数据类型有关，与成员函数、静态成员无关。因为类的静态数据成员被该类所有的对象共享，不属于具体哪个对象，静态数据成员定义在内存的全局区</li>
+<li>虚函数由于虚函数表指针，会对类的大小有影响</li>
+<li>虚继承由于虚基表指针，会对类的大小有影响</li>
+<li>空类的大小为1，因为C++腰围某个实体分配内存，这个实体就必须有大小。</li>
+</ul>
+<h3 id="空类"><a href="#空类" class="headerlink" title="空类"></a>空类</h3><ul>
+<li>空类作为基类被继承时，且派生类有自己的数据成员时，基类子对象的一个字节不会加入到派生类中，因为派生类有自己的数据成员，是可以被分配内存的</li>
+<li>当空类作为类的对象成员时，要计算空类的一个字节</li>
+</ul>
+<h3 id="含有虚函数的类"><a href="#含有虚函数的类" class="headerlink" title="含有虚函数的类"></a>含有虚函数的类</h3><ul>
+<li><p>编译器必须保证虚函数表的指针存在于对象实例中最前面的位置。虚函数表是所有类对象共享的，而每个类对象的vptr是他们自己独立拥有的</p>
+</li>
+<li><p>64位操作系统中指针大小是8个字节，所以任何含有虚函数的类大小都要在原本上面+8</p>
+</li>
+<li><p>当继承的基类含有虚函数且派生类中不对基类的虚函数重载且派生类中还有自己的虚函数时：派生类的虚函数表首先存放基类虚函数地址，再存放派生类虚函数地址，虚函数地址顺序与声明顺序一致。因此无论是基类还是派生类，大小都是原本+8.<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220710171818558.png" alt="image-20220710171818558"></p>
+</li>
+<li><p>如果派生类对基类的虚函数进行了覆盖，同时派生类中还有自己的虚函数。此时虚函数表中原本存放基类虚函数的位置会被覆盖为派生类重写的虚函数地址，其他顺序不变。因此无论是基类还是派生类，大小都是原本+8.<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220710181634609.png" alt="image-20220710181634609"></p>
+</li>
+<li><p>当一个派生类继承自多个含有虚函数的基类，并对基类虚函数无重载，此时派生类虚函数放在第一个基类虚函数表后面，此时派生类的大小&#x3D;原本大小+积累数量*8字节<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220710181800855.png" alt="image-20220710181800855"></p>
+</li>
+<li><p>当一个派生类继承自多个含有虚函数的基类，并且对基类中的虚函数重载，此时大小和上一个情况一致，并且此时人一个基类指针指向派生类对象都可以调用派生类重载的基类虚函数。<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/image-20220710182014431.png" alt="image-20220710182014431"></p>
+</li>
+<li><p>示例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span>&#123;</span><br><span class="line">    <span class="type">char</span> ch;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">char</span> ch1;</span><br><span class="line">    <span class="type">char</span> ch2;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">D</span>:<span class="keyword">public</span> A,<span class="keyword">public</span> C&#123;</span><br><span class="line">    <span class="type">int</span> d;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">E</span>:<span class="keyword">public</span> B,<span class="keyword">public</span> C</span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> e;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;A=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(A)&lt;&lt;endl;	<span class="comment">//1</span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;B=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(B)&lt;&lt;endl;	<span class="comment">//虚函数表指针8+ch1=9，与8对齐，结果16</span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;C=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(C)&lt;&lt;endl;	<span class="comment">//虚函数表指针8+两个ch=10,与8对齐，结果16</span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;D=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(D)&lt;&lt;endl;	<span class="comment">//继承自C，基类C子对象16+d4=20,与8对齐，结果24</span></span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;E=&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(E)&lt;&lt;endl;	<span class="comment">//继承自B和C，基类B子对象16+基类C子对象16+e4=36,与8对齐，结果40</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="含有虚继承的类"><a href="#含有虚继承的类" class="headerlink" title="含有虚继承的类"></a>含有虚继承的类</h3><ul>
+<li>只是多了一个指向虚基类表的指针vbptr，真正的指向虚基类的指针存放在虚基类表中。</li>
+</ul>
+<h2 id="数据成员布局"><a href="#数据成员布局" class="headerlink" title="数据成员布局"></a>数据成员布局</h2><ul>
+<li>基类子对象：<ul>
+<li>虚函数表指针 vfptr</li>
+<li>虚基类表指针 vbptr</li>
+<li>基类成员</li>
+</ul>
+</li>
+<li>数据成员</li>
+<li>虚基类成员</li>
+</ul>
+<p>例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">X</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Y</span>:<span class="keyword">public</span> <span class="keyword">virtual</span> X&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func0</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Z</span>:<span class="keyword">public</span> <span class="keyword">virtual</span> X&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">int</span> j;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>:<span class="keyword">public</span> Y,<span class="keyword">public</span> Z&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="type">char</span> x;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func1</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">func2</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">mian</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    std::count&lt;&lt;<span class="string">&quot;size of class X is&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(X)&lt;&lt;std::endl;	<span class="comment">//result=4</span></span><br><span class="line">    std::count&lt;&lt;<span class="string">&quot;size of class Y is&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(X)&lt;&lt;std::endl;	<span class="comment">//虚函数表指针8+虚基类表指针8=16+虚基类成员4=20，与8对齐result=24</span></span><br><span class="line">    std::count&lt;&lt;<span class="string">&quot;size of class Z is&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(X)&lt;&lt;std::endl;	<span class="comment">//虚函数表指针8+虚基类表指针8=16+数据成员j4=20，与8对齐=24+徐基类成员i4=28，与8对齐=32</span></span><br><span class="line">    std::count&lt;&lt;<span class="string">&quot;size of class A is&quot;</span>&lt;&lt;<span class="built_in">sizeof</span>(X)&lt;&lt;std::endl;	<span class="comment">//基类A的虚函数表指针8+基类A的虚基类表指针8=16+基类Z虚函数表指针8=24+基类Z虚基类表指针8=32+基类Z成员j4=36，与8对齐=40+A数据成员x1=41，与8对齐=48+虚基类X数据成员i4=52，与8对齐result=56</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/C-%E5%A4%9A%E6%80%81%E4%B8%8E%E7%BB%A7%E6%89%BF/" rel="tag"># C++多态与继承</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/" rel="prev" title="构造函数">
+      <i class="fa fa-chevron-left"></i> 构造函数
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E5%AD%97%E8%8A%82%E5%AF%B9%E9%BD%90"><span class="nav-text">C++字节对齐</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%9B%A0"><span class="nav-text">原因</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F"><span class="nav-text">方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%B1%BB%E5%A4%A7%E5%B0%8F%E8%AE%A1%E7%AE%97"><span class="nav-text">C++类大小计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%88%99"><span class="nav-text">原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E7%B1%BB"><span class="nav-text">空类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AB%E6%9C%89%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E7%B1%BB"><span class="nav-text">含有虚函数的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AB%E6%9C%89%E8%99%9A%E7%BB%A7%E6%89%BF%E7%9A%84%E7%B1%BB"><span class="nav-text">含有虚继承的类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98%E5%B8%83%E5%B1%80"><span class="nav-text">数据成员布局</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

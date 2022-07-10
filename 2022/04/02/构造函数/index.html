@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="包括默认构造函数、拷贝构造函数、列表初始化成员这几种构造函数，在什么情况下编译器产生的是有效的构造函数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="构造函数">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="包括默认构造函数、拷贝构造函数、列表初始化成员这几种构造函数，在什么情况下编译器产生的是有效的构造函数">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/image-20220710144627448.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/image-20220710145714364.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/image-20220710155605913.png">
+<meta property="article:published_time" content="2022-04-02T09:30:56.000Z">
+<meta property="article:modified_time" content="2022-07-10T10:55:44.612Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="C++多态与继承">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/image-20220710144627448.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>构造函数 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          构造函数
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-02 17:30:56" itemprop="dateCreated datePublished" datetime="2022-04-02T17:30:56+08:00">2022-04-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-10 18:55:44" itemprop="dateModified" datetime="2022-07-10T18:55:44+08:00">2022-07-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/C-%E5%A4%9A%E6%80%81%E4%B8%8E%E7%BB%A7%E6%89%BF/" itemprop="url" rel="index"><span itemprop="name">C++多态与继承</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>包括默认构造函数、拷贝构造函数、列表初始化成员这几种构造函数，在什么情况下编译器产生的是有效的构造函数<br><em><span id="more"></span></em></p>
+<h2 id="默认构造函数"><a href="#默认构造函数" class="headerlink" title="默认构造函数"></a>默认构造函数</h2><ul>
+<li>当定义一个类的时候没有显示的为其声明构造函数，编译器会自动为其生成默认构造函数，但一般来说编译器生成的默认构造函数是没用的，只有在以下四种情况下才有用</li>
+</ul>
+<h3 id="含有（具有默认构造函数的）类对象成员"><a href="#含有（具有默认构造函数的）类对象成员" class="headerlink" title="含有（具有默认构造函数的）类对象成员"></a>含有（具有默认构造函数的）类对象成员</h3><ul>
+<li><p>即一个类没有显示的声明构造函数，但他含有一个类对象成员，该成员声明了构造函数，那么此时这个类的默认构造函数就是有用的。编译器会为这个类生成一个默认构造函数，但只有在构造函数真正被调用时才进行。如</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Foo</span>&#123;<span class="keyword">public</span>:<span class="built_in">Foo</span>(),<span class="built_in">Foo</span>(<span class="type">int</span>)...&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Bar</span>&#123;<span class="keyword">public</span>:Foo foo;<span class="type">char</span> *str;&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo_bar</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Bar bar;</span><br><span class="line">    <span class="keyword">if</span>(bar.str) &#123;...&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>类Bar中包含了对象成员foo，而foo有显式声明的构造函数，这是编译器会为Bar生成默认构造函数，它调用Foo的构造函数来初始化对象成员foo，但不初始化Bar的str成员，此时需要我们自己初始化str</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="title">Bar::Bar</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    foo.Foo::<span class="built_in">Foo</span>();</span><br><span class="line">&#125;</span><br><span class="line">Bar::<span class="built_in">Bar</span>()</span><br><span class="line">&#123;</span><br><span class="line">    str=<span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当我们已经为str自己定义了一个构造函数，由于该构造函数里没有初始化对象成员，所以编译器还是会自动生成一个默认构造函数，首先调用成员对象的构造函数再加入我们自己定义的构造函数，即</p>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Bar::<span class="built_in">Bar</span>()</span><br><span class="line">&#123;</span><br><span class="line">    foo.Foo::<span class="built_in">Foo</span>();</span><br><span class="line">    str=<span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>如果一个类中有多个对象成员，这些对象成员都有显式定义的构造函数，那么编译器会按照对象的声明顺序调用它们的构造函数，如</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Dopey</span>&#123;<span class="keyword">public</span>:<span class="built_in">Dopey</span>();...&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Sneezy</span>&#123;<span class="keyword">public</span>:<span class="built_in">Sneezy</span>(<span class="type">int</span>);<span class="built_in">Sneezy</span>();...&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Bashful</span>&#123;<span class="keyword">public</span>:<span class="built_in">Bashful</span>();...&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Snow_White</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Dopey dopey;</span><br><span class="line">    Sneezy sneezy;</span><br><span class="line">    Bashful bashful;</span><br><span class="line">    <span class="built_in">Snow_White</span>():<span class="built_in">sneezy</span>(<span class="number">1024</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        mumble=<span class="number">2048</span>;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span> mumble;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时编译器自动扩展后的构造函数为</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Snow_White::<span class="built_in">Snow_White</span>():<span class="built_in">sneezy</span>(<span class="number">1024</span>)</span><br><span class="line">&#123;</span><br><span class="line">    dopey.Dopey::<span class="built_in">Dopey</span>();</span><br><span class="line">    sneezy.Sneezy::<span class="built_in">Sneezy</span>(<span class="number">1024</span>);</span><br><span class="line">    bashful.Bashful::<span class="built_in">Bashful</span>();</span><br><span class="line">    mumble=<span class="number">2048</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="继承自（带有默认构造函数）基类"><a href="#继承自（带有默认构造函数）基类" class="headerlink" title="继承自（带有默认构造函数）基类"></a>继承自（带有默认构造函数）基类</h3><ul>
+<li>如果一个没有显示定义构造函数的类派生于一个有显示构造函数的基类，那么此时该派生类的默认构造函数会调用上一层基类的默认构造函数</li>
+<li>如果一个派生类声明了多个构造函数，但就是没有默认构造函数，那么编译器会扩展所有构造函数，将调用所有必要的默认构造函数（包括基类的，对象成员的）的代码加入这些构造函数之中。</li>
+</ul>
+<h3 id="带有虚函数的类"><a href="#带有虚函数的类" class="headerlink" title="带有虚函数的类"></a>带有虚函数的类</h3><ul>
+<li><p>当一个没有默认构造函数的类中包含虚函数，或者该类派生自一个继承链，这个继承链中有一个或多个带有虚函数的基类，此时的默认构造函数是有用的，因为每个该类的对象都要有一个虚函数指针来指向虚函数表，需要给定虚函数指针初始值（即它指向的虚函数表的地址）。如有以下继承关系：<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/image-20220710144627448.png" alt="image-20220710144627448"></p>
+<p>执行以下代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Widget</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">flip</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">flip</span><span class="params">(<span class="type">const</span> Widget&amp; widget)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    widget.<span class="built_in">flip</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Bell b;</span><br><span class="line">    Whistle w;</span><br><span class="line">    <span class="built_in">flip</span>(b);</span><br><span class="line">    <span class="built_in">flip</span>(w);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在编译期间，编译器会首先产生一张虚函数表来存放类的虚函数地址，在每一个类对象中，编译器会生成一个指向该类的虚函数表的指针vptr，并且<code>widget.flip()</code>会被重写来使用widget的vptr和vtbl中的flip()条目:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(*widget.vptr[<span class="number">1</span>])(&amp;widget);	<span class="comment">//其中*widget.vptr得到虚函数表，[1]表示flip()函数在虚函数表中的索引，&amp;widget表示要交给flip()函数实体的this指针</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="继承于虚基类的类"><a href="#继承于虚基类的类" class="headerlink" title="继承于虚基类的类"></a>继承于虚基类的类</h3><ul>
+<li><p>需要保证虚拟基类子对象在其每一个派生类对象中的位置（如 对象 中的组织关系图）能够在执行期准备好。</p>
+</li>
+<li><p>如有以下继承关系：<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/image-20220710145714364.png" alt="image-20220710145714364"></p>
+<p>针对该关系有代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">X</span>&#123;<span class="keyword">public</span>:<span class="type">int</span> i;&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>:<span class="keyword">public</span> <span class="keyword">virtual</span> X&#123;<span class="keyword">public</span>:<span class="type">int</span> j;&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span>:<span class="keyword">public</span> <span class="keyword">virtual</span> X&#123;<span class="keyword">public</span>:<span class="type">double</span> d;&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">C</span>:<span class="keyword">public</span> A,<span class="keyword">public</span> B&#123;<span class="keyword">public</span>: <span class="type">int</span> k;&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">const</span> A* pa)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    pa-&gt;i=<span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">main</span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">foo</span>(<span class="keyword">new</span> A);</span><br><span class="line">    <span class="built_in">foo</span>(<span class="keyword">new</span> C);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>由于pa的类型可以改变，所以编译期间片一起无法确定foo中<code>pa-&gt;X::i</code>的实际位置（也就是包含的基类子对象的位置在不同的派生类对象中不同），因此编译器需要改变对虚拟基类成员进行存取操作的代码，使得<code>pa-&gt;X::i</code>延迟到执行时才确定。 这一操作通过在派生类对象中添加指向虚拟基类的指针完成，对虚拟基类成员的存取操作都由该指针完成，如<code>pa-&gt;_vbcX-&gt;i=1024</code>,</p>
+</li>
+<li><p>对于类中声明的每一个构造函数，编译器都会加入构建_vbcX的代码；对于没有构造函数的类，编译器会生成一个默认构造函数完成这件事。</p>
+</li>
+</ul>
+<h2 id="拷贝构造函数"><a href="#拷贝构造函数" class="headerlink" title="拷贝构造函数"></a>拷贝构造函数</h2><ul>
+<li><p>以一个对象的内容作为另一个对象的初值：</p>
+<ul>
+<li><p>使用一个对象对另一个对象进行初始化</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">X</span>&#123;...&#125;;</span><br><span class="line">X x;</span><br><span class="line">X xx=x;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对象作为函数参数传递</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">void</span> <span class="title">foo</span><span class="params">(X x)</span></span>;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">bar</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    X xx;</span><br><span class="line">    <span class="built_in">foo</span>(xx);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对象作为函数返回值</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">X <span class="title">foo</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    X xx;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> xx;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>当在类中明确顶一个拷贝构造函数（以本类型作为参数的构造函数），如<code>X::X(const X&amp; X);</code>,那么上述情况下的拷贝构造函数会被调用。</p>
+</li>
+</ul>
+<h3 id="Default-Memberwise-Initialization-默认逐成员初始化"><a href="#Default-Memberwise-Initialization-默认逐成员初始化" class="headerlink" title="Default Memberwise Initialization(默认逐成员初始化)"></a>Default Memberwise Initialization(默认逐成员初始化)</h3><ul>
+<li><p>当用户没有显示的定义拷贝构造函数，编译器内部以 default memberwise initialization 方法进行拷贝构造。该方法把类对象成员以外的成员变量的值，依次从某个对象拷贝到另一个对象身上。即：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">String</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    ...</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">char</span>* str;</span><br><span class="line">    <span class="type">int</span> len;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//把一个字符串对象作为另一个字符串对象的初值时</span></span><br><span class="line"><span class="function">String <span class="title">noun</span><span class="params">(<span class="string">&quot;book&quot;</span>)</span></span>;</span><br><span class="line">String verb=noun;</span><br><span class="line"><span class="comment">//使用default memberwise initialization</span></span><br><span class="line">verb.ste=noun.str;</span><br><span class="line">verb.len=noun.len;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果一个String对象作为另一个类的成员</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">word</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    ...;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span> _occurs;</span><br><span class="line">    String _word;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//此时word对象的default memberwise initialization 会直接拷贝成员_occurs，在_word上递归进行memberwise initialization</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>因此，决定一个编译器生成的是否是有用的拷贝构造函数，取决于这个类是否展现出了bitwise copy semantics（逐位次拷贝语义），如果没有展现出来那么生成的拷贝构造函数就是有用的。</p>
+</li>
+</ul>
+<h3 id="bitwise-copy-semantics"><a href="#bitwise-copy-semantics" class="headerlink" title="bitwise copy semantics"></a>bitwise copy semantics</h3><ul>
+<li>不会展现出bitwise copy semantics的情况<ul>
+<li>class包含一个对象成员，这个对象成员的类中声明了一个拷贝构造函数（可以是显示声明的，也可以是被编译器合成的）</li>
+<li>class继承自有拷贝构造函数的基类</li>
+<li>class声明了一个或多个虚函数</li>
+<li>class继承自一个继承链，继承链中有一个或多个虚拟基类</li>
+</ul>
+</li>
+<li>前两种中编译器将对象成员或基类的拷贝构造函数调用代码插入到生成的拷贝构造函数中</li>
+</ul>
+<h3 id="类中声明了虚函数"><a href="#类中声明了虚函数" class="headerlink" title="类中声明了虚函数"></a>类中声明了虚函数</h3><ul>
+<li><p>当类中包含了虚函数，编译器就会为类生成一个虚函数表，在每一个类对象中增加一个指向虚函数表的指针vptr，所以在拷贝构造函数中需要对对象的vptr正确赋值。如:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ZooAnimal</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">ZooAnimal</span>();</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">ZooAnimal</span>();</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">animate</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">draw</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="comment">//成员变量</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Bear</span>:<span class="keyword">public</span> ZooAnimal&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Bear</span>();</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Bear</span>();</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">animate</span><span class="params">()</span> <span class="keyword">override</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">draw</span><span class="params">()</span> <span class="keyword">override</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="title">dance</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当一个ZooAnimal（Bear）对象以另一个ZooAnimal(Bear)对象作为初始值时，都是直接靠bitwise copy semantics完成（把一个对象的vptr值直接赋值给另一个对象），但当用一个Bear对象去初始化ZooAnimal时，就不是直接把派生类对象的vptr值赋值给基类对象了，如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Bear yogi;</span><br><span class="line">ZooAnimal franny=yogi;</span><br><span class="line">franny.<span class="built_in">draw</span>();</span><br></pre></td></tr></table></figure>
+
+<p>此时如果直接复制vptr的值，franny调用的就是Bear的draw了，这样就出错了。因此编译器要保证在拷贝构造函数中为基类对象设定指向积累虚函数表的vptr值。(上述代码中，只有franny被声明为一个基类指针或引用，才能调用Bear的draw方法)</p>
+</li>
+</ul>
+<h3 id="类继承自虚拟基类"><a href="#类继承自虚拟基类" class="headerlink" title="类继承自虚拟基类"></a>类继承自虚拟基类</h3><ul>
+<li>当用派生类对象初始化一个基类对象，而该基类对象的继承链中包含虚拟基类时，需要使用拷贝构造函数确定虚拟基类子对象在每个派生类对象中的位置，即明确的将virtual base class subobject指针初始化。<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/02/%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0/image-20220710155605913.png" alt="image-20220710155605913"></li>
+</ul>
+<h2 id="列表初始化成员"><a href="#列表初始化成员" class="headerlink" title="列表初始化成员"></a>列表初始化成员</h2><h3 id="使用列表的好处"><a href="#使用列表的好处" class="headerlink" title="使用列表的好处"></a>使用列表的好处</h3><ul>
+<li><p>首先有一个类的构造函数如下</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">word</span>&#123;</span><br><span class="line">    string _name;</span><br><span class="line">    <span class="type">int</span> _cnt;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">word</span>()</span><br><span class="line">    &#123;</span><br><span class="line">        _name=<span class="number">0</span>;</span><br><span class="line">        _cnt=<span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时编译器会先产生一个临时String对象，将其初始化，再以一个assignment运算符把它指定给_name成员，再摧毁该临时对象，即</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">word::<span class="built_in">word</span>()</span><br><span class="line">&#123;</span><br><span class="line">    _name.String::<span class="built_in">String</span>();</span><br><span class="line">    String temp=<span class="built_in">String</span>(<span class="number">0</span>);</span><br><span class="line">    _name.String::<span class="keyword">operator</span>=(temp);</span><br><span class="line">    temp.String::~<span class="built_in">String</span>();</span><br><span class="line">    _cnt=<span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但当把构造函数写成列表的形式</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">word::<span class="built_in">word</span>():_name(<span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">    _cnt=<span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译器会把代码扩展成</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">word::<span class="built_in">word</span>()</span><br><span class="line">&#123;</span><br><span class="line">    _name.String::<span class="built_in">String</span>(<span class="number">0</span>);</span><br><span class="line">    _cnt=<span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="列表初始化次序"><a href="#列表初始化次序" class="headerlink" title="列表初始化次序"></a>列表初始化次序</h3><ul>
+<li><p>编译器会按照成员变量在类中声明的次序，逐个操作初始化列表，将这些代码安插在构造函数内，即</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">X</span>&#123;</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">    <span class="type">int</span> j;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">X</span>(<span class="type">int</span> val):<span class="built_in">j</span>(val),<span class="built_in">i</span>(j)&#123;&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时由于在类中i比j早声明，所以在列表初始化中会先调用i&#x3D;j，而此时还没有给j赋值val，所以就会出错。</p>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>构造函数执行过程：<ul>
+<li>在派生类构造函数中，所有虚基类和上一层基类的构造函数首先会按顺序被调用，以生成基类子对象</li>
+<li>上述完成后，对象的vptr会被初始化，指向正确的虚函数表</li>
+<li>如果有成员初始化列表，将在vptr设定后扩展，以免其中调用了虚函数</li>
+<li>如果有对象成员且尤其构造函数，调用对象成员的构造函数</li>
+<li>最后执行程序员提供的初始化代码</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/C-%E5%A4%9A%E6%80%81%E4%B8%8E%E7%BB%A7%E6%89%BF/" rel="tag"># C++多态与继承</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/03/30/%E5%AF%B9%E8%B1%A1/" rel="prev" title="类的对象">
+      <i class="fa fa-chevron-left"></i> 类的对象
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/" rel="next" title="数据成员">
+      数据成员 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">默认构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AB%E6%9C%89%EF%BC%88%E5%85%B7%E6%9C%89%E9%BB%98%E8%AE%A4%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%EF%BC%89%E7%B1%BB%E5%AF%B9%E8%B1%A1%E6%88%90%E5%91%98"><span class="nav-text">含有（具有默认构造函数的）类对象成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF%E8%87%AA%EF%BC%88%E5%B8%A6%E6%9C%89%E9%BB%98%E8%AE%A4%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%EF%BC%89%E5%9F%BA%E7%B1%BB"><span class="nav-text">继承自（带有默认构造函数）基类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%A6%E6%9C%89%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E7%B1%BB"><span class="nav-text">带有虚函数的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF%E4%BA%8E%E8%99%9A%E5%9F%BA%E7%B1%BB%E7%9A%84%E7%B1%BB"><span class="nav-text">继承于虚基类的类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">拷贝构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Default-Memberwise-Initialization-%E9%BB%98%E8%AE%A4%E9%80%90%E6%88%90%E5%91%98%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-text">Default Memberwise Initialization(默认逐成员初始化)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bitwise-copy-semantics"><span class="nav-text">bitwise copy semantics</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E4%B8%AD%E5%A3%B0%E6%98%8E%E4%BA%86%E8%99%9A%E5%87%BD%E6%95%B0"><span class="nav-text">类中声明了虚函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E7%BB%A7%E6%89%BF%E8%87%AA%E8%99%9A%E6%8B%9F%E5%9F%BA%E7%B1%BB"><span class="nav-text">类继承自虚拟基类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E5%88%9D%E5%A7%8B%E5%8C%96%E6%88%90%E5%91%98"><span class="nav-text">列表初始化成员</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%88%97%E8%A1%A8%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-text">使用列表的好处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E5%88%9D%E5%A7%8B%E5%8C%96%E6%AC%A1%E5%BA%8F"><span class="nav-text">列表初始化次序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
