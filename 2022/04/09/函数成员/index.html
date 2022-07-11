@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="包含各种类型的成员函数，虚函数的继承特性，内联函数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="（四）函数成员">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/09/%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="包含各种类型的成员函数，虚函数的继承特性，内联函数">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/09/%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220711102040606.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/09/%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220711103106438.png">
+<meta property="article:published_time" content="2022-04-09T10:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-11T11:43:20.909Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="C++多态与继承">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/09/%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220711102040606.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/09/%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>（四）函数成员 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/09/%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          （四）函数成员
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-09 18:42:38" itemprop="dateCreated datePublished" datetime="2022-04-09T18:42:38+08:00">2022-04-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-11 19:43:20" itemprop="dateModified" datetime="2022-07-11T19:43:20+08:00">2022-07-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/C-%E5%A4%9A%E6%80%81%E4%B8%8E%E7%BB%A7%E6%89%BF/" itemprop="url" rel="index"><span itemprop="name">C++多态与继承</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>包含各种类型的成员函数，虚函数的继承特性，内联函数<br><em><span id="more"></span></em></p>
+<h2 id="不同成员函数"><a href="#不同成员函数" class="headerlink" title="不同成员函数"></a>不同成员函数</h2><h3 id="非静态成员函数"><a href="#非静态成员函数" class="headerlink" title="非静态成员函数"></a>非静态成员函数</h3><ul>
+<li><p>设计原则是非静态成员函数必须至少和一般的非成员函数有相同的效率，因此在调用非静态成员函数时，编译器会将其转化为一般的非成员函数，并传入一个对象指针，如有成员函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">float</span> <span class="title">Point3d::magnitude</span><span class="params">()</span> <span class="type">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sqrt</span>(x*x+y*y+z*z);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译器对其的转化过程为：</p>
+<ul>
+<li>改写函数原型，安插一个额外的参数即this指针到成员函数中，用于对对象成员的存取管理</li>
+<li>将对每一个成员变量的存取变为用this指针来存取</li>
+<li>将成员函数重写为一个外部非成员函数，并将函数名编码为一个独一无二的内部名称</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">float</span> <span class="title">magnitue_7Point3dFv</span><span class="params">(<span class="type">const</span> Point3d* <span class="keyword">this</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">sqrt</span>(</span><br><span class="line">        <span class="keyword">this</span>-&gt;x*<span class="keyword">this</span>-&gt;x+</span><br><span class="line">        <span class="keyword">this</span>-&gt;y*<span class="keyword">this</span>-&gt;y+</span><br><span class="line">        <span class="keyword">this</span>-&gt;z*<span class="keyword">this</span>-&gt;z);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对函数调用由</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Point3d* ptr=<span class="keyword">new</span> <span class="built_in">Point3d</span>();</span><br><span class="line">ptr-&gt;<span class="built_in">magnitude</span>();</span><br></pre></td></tr></table></figure>
+
+<p>变为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">magnitude_7Point3dFv</span>(ptr);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="静态成员函数"><a href="#静态成员函数" class="headerlink" title="静态成员函数"></a>静态成员函数</h3><ul>
+<li><p>编译器同样将其转化为一般的外部非成员函数，但它传入的不是this指针，而是将0强制转化为对象指针传入函数，即</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">float</span> <span class="title">magnitude_7Point3dFv</span><span class="params">((Point3d*) <span class="number">0</span>)</span></span>&#123;...&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>正是因为这样的转换，得到了静态成员函数的特性：</p>
+<ul>
+<li>不用被类对象调用，直接由类名就可以调用，因为无需传入任何具体的对象指针</li>
+<li>不能够直接存取类中的非静态成员，因为指针0指不到任何对象实体</li>
+<li>不能声明为const,virtual等</li>
+</ul>
+</li>
+</ul>
+<h3 id="虚拟成员函数"><a href="#虚拟成员函数" class="headerlink" title="虚拟成员函数"></a>虚拟成员函数</h3><ul>
+<li><p>在调用时被转化为经由vptr指向虚函数表中的索引值调用，即：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Point3d* ptr=<span class="keyword">new</span> <span class="built_in">Point3d</span>();</span><br><span class="line">(*ptr-&gt;vptr[<span class="number">1</span>])(ptr);	<span class="comment">//此时的第二个ptr也是this指针</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h2><h3 id="单一继承"><a href="#单一继承" class="headerlink" title="单一继承"></a>单一继承</h3><ul>
+<li><p>一个类只有一个虚函数表，每一个虚函数表包含其对应的类对象中所有的虚函数实体地址，包括：</p>
+<ul>
+<li>这个类定义的函数实体，会改写一个可能存在的基类虚函数实体</li>
+<li>继承自基类的函数实体，即派生类决定不改写基类虚函数</li>
+<li>纯虚函数调用实体，既可以扮演纯虚函数的空间占用者，也可以当作执行期的异常处理函数，当调用一个基类中的纯虚函数（即未被定义）时，会抛出异常、终止程序</li>
+</ul>
+</li>
+<li><p>单一继承下的虚函数表布局：<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/09/%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220711102040606.png" alt="image-20220711102040606"></p>
+<p>即重载的虚函数会覆盖基类的虚函数（地址仍然是基类虚函数的地址），没有重写的就直接复制基类虚函数地址</p>
+</li>
+<li><p>假设此时调用<code>ptr-&gt;z()</code>;，就会被编译器转化为<code>(*ptr-&gt;vptr[4])(ptr);</code>，于是这样的转换形式就可以给程序提供足够的信息，让它在执行期间知道调用哪个函数实体了，因为：</p>
+<ul>
+<li>即使不知道ptr指向的具体类型，但知道经由ptr可以访问到该对象的vptr，再由vptr访问到该类的虚函数表</li>
+<li>即使不知道哪个函数实体会被调用，但是所有类的z()函数实体地址都放在虚函数表中下标为4的地方</li>
+</ul>
+</li>
+</ul>
+<h3 id="多重继承"><a href="#多重继承" class="headerlink" title="多重继承"></a>多重继承</h3><ul>
+<li><p>一个派生类含有n个（上一层基类有n个）虚函数表，其中第一个基类子对象指向的表为主要表格（包含第一个基类虚函数和派生类自己的虚函数），其他为次要表格。没一个虚函数表，派生类对象都有一个对应的vptr，当将派生类对象指定给第一个基类指针或者派生类指针时，使用的就是主要表格，其他情况使用的是次要表格</p>
+</li>
+<li><p>多重继承下的虚函数表布局：<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/04/09/%E5%87%BD%E6%95%B0%E6%88%90%E5%91%98/image-20220711103106438.png" alt="image-20220711103106438"></p>
+<p>上图中带*的虚函数表示需要调整this指针，以使用正确的虚函数：</p>
+<ul>
+<li><p>通过指向第二个基类的指针调用派生类的虚函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Base2* ptr=<span class="keyword">new</span> <span class="built_in">Derived</span>();</span><br><span class="line"><span class="keyword">delete</span> ptr;</span><br></pre></td></tr></table></figure>
+
+<p>以上代码首先会被编译器调整至第二个基类子对象，来保证后续正确的访问或调用第二个基类有关的成员和方法。但当delete时需要再把ptr向后调整到指向派生类对象起始地址，以删除整个派生类对象</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Derived* temp=<span class="keyword">new</span> <span class="built_in">Derived</span>();</span><br><span class="line">Base2* ptr=temp?temp+<span class="built_in">sizeof</span>(Base1):<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用指向派生类的指针，调用第二个基类中一个继承而来的虚函数，此时需要将派生类指针调整至指向第二个基类子对象</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Derived* pder=<span class="keyword">new</span> Derived;</span><br><span class="line">pder-&gt;<span class="built_in">mumble</span>();</span><br><span class="line"><span class="comment">//此时pedr必须向前调整sizeof(Base1)个字节</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>由于虚函数的返回值类型可以发生变化，如上图中的clone函数的派生版本，就返回一个派生类对象，改写了两个基类的函数实体，当我们通过第二个基类指针调用clone()函数时，需要调整this指针</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Base2* pb1=<span class="keyword">new</span> <span class="built_in">Derived</span>();</span><br><span class="line">Base2* pb2=pb1-&gt;<span class="built_in">clone</span>();	<span class="comment">//返回值必须调整以指向第二个基类子对象，执行pb1-&gt;clone()时会返回一个新的派生类对象，当该对象被指定给第二个基类指针时（此时也就相当于要使用第二个基类指针调用派生类虚函数，同情况1了），要调整this指向第二个基类子对象。</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h3 id="虚拟继承"><a href="#虚拟继承" class="headerlink" title="虚拟继承"></a>虚拟继承</h3><ul>
+<li>不要在虚基类中声明非静态成员变量</li>
+</ul>
+<h2 id="内联函数"><a href="#内联函数" class="headerlink" title="内联函数"></a>内联函数</h2><ul>
+<li>不是所有的声明为inline的函数都会变成内联函数，在使用时扩展，而是inline只是一个请求，只有编译器通过一套算法（计算不同权值的赋值、函数调用、虚函数调用等操作的次数）接收了这个请求，才能成为真正的内联函数被扩展。</li>
+</ul>
+<h3 id="处理阶段"><a href="#处理阶段" class="headerlink" title="处理阶段"></a>处理阶段</h3><ul>
+<li>分析函数定义，决定他是否为内联函数，如果被判定为非内联函数，就会被转化成一个静态函数，在被编译的模块内产生定义</li>
+<li>真正的内联函数会在被调用的地方展开，但会带来参数求值操作及临时性对象管理问题</li>
+</ul>
+<h3 id="参数副作用"><a href="#参数副作用" class="headerlink" title="参数副作用"></a>参数副作用</h3><ul>
+<li><p>内联函数扩展示例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">int</span> <span class="title">min</span><span class="params">(<span class="type">int</span> i,<span class="type">int</span> j)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> i&lt;j?i:j;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当调用时</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> minval;</span><br><span class="line"><span class="type">int</span> val=<span class="number">1024</span>;</span><br><span class="line"><span class="type">int</span> val2=<span class="number">2048</span>;</span><br><span class="line"></span><br><span class="line">/(<span class="number">1</span>)/minval=<span class="built_in">min</span>(val1,val2);</span><br><span class="line">/(<span class="number">2</span>)/minval=<span class="built_in">min</span>(<span class="number">1024</span>,<span class="number">2048</span>);</span><br><span class="line">/(<span class="number">3</span>)/minval=<span class="built_in">min</span>(<span class="built_in">foo</span>(),<span class="built_in">bar</span>()+<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>分别被扩展为</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">minval=val1&lt;val2?val1:val2;</span><br><span class="line">minval=<span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> t1,t2;</span><br><span class="line">t1=<span class="built_in">foo</span>();</span><br><span class="line">t2=<span class="built_in">bar</span>()+<span class="number">1</span>;</span><br><span class="line">minval=t1&lt;t2?t1:t2;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到在第三个调用时把函数调用作为参数传入了内联函数，可能会导致实际参数的多次求值，因此认为是有副作用的参数，所以在扩展时使用了临时变量。</p>
+</li>
+</ul>
+<h3 id="内联函数的局部变量"><a href="#内联函数的局部变量" class="headerlink" title="内联函数的局部变量"></a>内联函数的局部变量</h3><ul>
+<li><p>修改内联函数，引入局部变量</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="type">int</span> <span class="title">min</span><span class="params">(<span class="type">int</span> i,<span class="type">int</span> j)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> minval=i&lt;j?i:j;</span><br><span class="line">    <span class="keyword">return</span> minval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时调用</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> minval;</span><br><span class="line"><span class="type">int</span> val1=<span class="number">1024</span>;</span><br><span class="line"><span class="type">int</span> val2=<span class="number">2048</span>;</span><br><span class="line">minval=<span class="built_in">min</span>(val1,val2);</span><br></pre></td></tr></table></figure>
+
+<p>会被扩展为</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> min_lv_minval=val1&lt;val2?val1:val2;</span><br><span class="line">minval=min_lv_minval;</span><br></pre></td></tr></table></figure>
+
+<p>即内联函数中的局部变量会被保留，产生一个拥有唯一编码名字的临时变量。如果内联函数在同一段代码中被多次调用，就会产生一组名字不同的临时变量。</p>
+<p>因此当参数带有副作用或者内联函数中有局部变量时，就会产生大量临时对象，编译器无法移除。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/C-%E5%A4%9A%E6%80%81%E4%B8%8E%E7%BB%A7%E6%89%BF/" rel="tag"># C++多态与继承</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/04/04/%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98/" rel="prev" title="（三）数据成员">
+      <i class="fa fa-chevron-left"></i> （三）数据成员
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/04/10/%E6%89%A7%E8%A1%8C%E6%9C%9F/" rel="next" title="（六）执行期">
+      （六）执行期 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="nav-text">不同成员函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9E%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="nav-text">非静态成员函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="nav-text">静态成员函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="nav-text">虚拟成员函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E5%87%BD%E6%95%B0"><span class="nav-text">虚函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E4%B8%80%E7%BB%A7%E6%89%BF"><span class="nav-text">单一继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E9%87%8D%E7%BB%A7%E6%89%BF"><span class="nav-text">多重继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E7%BB%A7%E6%89%BF"><span class="nav-text">虚拟继承</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0"><span class="nav-text">内联函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E9%98%B6%E6%AE%B5"><span class="nav-text">处理阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E5%89%AF%E4%BD%9C%E7%94%A8"><span class="nav-text">参数副作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E7%9A%84%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F"><span class="nav-text">内联函数的局部变量</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

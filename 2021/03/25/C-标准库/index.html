@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="包括I&#x2F;O类，顺序容器，关联容器，泛型算法，动态内存等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++标准库">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="包括I&#x2F;O类，顺序容器，关联容器，泛型算法，动态内存等">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/c9952954414d7ab0ccd8261cb56f0390.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/98d0477b9808ab1d9619e78d45be6db8.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/218e5d1c3507c68f0fedde9842c964df.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/0b24c12c0ab1103ac9cd9ee526b2908e.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/5fcac68969103f154eb1b432256d7197.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/bfe96dede5581ceebb0a71ce3cb47ae5.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/e45415b7d017fd0555c43d3218197169.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/03b31f0df90c91c0442f3e29e3006258.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/7bd55625f2578315656cb7b6bff56126.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/9c84a66ecc306152ff2e03db0e5d8cfc.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/cb5e9dde05b2f7c30c7f8e6535ec8e70.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/8385cbe83dee7dc9f57d117d1b32c457.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/b82ac85c4821c552822f71a9ad580703.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/361c17251e695f1cf79aa8792f086398.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/450ad791a5dbbc65479e3f9176833b47.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/d96860a242b21484f711d206f54e7eb3.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/33ea96c09151e4e1fe698444dc7beb59.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/6361df25ffd6ac4e22ad648bd7e1f860.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/b0ecc1ddfb5c6aa3ee9a5df7c80393d0.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/0de98b50e8116a53ee2c611dbfb05285.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/2fe14f5e27fce8f3ee7d7c8db4b80a46.png">
+<meta property="article:published_time" content="2021-03-25T10:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-11T11:41:26.857Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="C++&amp;STL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/c9952954414d7ab0ccd8261cb56f0390.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C++标准库 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++标准库
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-25 18:42:38" itemprop="dateCreated datePublished" datetime="2021-03-25T18:42:38+08:00">2021-03-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-11 19:41:26" itemprop="dateModified" datetime="2022-07-11T19:41:26+08:00">2022-07-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/C-STL/" itemprop="url" rel="index"><span itemprop="name">C++&STL</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>包括I&#x2F;O类，顺序容器，关联容器，泛型算法，动态内存等<br><em><span id="more"></span></em></p>
+<h2 id="I-x2F-O类"><a href="#I-x2F-O类" class="headerlink" title="I&#x2F;O类"></a><strong>I&#x2F;O类</strong></h2><hr>
+<ul>
+<li>iostream：读写流</li>
+<li>fstream：读写文件</li>
+<li>sstream：读写字符串</li>
+<li>刷新缓冲区</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/c9952954414d7ab0ccd8261cb56f0390.png" alt="c9952954414d7ab0ccd8261cb56f0390.png"></p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/98d0477b9808ab1d9619e78d45be6db8.png" alt="98d0477b9808ab1d9619e78d45be6db8.png"></p>
+<ul>
+<li>读写文件：</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/218e5d1c3507c68f0fedde9842c964df.png" alt="218e5d1c3507c68f0fedde9842c964df.png"></p>
+<ul>
+<li><p>方式：</p>
+<ul>
+<li><p>ofstream默认以out写方式打开文件</p>
+</li>
+<li><p>ifstream默认以in读方式打开文件</p>
+</li>
+<li><p>fstream默认in+out</p>
+</li>
+<li><p>ofstream保留文件已有数据唯一方法:<code>ofstream app(&quot;file&quot;,ofstream::app);</code></p>
+</li>
+<li><p>isstringstream,继承自iostream，可以用&lt;&lt;写入数据，&gt;&gt;读取数据</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="顺序容器"><a href="#顺序容器" class="headerlink" title="顺序容器"></a><strong>顺序容器</strong></h2><hr>
+<ul>
+<li>迭代器范围，左闭合区间，从第一个元素位置到最后一个元素的后一个位置，左闭合可以保证begin&#x3D;end时，迭代器为空退出循环。</li>
+</ul>
+<h3 id="array数组"><a href="#array数组" class="headerlink" title="array数组"></a>array数组</h3><ul>
+<li>必须同时指定数据类型和容器大小</li>
+<li>比较两个容器大小：元素相等，大小相同则相等；元素不同，决定于第一个不同元素的大小；元素相等，大小不等，取决于容器大小</li>
+<li>insert函数将元素插入到迭代器所指的元素之前，返回指向第一个新加入元素的迭代器。</li>
+<li>erase函数返回指向删除元素的下一个元素的迭代器</li>
+<li>resize函数调整容器大小为n</li>
+<li>循环中的迭代器更新示例</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/0b24c12c0ab1103ac9cd9ee526b2908e.png" alt="0b24c12c0ab1103ac9cd9ee526b2908e.png"></p>
+<hr>
+<h3 id="vector"><a href="#vector" class="headerlink" title="vector"></a>vector</h3><ul>
+<li>（连续存储元素，便于索引）分配内存空间：会比需要的新空间大</li>
+</ul>
+<ul>
+<li>resize函数改变元素个数，但不改变vector的内存空间大小</li>
+<li>reserve函数会扩大vector的内存空间 capacity&gt;&#x3D;size,只有必须要分配内存时vector才会分配内存，shrink_to_fit可以请求vector返还额外空间，但不一定成功</li>
+</ul>
+<hr>
+<h3 id="string"><a href="#string" class="headerlink" title="string"></a>string</h3><ul>
+<li>assign函数替换string中所有元素</li>
+</ul>
+<ul>
+<li>string搜索</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/5fcac68969103f154eb1b432256d7197.png" alt="5fcac68969103f154eb1b432256d7197.png"></p>
+<ul>
+<li>当进行字符数组相关操作时，输入应该是指向字符数组的指针，并且字符数组必须以空字符结束</li>
+<li>string与数值转换</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/bfe96dede5581ceebb0a71ce3cb47ae5.png" alt="bfe96dede5581ceebb0a71ce3cb47ae5.png"></p>
+<hr>
+<h3 id="容器适配器（stack、queue等）"><a href="#容器适配器（stack、queue等）" class="headerlink" title="容器适配器（stack、queue等）"></a><strong>容器适配器（stack、queue等）</strong></h3><ul>
+<li>一种机制，让某事物的行为看起来像另一种事物。如stack接受一个顺序容器，使顺序容器表现为stack</li>
+</ul>
+<hr>
+<h2 id="泛型算法"><a href="#泛型算法" class="headerlink" title="泛型算法"></a><strong>泛型算法</strong></h2><h3 id="插入迭代器算法"><a href="#插入迭代器算法" class="headerlink" title="插入迭代器算法"></a>插入迭代器算法</h3><ul>
+<li>back_inserter，接受一个容器的引用，返回与该容器绑定的一个插入迭代器，调用push_back将元素添加到容器中</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/e45415b7d017fd0555c43d3218197169.png" alt="e45415b7d017fd0555c43d3218197169.png"></p>
+<h3 id="copy算法"><a href="#copy算法" class="headerlink" title="copy算法"></a>copy算法</h3><ul>
+<li><p>返回目的位置迭代器递增以后的值，前两个参数是拷贝范围，第三个参数是目的容器的起始位置，返回的是目的位置迭代器（递增后）的值，即指向拷贝到目标数组的尾元素之后的位置</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a1[]=&#123;<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>&#125;;</span><br><span class="line"><span class="type">int</span> a2[<span class="built_in">sizeof</span>(a1)/<span class="built_in">sizeof</span>(*a1)];</span><br><span class="line"><span class="keyword">auto</span> ret=<span class="built_in">copy</span>(a1.<span class="built_in">begin</span>(),a2.<span class="built_in">end</span>(),a2);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="unique算法"><a href="#unique算法" class="headerlink" title="unique算法"></a>unique算法</h3><ul>
+<li>不删除元素，只是将不重复的元素放在容器的前面，返回最后一个不重复元素之后的位置</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/03b31f0df90c91c0442f3e29e3006258.png" alt="03b31f0df90c91c0442f3e29e3006258.png"></p>
+<h3 id="lambda表达式"><a href="#lambda表达式" class="headerlink" title="lambda表达式"></a>lambda表达式</h3><ul>
+<li>是一个可以调用的代码单元。</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/7bd55625f2578315656cb7b6bff56126.png" alt="7bd55625f2578315656cb7b6bff56126.png"></p>
+<ul>
+<li>lambda表达式可以被直接调用</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/9c84a66ecc306152ff2e03db0e5d8cfc.png" alt="9c84a66ecc306152ff2e03db0e5d8cfc.png"></p>
+<ul>
+<li>lambda捕获列表</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/cb5e9dde05b2f7c30c7f8e6535ec8e70.png" alt="cb5e9dde05b2f7c30c7f8e6535ec8e70.png"></p>
+<ul>
+<li>lambda定义返回类型时，必须使用尾至返回</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/8385cbe83dee7dc9f57d117d1b32c457.png" alt="8385cbe83dee7dc9f57d117d1b32c457.png"></p>
+<h3 id="bind函数"><a href="#bind函数" class="headerlink" title="bind函数"></a>bind函数</h3><p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/b82ac85c4821c552822f71a9ad580703.png" alt="b82ac85c4821c552822f71a9ad580703.png"></p>
+<p>对bind函数g的调用，会调用f:</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/361c17251e695f1cf79aa8792f086398.png" alt="361c17251e695f1cf79aa8792f086398.png"></p>
+<h3 id="插入迭代器"><a href="#插入迭代器" class="headerlink" title="插入迭代器"></a>插入迭代器</h3><ul>
+<li>back_inserter(创建使用push_back的迭代器）</li>
+<li>front_inserter(创建使用push_front的迭代器)</li>
+<li>inserter（创建一个使用insert的迭代器，元素被插入到迭代器所指的位置之前）</li>
+</ul>
+<h3 id="list-forwad-list成员函数算法"><a href="#list-forwad-list成员函数算法" class="headerlink" title="list\forwad_list成员函数算法"></a>list\forwad_list成员函数算法</h3><p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/450ad791a5dbbc65479e3f9176833b47.png" alt="450ad791a5dbbc65479e3f9176833b47.png"></p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/d96860a242b21484f711d206f54e7eb3.png" alt="d96860a242b21484f711d206f54e7eb3.png"></p>
+<h2 id="关联容器"><a href="#关联容器" class="headerlink" title="关联容器"></a><strong>关联容器</strong></h2><ul>
+<li>insert函数，对于map.insert返回一个pair,pair.first是一个指向map中相应元素的迭代器，该迭代器类型也是pair;pair.second返回一个bool,表示插入是否成功   对于multimap只返回迭代器</li>
+<li>erase函数，可以用key_type作为输入，返回的是删除了几个元素</li>
+<li>只有Map可以使用下标操作，且如果不在map中，会创建插入该下标关键字和值；对map进行下标操作得到mapped_type对象，对map的迭代器解引用时返回value_type。</li>
+<li>查找：multimap中多个相同的关键字元素会相邻存储</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/33ea96c09151e4e1fe698444dc7beb59.png" alt="33ea96c09151e4e1fe698444dc7beb59.png"></p>
+<p>lower_bound返回的迭代器指向第一个具有给定关键字的元素，upper_bound返回迭代器指向最后一个匹配给定关键字元素之后的位置。给两个函数相同的输入，会返回一个范围</p>
+<ul>
+<li>无序容器管理：关键字对应的元素存放在各个桶中，不同关键字可以映射到一个桶</li>
+</ul>
+<p> </p>
+<h2 id="动态内存"><a href="#动态内存" class="headerlink" title="动态内存"></a><strong>动态内存</strong></h2><hr>
+<h3 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h3><ul>
+<li>shared_ptr多个指针可以指向同一对象；unique_ptr只有一个指针指向对象  shared_ptr&lt;string&gt; pt，默认初始化为空指针</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/6361df25ffd6ac4e22ad648bd7e1f860.png" alt="6361df25ffd6ac4e22ad648bd7e1f860.png"></p>
+<h3 id="new"><a href="#new" class="headerlink" title="new"></a>new</h3><ul>
+<li>在自由空间分配内存是无名的，new不能为分配的对象命名</li>
+<li>new分配对象数组时，需要在[]中写明数组大小，可以在new分配的动态数组进行值初始化：<code>new int[]()</code> ; delete释放动态数组时，需要加[]: delete []p，且p指向的动态数组中的元素逆序释放</li>
+<li>unique_ptr管理new分配的动态数组时需要在unique_ptr的对象类型后加[]:unique_ptr&lt;int [ ]&gt; p(new int[10]);</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/b0ecc1ddfb5c6aa3ee9a5df7c80393d0.png" alt="b0ecc1ddfb5c6aa3ee9a5df7c80393d0.png"></p>
+<h3 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a>unique_ptr</h3><ul>
+<li><p>定义时需要绑定new返回的指针并且初始化只能使用显示的内置指针，直接初始化 <code>unique_ptr&lt;int&gt; p(new int(20))</code>; 不支持普通的拷贝和赋值，可以使用release转移unique_ptr的所有权</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">unique_ptr&lt;<span class="type">int</span>&gt; p1;</span><br><span class="line"><span class="function">unique_ptr&lt;<span class="type">int</span>&gt; <span class="title">p2</span><span class="params">(p1.release())</span></span>;	<span class="comment">//release将p1置空</span></span><br><span class="line">unique_ptr&lt;<span class="type">int</span>&gt; p3;</span><br><span class="line">p2.<span class="built_in">reset</span>(p3.<span class="built_in">release</span>());  <span class="comment">//所有权从p3转移到p2,且p2释放原来指向的内存，即原p1指向的内存</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="weak-ptr"><a href="#weak-ptr" class="headerlink" title="weak_ptr"></a>weak_ptr</h3><ul>
+<li>不控制所指向对象的生命周期，即将weak_ptr绑定到一个shared_ptr时，shared_ptr不会递增引用计数；weak_ptr创建以后要用shared_ptr进行初始化，且不能直接用weak_ptr访问对象，需要通过weak_ptr.lock()来返回一个shared_ptr调用对象，因为弱指针指向的对象可能已经被释放了</li>
+</ul>
+<h3 id="this指针"><a href="#this指针" class="headerlink" title="this指针"></a>this指针</h3><ul>
+<li>指向当前对象，可以访问当前对象的所有成员</li>
+</ul>
+<h3 id="友元"><a href="#友元" class="headerlink" title="友元"></a><strong>友元</strong></h3><ul>
+<li>允许一个函数&#x2F;类&#x2F;类的成员函数访问一个类的私有成员。需要在被访问私有成员的类中定义友元函数&#x2F;类&#x2F;类的成员函数，如：<code>friend void test（）；friend class test； friend void test::test();</code></li>
+</ul>
+<h3 id="allocator"><a href="#allocator" class="headerlink" title="allocator"></a>allocator</h3><ul>
+<li><p>将内存分配和对象构建分开</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">allocator&lt;string&gt; alloc;</span><br><span class="line"><span class="keyword">auto</span> <span class="type">const</span> p=alloc.<span class="built_in">allocate</span>(n);	<span class="comment">//分配n个未初始化的string</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>            allocator分配的内存是未构造的，使用时需要用构造函数构造对象，初始化或不初始化</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/0de98b50e8116a53ee2c611dbfb05285.png" alt="0de98b50e8116a53ee2c611dbfb05285.png"></p>
+<p>        当使用完对象时，必须对每个对象都进行destroy</p>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/25/C-%E6%A0%87%E5%87%86%E5%BA%93/2fe14f5e27fce8f3ee7d7c8db4b80a46.png" alt="2fe14f5e27fce8f3ee7d7c8db4b80a46.png"></p>
+<p>            释放allocator使用的内存，需要使用deallocate函数，必须传递给deallocate指向allocate分配的内存的指针，以及当时分配的内存大小</p>
+<h3 id="拷贝未初始化内存函数"><a href="#拷贝未初始化内存函数" class="headerlink" title="拷贝未初始化内存函数"></a>拷贝未初始化内存函数</h3><ul>
+<li>uninitiated_copy函数，返回指向最后一个拷贝对象之后的元素的指针</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/C-STL/" rel="tag"># C++&STL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/06/27/%E8%AE%A1%E7%BD%91/" rel="next" title="计算计网络基础">
+      计算计网络基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-x2F-O%E7%B1%BB"><span class="nav-text">I&#x2F;O类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E5%AE%B9%E5%99%A8"><span class="nav-text">顺序容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#array%E6%95%B0%E7%BB%84"><span class="nav-text">array数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vector"><span class="nav-text">vector</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#string"><span class="nav-text">string</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%B9%E5%99%A8%E9%80%82%E9%85%8D%E5%99%A8%EF%BC%88stack%E3%80%81queue%E7%AD%89%EF%BC%89"><span class="nav-text">容器适配器（stack、queue等）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B%E7%AE%97%E6%B3%95"><span class="nav-text">泛型算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E8%BF%AD%E4%BB%A3%E5%99%A8%E7%AE%97%E6%B3%95"><span class="nav-text">插入迭代器算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#copy%E7%AE%97%E6%B3%95"><span class="nav-text">copy算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unique%E7%AE%97%E6%B3%95"><span class="nav-text">unique算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-text">lambda表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bind%E5%87%BD%E6%95%B0"><span class="nav-text">bind函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="nav-text">插入迭代器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#list-forwad-list%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%E7%AE%97%E6%B3%95"><span class="nav-text">list\forwad_list成员函数算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E8%81%94%E5%AE%B9%E5%99%A8"><span class="nav-text">关联容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%86%85%E5%AD%98"><span class="nav-text">动态内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="nav-text">智能指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#new"><span class="nav-text">new</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unique-ptr"><span class="nav-text">unique_ptr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#weak-ptr"><span class="nav-text">weak_ptr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#this%E6%8C%87%E9%92%88"><span class="nav-text">this指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8B%E5%85%83"><span class="nav-text">友元</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#allocator"><span class="nav-text">allocator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E6%9C%AA%E5%88%9D%E5%A7%8B%E5%8C%96%E5%86%85%E5%AD%98%E5%87%BD%E6%95%B0"><span class="nav-text">拷贝未初始化内存函数</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
