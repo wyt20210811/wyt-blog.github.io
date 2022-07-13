@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="包括拷贝控制、对象移动、重载运算与类型转换、OOP、模板等具体讲解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="类设计者的工具">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/30/%E7%B1%BB%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E5%B7%A5%E5%85%B7/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="包括拷贝控制、对象移动、重载运算与类型转换、OOP、模板等具体讲解">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/30/%E7%B1%BB%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E5%B7%A5%E5%85%B7/01881527d4f7ac4c57b5c5726b12bf35.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/30/%E7%B1%BB%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E5%B7%A5%E5%85%B7/f2fb39cc6b2143f63f22d319cd7d1ccb.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/30/%E7%B1%BB%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E5%B7%A5%E5%85%B7/a20fec93e1f3ce1f9f45b990a1f76e9f.png">
+<meta property="article:published_time" content="2021-03-30T10:42:38.000Z">
+<meta property="article:modified_time" content="2022-07-13T08:43:47.240Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="C++&amp;STL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/30/%E7%B1%BB%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E5%B7%A5%E5%85%B7/01881527d4f7ac4c57b5c5726b12bf35.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/30/%E7%B1%BB%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E5%B7%A5%E5%85%B7/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>类设计者的工具 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/30/%E7%B1%BB%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E5%B7%A5%E5%85%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          类设计者的工具
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-30 18:42:38" itemprop="dateCreated datePublished" datetime="2021-03-30T18:42:38+08:00">2021-03-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-13 16:43:47" itemprop="dateModified" datetime="2022-07-13T16:43:47+08:00">2022-07-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/C-STL/" itemprop="url" rel="index"><span itemprop="name">C++&STL</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>包括拷贝控制、对象移动、重载运算与类型转换、OOP、模板等具体讲解<br><em><span id="more"></span></em></p>
+<h2 id="拷贝控制"><a href="#拷贝控制" class="headerlink" title="拷贝控制"></a><strong>拷贝控制</strong></h2><h3 id="拷贝、赋值、销毁"><a href="#拷贝、赋值、销毁" class="headerlink" title="拷贝、赋值、销毁"></a><strong>拷贝、赋值、销毁</strong></h3><ul>
+<li>拷贝构造函数定义了当用同类型的另一个对象初始化本对象应怎么做；拷贝赋值运算符定义了当将一个对象赋予同类型对象时做什么</li>
+</ul>
+<h4 id="拷贝构造函数"><a href="#拷贝构造函数" class="headerlink" title="拷贝构造函数"></a>拷贝构造函数</h4><ul>
+<li><p>如果一个构造函数的第一个参数是自身类类型的引用，且任何额外参数都有默认值，则此构造函数是拷贝构造函数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Foo</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Foo</span>();	<span class="comment">//默认构造函数</span></span><br><span class="line">    <span class="built_in">Foo</span>(<span class="type">const</span> Foo&amp;);	<span class="comment">//拷贝构造函数</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="赋值运算符"><a href="#赋值运算符" class="headerlink" title="赋值运算符"></a>赋值运算符</h4><ul>
+<li><p>返回一个指向左侧对象的引用</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Foo</span>&#123;</span><br><span class="line">    Foo&amp; <span class="keyword">operator</span>=(<span class="type">const</span> Foo&amp;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>=default</code>会显示的要求编译器生成合成拷贝函数&#x2F;运算符。</p>
+</li>
+</ul>
+<h4 id="阻止拷贝"><a href="#阻止拷贝" class="headerlink" title="阻止拷贝"></a>阻止拷贝</h4><ul>
+<li>如iostream类是不允许拷贝的，因为会出现多个对象同时向一个输入输出流写入读取的情况。所以这样的类会阻止拷贝，但不能直接不定义，不定义的话编译器会默认定义一个合成拷贝函数&#x2F;运算符。这时要定义删除的函数：即定义这个函数，但永远不使用 ，定义删除函数的方式为在函数定义后添<code>=delete；</code>如下</li>
+</ul>
+<p><strong><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/30/%E7%B1%BB%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E5%B7%A5%E5%85%B7/01881527d4f7ac4c57b5c5726b12bf35.png" alt="01881527d4f7ac4c57b5c5726b12bf35.png"></strong></p>
+<ul>
+<li>private拷贝控制：把拷贝构造函数和赋值运算符写在private中，声明且不定义它们。</li>
+</ul>
+<h3 id="拷贝控制和资源管理"><a href="#拷贝控制和资源管理" class="headerlink" title="拷贝控制和资源管理"></a>拷贝控制和资源管理</h3><ul>
+<li><p>有如下行为像值的类，每个对象都有自己的一份拷贝：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">HasPtr</span>&#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">HasPtr</span>(<span class="type">const</span> std::string &amp;s=std::<span class="built_in">string</span>()):<span class="built_in">ps</span>(<span class="keyword">new</span> std::<span class="built_in">string</span>(s)),<span class="built_in">i</span>(<span class="number">0</span>)&#123;&#125;</span><br><span class="line">    <span class="built_in">HasPtr</span>(<span class="type">const</span> HasPtr&amp; p):<span class="built_in">ps</span>(*p.ps),<span class="built_in">i</span>(p.i)&#123;&#125;</span><br><span class="line">    HasPtr&amp; <span class="keyword">operator</span>=(<span class="type">const</span> HasPtr &amp;);</span><br><span class="line">    ~<span class="built_in">HasPtr</span>() &#123;<span class="keyword">delete</span> ps;&#125;</span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">    std::string *ps;</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">HasPtr&amp; HasPtr::<span class="keyword">operator</span>=(<span class="type">const</span> HasPtr&amp; rhs)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">auto</span> newp=<span class="keyword">new</span> <span class="built_in">string</span>(*rhs.ps);</span><br><span class="line">    <span class="keyword">delete</span> ps;</span><br><span class="line">    ps=newp;</span><br><span class="line">    i=rhs.i;</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>行为像指针的类，此时拷贝的是指针成员本身而不是它指向的string</p>
+<ul>
+<li>引用计数：用来记录有多少对象与正在创建的对象共享状态。当我们创建一个对象时，只有一个对象共享状态，计数器的值初始化为1</li>
+<li>拷贝构造函数不分配新的计数器，而是把计数器也拷贝了。但拷贝构造函数递增共享的计数器，指出给定对象的状态又被一个新用户所共享</li>
+<li>析构函数时会递减共享的计数器，当计数器变为0，释放状态</li>
+<li>拷贝赋值运算符递增右边的运算对象的计数器，递减左侧对象的计数器。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">HasPtr</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">HasPtr</span>(<span class="type">const</span> std::string&amp; s=std::<span class="built_in">string</span>()):<span class="built_in">ps</span>(<span class="keyword">new</span> std::<span class="built_in">string</span>(s)),<span class="built_in">i</span>(<span class="number">0</span>),<span class="built_in">use</span>(<span class="keyword">new</span> std::<span class="built_in">size_t</span>(<span class="number">1</span>))&#123;&#125;	<span class="comment">//构造对象时引用计数初始值为1</span></span><br><span class="line">    <span class="built_in">HasPtr</span>(<span class="type">const</span> HasPtr&amp; p):<span class="built_in">ps</span>(p.ps),<span class="built_in">i</span>(p.i),<span class="built_in">use</span>(p.use)&#123;++*use;&#125;	<span class="comment">//拷贝构造函数时递增计数器</span></span><br><span class="line">    HasPtr&amp; <span class="keyword">operator</span>=(<span class="type">const</span> HasPtr&amp;);</span><br><span class="line">    ~<span class="built_in">HasPtr</span>();</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    std::string* ps;</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">    std::<span class="type">size_t</span> *use;	<span class="comment">//记录有多少个对象共享*ps的成员</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">HasPtr::~<span class="built_in">HasPtr</span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(--*use == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">delete</span> ps;</span><br><span class="line">        <span class="keyword">delete</span> use;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">HasPtr&amp; HasPtr::<span class="keyword">operator</span>=(<span class="type">const</span> HasPtr&amp; rhs)</span><br><span class="line">&#123;</span><br><span class="line">    ++*rhs.use;</span><br><span class="line">    <span class="keyword">if</span>(--*use == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">delete</span> ps;</span><br><span class="line">        <span class="keyword">delete</span> use;</span><br><span class="line">    &#125;</span><br><span class="line">    ps=rhs.ps;</span><br><span class="line">    i=rhs.i;</span><br><span class="line">    use=rhs.use;</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="对象移动"><a href="#对象移动" class="headerlink" title="对象移动"></a>对象移动</h3><ul>
+<li>右值引用：用来将一个不可拷贝的对象移动到另一个对象上。如</li>
+</ul>
+ <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> i=<span class="number">42</span>;     <span class="comment">//i:左值     42：右值</span></span><br><span class="line"><span class="type">int</span> &amp;r=i;     <span class="comment">//左值引用，将r绑定到i</span></span><br><span class="line"><span class="type">int</span> &amp;&amp;r=i;         <span class="comment">//错误，不能将右值引用绑定到左值上</span></span><br><span class="line"><span class="type">int</span> &amp;&amp;r=<span class="number">42</span>;       <span class="comment">//右值引用</span></span><br><span class="line"><span class="type">int</span> &amp;&amp;r=i*<span class="number">42</span>;     <span class="comment">//右值引用绑定到表达式</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> &amp;r=i*<span class="number">42</span>;     <span class="comment">//可以将const的左值引用绑定到右值上</span></span><br></pre></td></tr></table></figure>
+
+<p>可以发现右值通常是字面常量或者表达式计算得到的临时变量，因此右值引用是短暂的，只能绑定到要销毁的临时对象上</p>
+<ul>
+<li><p>std::move函数：告诉编译器，希望像使用右值一样使用左值</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> &amp;&amp;rr3=std::<span class="built_in">move</span>(rr1);	<span class="comment">//使用move意味着除了对rr1赋值或销毁它以外，我们将不再使用它</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li><p>移动构造函数：不分配新的内存，而是接管源对象的内存，即“窃取资源”；而源对象由于内存被接管会被摧毁，此时需要将源对象的指针置空</p>
+<ul>
+<li><p>移动构造函数的第一个参数必须是右值引用，如</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">StrVec</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">StrVec</span>(StrVec&amp;&amp;) <span class="keyword">noexcept</span>;	<span class="comment">//声明移动构造函数</span></span><br><span class="line">    StrVec&amp; <span class="keyword">operator</span>=(StrVec&amp;&amp;) noexpect;	<span class="comment">//声明移动赋值运算符</span></span><br><span class="line">&#125;;</span><br><span class="line">StrVec::<span class="built_in">StrVec</span>(StrVec &amp;&amp;s) noexpect:<span class="built_in">elementd</span>(s.elements),<span class="built_in">first_free</span>(s.first_free),<span class="built_in">cap</span>(s.cap)&#123;</span><br><span class="line">    s.elements=s.first_free=s.cap=<span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br><span class="line">StrVec&amp; StrVec::<span class="keyword">operator</span>=(StrVec&amp;&amp; rhs) noexpect&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">this</span> != &amp;rhs)&#123;</span><br><span class="line">        <span class="built_in">free</span>();</span><br><span class="line">        elements=rhs.elements;</span><br><span class="line">        first_free=rhs.first_free;</span><br><span class="line">        cap=rhs.cap;</span><br><span class="line">        rhs.elements=rhs.first_free=rhs.cap=<span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h2 id="重载运算与类型转换"><a href="#重载运算与类型转换" class="headerlink" title="重载运算与类型转换"></a><strong>重载运算与类型转换</strong></h2><h3 id="运算符函数"><a href="#运算符函数" class="headerlink" title="运算符函数"></a>运算符函数</h3><ul>
+<li>当它是类的成员函数时，第一个运算对象绑定到隐式的this指针上，因此成员运算函数的显式参数数量比运算符的运算对象总数少一个。对于运算符函数，要么是一个类的成员函数，要么参数中至少包含一个类类型。一般输入输出、算数和关系运算符都要定义成类的非成员函数，以允许对左侧或右侧的成员进行转换</li>
+</ul>
+<h3 id="重载函数"><a href="#重载函数" class="headerlink" title="重载函数"></a><strong>重载函数</strong></h3><ul>
+<li><p>对称性的运算符：如+运算是对称的，因为两个参数都可以是左侧运算对象或右侧运算对象</p>
+</li>
+<li><p>重载输出运算符operate&lt;&lt;：输出运算符的第一个形参是一个非常量ostream对象的引用（之所以用引用是因为ostream对象不能复制），第二个形参是常量的引用，该常量是要输出的类类型（之所以用引用是希望避免对实参的复制）,重载输出运算符返回它的ostream形参</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ostream &amp;<span class="keyword">operator</span>&lt;&lt;(ostream &amp;os,<span class="type">const</span> Sales_data &amp;item)</span><br><span class="line">&#123;</span><br><span class="line">    os&lt;&lt;item.<span class="built_in">isbn</span>();</span><br><span class="line">    <span class="keyword">return</span> os;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重载输入运算符operate&gt;&gt;:第一个形参是一个 istream 流的引用，第二个形参是一个非常量对象的引用，返回一个给定流的引用</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">istream &amp;<span class="keyword">operator</span>&gt;&gt;(istream&amp; is,Sales_data &amp;item)</span><br><span class="line">&#123;</span><br><span class="line">    is&gt;&gt;item.bookNo&gt;&gt;item.units_sold&gt;&gt;price;</span><br><span class="line">    <span class="keyword">if</span>(is)</span><br><span class="line">        item.revenue=item.units_sold*price;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        item=<span class="built_in">Sales_data</span>();</span><br><span class="line">    <span class="keyword">return</span> is;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>输入运算符必须处理输入可能失败的情况，输出运算符不需要。可以在读取了所有数据之后、要使用它们之前检查是否出错</li>
+</ul>
+</li>
+<li><p>算数和关系运算符形参是常量的引用，因此不会改变对象的状态</p>
+</li>
+<li><p>重载下标运算符一般是类的成员函数，一般会设置两种返回，一种是非常量的引用,可以对其通过下标访问赋值；一种是常量的引用不能修改值</p>
+</li>
+<li><p>重载递增&#x2F;递减运算符：需要重载前置递增&#x2F;递减和后置递增&#x2F;递减两个版本。后置递增&#x2F;递减与前置递增&#x2F;递减的区别是后置：<code>operate++（int）/operate--(int)；</code>当显式的调用后置函数时，需要给int一个值，如：<code>p.operate++(0)</code></p>
+</li>
+<li><p>重载函数调用运算符：operate()，一般作为类的成员函数。通过重载函数调用运算符，可以使类的对象行为象一个函数一样，可以像调用函数一样调用类的对象。如果类定义了调用运算符，则该类的对象称为“函数对象”。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">absInt</span>&#123;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="type">int</span> val)</span> <span class="type">const</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> val&lt;<span class="number">0</span>?-val:val;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="type">int</span> i=<span class="number">-42</span>;</span><br><span class="line">absInt absObj;</span><br><span class="line"><span class="type">int</span> ui=<span class="built_in">absObj</span>(i);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重载类型转换运算符：定义为类的成员函数， <code>operate type() const;</code> 是隐式执行的所以没有返回值，没有形参列表。当不希望类型转换运算符隐式的自动调用时，可以将其定义为显示的，<code> explicit operate type() const ;</code>使用时需要进行强制转换，<code>static_cast&lt;type&gt;();</code> </p>
+<ul>
+<li>IO标准库定义了一个向bool的显示类型转换，即<code>while(cin&gt;&gt;val);</code>此时的cin会被自动转换为一个bool，如果输入成功返回true</li>
+</ul>
+</li>
+</ul>
+<h2 id="面向对象程序设计oop"><a href="#面向对象程序设计oop" class="headerlink" title="面向对象程序设计oop"></a><strong>面向对象程序设计oop</strong></h2><ul>
+<li>oop的核心思想：数据抽象、继承、动态绑定。数据抽象实现类的接口与实现分离，继承定义相似的类型，动态绑定在一定程度上忽略相似类之间的区别</li>
+</ul>
+<h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><ul>
+<li><p>底部有一个基类，定义了在层次关系中的所有类共有的成员；其他的直接或间接的派生类各有各特有的成员</p>
+</li>
+<li><p>当基类希望某些函数在派生类中可以定义更适合自己的版本时，就把这些函数声明为虚函数（函数定义前加virtual前缀）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Quote</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">std::string <span class="title">isbn</span><span class="params">()</span> <span class="type">const</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">double</span> <span class="title">net_price</span><span class="params">(std::<span class="type">size_t</span> n)</span> <span class="type">const</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>派生类需要使用派生列表来说明自己是继承了哪些基类，具体形式为 ：<code>public CLASS_A,public CLASS_B</code>其中public为访问说明符。并且在派生类中需要对基类中的虚函数重新定义，并在函数声明后使用<code>override</code>标识。</p>
+</li>
+<li><p>动态绑定：也称为运行时绑定，它在函数传入实参时才会决定使用函数的哪个版本</p>
+</li>
+<li><p>protect访问说明符：只有类和他的派生类的成员函数可以访问；public：成员函数和对象都可以访问</p>
+</li>
+</ul>
+<h3 id="类的静态成员"><a href="#类的静态成员" class="headerlink" title="类的静态成员"></a>类的静态成员</h3><ul>
+<li>只与类本身关联，而类的对象不需要拥有该成员，但对象可以访问该成员，并且如果该成员值改变，类的所有对象访问该成员都可以得到新的值。 静态成员可以提高程序效率，比如银行的利率只要在类中即可，没必要每个对象都拥有一次银行利率</li>
+<li>派生类对象：由多个部分组成，包括派生类自己定义的非静态成员的子对象和继承自基类对应的子对象。 由于派生类对象拥有继承自基类的子对象，所以可以使用基类的指针或引用绑定派生类对象中的基类部分上，也称作派生类到基类的类型转换。</li>
+</ul>
+<p>例：<img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/30/%E7%B1%BB%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E5%B7%A5%E5%85%B7/f2fb39cc6b2143f63f22d319cd7d1ccb.png" alt="f2fb39cc6b2143f63f22d319cd7d1ccb.png"></p>
+<ul>
+<li><p>派生类必须使用基类的构造函数来初始化派生类中的基类成员。先使用基类构造函数初始化基类成员，再用自己的构造函数初始化自己的成员。</p>
+</li>
+<li><p>如果不希望一个类作为基类，即防止继承发生，可以在类名后添加“final”关键字。如：<code>class Noderived final&#123; /\*   \*/&#125;;</code></p>
+</li>
+<li><p>静态类型与动态类型：静态类型在编译的时候就是已知的，是变量声明的类型或者表达式生成的类型；动态类型是内存中的对象的类型，知道运行时才能根据实参的类型确定。 基类和派生类之间可以互相转换，因此当表达式是指针或者引用时，需要根据实参确定动态类型是基类还是派生类。但如果表达式不是指针或引用，则动态类型与静态类型永远一致。</p>
+</li>
+<li><p>可以将基类的指针或引用绑定到派生类对象上，是因为派生类对象中含有基类对象的部分。但不存在从派生类到基类的类型转换，因为基类对象可能是派生类对象的一部分也可能不是。</p>
+</li>
+<li><p>当使用一个派生类对象对基类对象进行初始化或赋值时，只会调用基类构造函数&#x2F;赋值运算符来处理派生类对象中的基类部分，而其中的派生类部分会被忽略，即发生“切割”。</p>
+</li>
+</ul>
+<h3 id="OOP-的核心思想"><a href="#OOP-的核心思想" class="headerlink" title="OOP 的核心思想"></a>OOP 的核心思想</h3><ul>
+<li>多态性。 把具有继承关系的多个类型称为多态类型，可以使用这些类型的“多种形式”而不需要在意他们的差异。引用或指针的静态类型与动态类型可能不同，是oop支持多态性的根本原因。</li>
+</ul>
+<h3 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h3><ul>
+<li>回避虚函数的默认机制：当派生类的虚函数需要调用它覆盖的基类中的虚函数时，不回避默认机制的话，会反复调用自己。 通过指定作用域进行虚函数默认机制的回避：</li>
+</ul>
+<p><img src="https://wyt20210811.github.io/wyt-blog.github.io/2021/03/30/%E7%B1%BB%E8%AE%BE%E8%AE%A1%E8%80%85%E7%9A%84%E5%B7%A5%E5%85%B7/a20fec93e1f3ce1f9f45b990a1f76e9f.png" alt="a20fec93e1f3ce1f9f45b990a1f76e9f.png"></p>
+<ul>
+<li>纯虚函数：告诉用户这个函数是没有意义的，在虚函数声明后添加“&#x3D;0”</li>
+<li>含有或未经覆盖直接继承纯虚函数的类是抽象基类，不能直接定义一个抽象基类的对象</li>
+</ul>
+<h3 id="访问"><a href="#访问" class="headerlink" title="访问"></a>访问</h3><ul>
+<li><p>protect访问控制：1.对于类的用户不可访问、2.对于派生类的成员和友元可以访问、3.派生类的成员和友元只能通过派生类对象访问基类中的受保护成员，但派生类对象对于基类中的受保护成员没有访问权限。 派生类的成员和友元只能访问派生类对象中的基类部分受保护成员，但对于普通的基类对象中的成员不具有特殊访问权限</p>
+</li>
+<li><p>派生类对基类继承来的成员的访问权限由两部分影响：1、成员在基类中的访问说明符；2、在派生类的派生列表中的访问说明符。    其中派生类能访问基类中的哪些成员由1决定，2决定的是派生类的用户对基类成员的访问权限，比如派生列表是private的，那么派生类中基类的所有成员都变为private的，用户都不能进行访问</p>
+</li>
+<li><p>友元关系不具有继承性，基类的友元在访问派生类成员时不具有特殊性，派生类的友元也不能随意访问基类的成员。 即一个基类的友元可以访问基类中的private成员，但不能访问基类的派生类对象中的private成员，不过可以访问基类的派生类中的基类成员</p>
+</li>
+<li><p>默认的派生运算符：当派生类使用struct关键字定义，默认是公有继承的；当用class关键字定义派生类，则默认派生类是私有继承的</p>
+</li>
+<li><p>派生类的作用域嵌套在基类的作用域之中，即如果编译器寻找一个名字在派生类的作用域中没找到，就依次到它的直接基类、间接基类的作用域中去寻找这个名字的定义。在作用域中，名字查找先于类型查找，即如果内部作用域中有函数或成员与外部作用域重名，则外部作用域中的函数或成员会被隐藏掉，编译器在查找时只要在内部作用域中查到了这个名字，不管参数类型能不能对上都会停止查找</p>
+</li>
+</ul>
+<h2 id="模板与泛型编程"><a href="#模板与泛型编程" class="headerlink" title="模板与泛型编程"></a><strong>模板与泛型编程</strong></h2><ul>
+<li><p>类模板：编译器不能为类模板推断模板的参数类型。当使用类模板时，必须在模板名后面的尖括号里提供额外的信息，也就是用来代替模板参数的模板实参列表。<code>template&lt;typename T&gt; class A&#123;&#125;</code>   如果想实例化一个string类型的A，必须使用A&lt;string&gt; b</p>
+<ul>
+<li><p>当一个类包含一个友元声明：如果类是模板，友元不是，那么友元是类的所有实例的友元；如果类不是模板，友元是模板，那么类可以授权所有友元实例，也可以只授权特定的友元实例。 通过友元的声明用类的模板形参作为自己的模板实参，可以实现友好关系限定在用相同类型实例化的类和友元之间。</p>
+</li>
+<li><p>当友元声明中使用了与类模板不同的模板参数，可以将所有实例都声明为友元。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="keyword">class</span> <span class="title class_">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> X&gt; <span class="keyword">friend</span> <span class="keyword">class</span> <span class="title class_">B</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>可以定义模板类型的别名：<code>template&lt;typename T&gt; using twin=pair&lt;T,T&gt;; </code>即twin是pair的别名，当实例化模板时可以使用<code>twin&lt;int&gt;</code></p>
+</li>
+<li><p>使用类的类型成员时，需要显示的告诉编译器这个名字是一个类型，通过关键字typename来实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; </span><br><span class="line"><span class="function"><span class="keyword">typename</span> T::value_type <span class="title">top</span><span class="params">(<span class="type">const</span> T&amp; c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typename</span> T::<span class="built_in">value_type</span>();</span><br><span class="line">&#125;	<span class="comment">//通过作用域运算符::访问的value_type是一个T类型。该函数返回一个value_type</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当一个类模板的所有模板参数都提供了默认实参，且我们想要使用这些默认实参时，对模板的实例化应该为：<code> A&lt;&gt;</code></p>
+</li>
+<li><p>当类模板中包含一个成员模板，且在类外定义成员模板时，需要同时为类模板和成员模板提供模板参数列表。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="keyword">class</span> <span class="title class_">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> X&gt; <span class="built_in">A</span>(X b,X e);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; </span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> X&gt;</span><br><span class="line">A&lt;T&gt;::<span class="built_in">A</span>(X b,X e)&#123; &#125;    <span class="comment">//先为类提供模板参数列表A&lt;T&gt;,再为成员函数提供模板参数列表</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li>将实参传递给带模板类型的函数形参时，能够自动应用的类型转换只有const转换及数组或函数到指针的转换</li>
+</ul>
+<ul>
+<li><p>当函数返回类型与参数列表中的任何类型都不相同时，编译器无法推断出模板实参的类型或者用户想要控制模板的实例化。如：希望sum函数由用户指定结果的类型时，代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T1,<span class="keyword">typename</span> T2,<span class="keyword">typename</span> T3&gt;</span><br><span class="line"><span class="function">T1 <span class="title">sum</span><span class="params">(T2,T3)</span></span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>            此时没有函数实参可以用来推断T1的类型，所以需要每次调用sum时为T1提供一个显示模板实参：即在尖括号中给出显示模板实参，位于函数名之后，实参列表之前。 <code>auto val=sum&lt;long long&gt;(a,b);</code></p>
+<ul>
+<li><p>当不知道函数准确的返回类型，但是知道所需类型时是所处理的参数的类型时，可以使用尾置返回，即出现在参数列表之后，可以使用函数的参数:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">* <span class="keyword">template</span> &lt;<span class="keyword">typename</span> IT&gt;</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">fcn</span><span class="params">(IT beg,IT end)</span>-&gt;<span class="title">decltype</span><span class="params">(*beg)</span>    <span class="comment">//使用decltype()函数获取*beg的类型</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/*     */</span></span><br><span class="line">	 <span class="keyword">return</span> *beg;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当一个函数参数是模板类型参数的普通左值引用T&amp;时，只能传递给它一个左值；当函数参数是const T&amp;时，可以传递给它左值或右值；当函数参数是一个指向模板类型参数的右值引用时，可以被绑定到一个左值，并且如果绑定到一个左值，推断出的模板实参类型就是一个左值引用，函数参数也被实例化为一个左值引用参数</p>
+</li>
+<li><p>函数的参数是左值表达式，一个左值表达式是不能实例化一个右值引用的，即使函数的参数就是一个右值42也会被看做是一个左值，为了让原始实参的类型保持不变（也就是说让右值42即使作为函数参数也仍旧是右值），此时要使用std::forward。forward返回显示实参类型的右值引用，forward<T>return T&amp;&amp;。一般使用forward传递 定义为模板类型参数的右值引用的函数参数（由于有模板类型参数的右值引用的折叠性，forward会保持给定实参的左值&#x2F;右值属性）</T></p>
+</li>
+<li><p>编译器选择重载的函数匹配时：同样好的函数中只有一个是非模板函数则选择非模板函数；没有非模板函数，但有一个模板函数比其他模板函数更加特例化，则选择更特例化的函数模板。  在定义任何函数之前，应该先声明所有重载的函数版本</p>
+</li>
+<li><p>可变参数模板：一个接受可变数目参数的模板函数或模板类。 参数包：可变数目的参数。 模板参数包：表示0个或多个模板参数；函数参数包：表示0个或多个函数参数</p>
+</li>
+<li><p>参数包用“…”表示。如模板参数列表中：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T,<span class="keyword">typename</span>... Args&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">const</span> T &amp;t,<span class="type">const</span> Args&amp;... rest)</span></span>;	<span class="comment">//rest表示函数参数包（有0个或多个Args类型的引用参数）编译器会在实例化时推断参数包中有几个参数。 </span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>需要知道包中有多少元素，可以使用sizeof…运算符。如：<code>sizeof...(Args)</code></p>
+</li>
+<li><p>包扩展：可以将包扩展为其构成元素，如<code>Args... rest；</code>也可以使用如<code>A（rest）... </code>函数A对rest中的每个元素执行操作。这里的A可以称为扩展模式。</p>
+</li>
+<li><p>特例化一个模板时，必须为原模版中每个模板参数都提供实参：template  &lt;&gt;。 类模板是可以部分特例化的</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/C-STL/" rel="tag"># C++&STL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/03/27/%E7%B1%BB/" rel="prev" title="类">
+      <i class="fa fa-chevron-left"></i> 类
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2021/06/27/%E8%AE%A1%E7%BD%91/" rel="next" title="计算计网络基础">
+      计算计网络基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E6%8E%A7%E5%88%B6"><span class="nav-text">拷贝控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E3%80%81%E8%B5%8B%E5%80%BC%E3%80%81%E9%94%80%E6%AF%81"><span class="nav-text">拷贝、赋值、销毁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">拷贝构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">赋值运算符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%98%BB%E6%AD%A2%E6%8B%B7%E8%B4%9D"><span class="nav-text">阻止拷贝</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E6%8E%A7%E5%88%B6%E5%92%8C%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86"><span class="nav-text">拷贝控制和资源管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%A7%BB%E5%8A%A8"><span class="nav-text">对象移动</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E8%BD%BD%E8%BF%90%E7%AE%97%E4%B8%8E%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-text">重载运算与类型转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E5%87%BD%E6%95%B0"><span class="nav-text">运算符函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E8%BD%BD%E5%87%BD%E6%95%B0"><span class="nav-text">重载函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1oop"><span class="nav-text">面向对象程序设计oop</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF"><span class="nav-text">继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E9%9D%99%E6%80%81%E6%88%90%E5%91%98"><span class="nav-text">类的静态成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OOP-%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="nav-text">OOP 的核心思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E5%87%BD%E6%95%B0"><span class="nav-text">虚函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE"><span class="nav-text">访问</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E4%B8%8E%E6%B3%9B%E5%9E%8B%E7%BC%96%E7%A8%8B"><span class="nav-text">模板与泛型编程</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
