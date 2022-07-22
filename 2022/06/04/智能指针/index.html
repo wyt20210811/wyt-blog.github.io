@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="unique_ptr 持有对对象的独有权，两个unique_ptr不能指向同一个对象，即unique_ptr不共享他所管理的对象。即无法复制到其他unique_ptr，无法通过值传递到函数，无法用于需要副本的任何STL算法。我们只能移动unique_ptr，实现把内存资源所有权交给另一个unique_ptr，此时原始的unique_ptr就不再拥有此资源了。  shared_ptr 共享所有权的指">
+<meta property="og:type" content="article">
+<meta property="og:title" content="智能指针">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="unique_ptr 持有对对象的独有权，两个unique_ptr不能指向同一个对象，即unique_ptr不共享他所管理的对象。即无法复制到其他unique_ptr，无法通过值传递到函数，无法用于需要副本的任何STL算法。我们只能移动unique_ptr，实现把内存资源所有权交给另一个unique_ptr，此时原始的unique_ptr就不再拥有此资源了。  shared_ptr 共享所有权的指">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/image-20220721092852831.png">
+<meta property="og:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/image-20220721223649404.png">
+<meta property="article:published_time" content="2022-06-04T11:24:38.000Z">
+<meta property="article:modified_time" content="2022-07-22T04:09:27.368Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="C++总结">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/image-20220721092852831.png">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>智能指针 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          智能指针
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-04 19:24:38" itemprop="dateCreated datePublished" datetime="2022-06-04T19:24:38+08:00">2022-06-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-22 12:09:27" itemprop="dateModified" datetime="2022-07-22T12:09:27+08:00">2022-07-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/C-%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">C++总结</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a>unique_ptr</h2><ul>
+<li>持有对对象的独有权，两个unique_ptr不能指向同一个对象，即unique_ptr不共享他所管理的对象。即无法复制到其他unique_ptr，无法通过值传递到函数，无法用于需要副本的任何STL算法。我们只能移动unique_ptr，实现把内存资源所有权交给另一个unique_ptr，此时原始的unique_ptr就不再拥有此资源了。</li>
+</ul>
+<h2 id="shared-ptr"><a href="#shared-ptr" class="headerlink" title="shared_ptr"></a>shared_ptr</h2><ul>
+<li>共享所有权的指针，允许多个指针指向同一个对象。同时shared_ptr还会对资源做引用计数，当引用计数减到0就自动释放资源。</li>
+<li>shared_ptr维护两部分信息：<ul>
+<li>指向共享资源的指针</li>
+<li>指向控制信息的指针（引用计数等共享资源的控制信息）<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/image-20220721092852831.png" alt="image-20220721092852831"></li>
+</ul>
+</li>
+</ul>
+<h3 id="为什么在控制信息中也要保存指向共享资源的指针"><a href="#为什么在控制信息中也要保存指向共享资源的指针" class="headerlink" title="为什么在控制信息中也要保存指向共享资源的指针"></a>为什么在控制信息中也要保存指向共享资源的指针</h3><ul>
+<li>可以看到在控制信息中还有一个指向资源的指针，这样做的原因是，在存在继承的情况下，shared_ptr对象中的指针指向的对象和控制块中指针指向的对象可能是不同的对象。比如当用基类指针指向派生类对象，此时基类指针指向的是派生类中的基类子对象，但控制信息中该基类指针会为派生类对象的引用计数+1，并且此时控制信息中指向的共享资源是派生类对象本身。</li>
+</ul>
+<h3 id="shared-ptr的实现"><a href="#shared-ptr的实现" class="headerlink" title="shared_ptr的实现"></a>shared_ptr的实现</h3><ul>
+<li>实现原理：就是利用一个计数器，当使用 拷贝构造函数、赋值运算符重载、作为函数返回值、作为参数传给函数 时该计数器都会 +1；当给指针赋新值或需要销毁指针时，计数器 -1；当计数器 &#x3D;0 就会调用析构函数，删除对象释放内存</li>
+<li>shared_ptr不直接支持管理动态数组，此时需要自己定制删除器</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;calss T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SharedPtr</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">//构造函数</span></span><br><span class="line">    <span class="built_in">SharedPtr</span>(T *ptr=<span class="literal">nullptr</span>):_ptr(ptr),_pcount(<span class="keyword">new</span> <span class="built_in">int</span>(<span class="number">1</span>))&#123;&#125;</span><br><span class="line">    <span class="comment">//拷贝构造函数：引用计数+1</span></span><br><span class="line">    <span class="built_in">SharedPtr</span>(<span class="type">const</span> SharedPtr &amp;s):_ptr(s._ptr),_pcount(s._pcount)&#123;</span><br><span class="line">        *(_pcount)++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//赋值运算符重载：左侧的资源控制信息引用计数-1，右侧的资源控制信息引用计数+1</span></span><br><span class="line">    SharedPtr&lt;T&gt;&amp; <span class="keyword">operator</span>=(<span class="type">const</span> SharedPtr &amp;s)&#123;</span><br><span class="line">       <span class="keyword">if</span>(<span class="keyword">this</span> != &amp;s)&#123;</span><br><span class="line">            <span class="keyword">if</span>(*(<span class="keyword">this</span>-&gt;_pcount)-- == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">delete</span> <span class="keyword">this</span>-&gt;_ptr;</span><br><span class="line">            <span class="keyword">delete</span> <span class="keyword">this</span>-&gt;_pcount;</span><br><span class="line">			&#125;</span><br><span class="line">            _ptr = s._ptr;</span><br><span class="line">            _pcount = s._pcount;</span><br><span class="line">            *(_pcount)++;</span><br><span class="line">       &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//*()返回资源的引用</span></span><br><span class="line">    T&amp; <span class="keyword">operator</span>*()&#123;	</span><br><span class="line">        <span class="keyword">return</span> *(<span class="keyword">this</span>-&gt;_ptr);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//-&gt;()返回指向资源的指针</span></span><br><span class="line">    T* <span class="keyword">operator</span>-&gt;()&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>-&gt;_ptr;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//析构函数，引用计数-1，当引用计数=0的时候，释放掉资源的内存，可以将这块内存分配给其他对象</span></span><br><span class="line">    ~<span class="built_in">SharedPtr</span>()&#123;</span><br><span class="line">        --(*(<span class="keyword">this</span>-&gt;_pcount));</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>-&gt;_pcount == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">delete</span> _ptr;</span><br><span class="line">            _ptr = <span class="literal">nullptr</span>;</span><br><span class="line">            <span class="keyword">delete</span> _pcount;</span><br><span class="line">            _pcount = <span class="literal">nullptr</span>;</span><br><span class="line">        &#125;      </span><br><span class="line">    &#125;    </span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T *_ptr;</span><br><span class="line">    <span class="type">int</span> *_pcount;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="shared-ptr的安全问题"><a href="#shared-ptr的安全问题" class="headerlink" title="shared_ptr的安全问题"></a>shared_ptr的安全问题</h3><ul>
+<li><p>同一个shared_ptr被多个线程“读”是安全的</p>
+</li>
+<li><p>同一个shared_ptr被多个线程“写”是不安全的：因为复制一个<code>shared_ptr</code>分为两步，一步是复制ptr指针，一步是复制引用计数指针。</p>
+<ul>
+<li>假如此时有两个线程，一个线程A运行时，把线程A的<code>shared_ptr&lt;Foo&gt; x</code>赋值<code>x=shared_ptr&lt;Foo&gt; g(new Foo)</code>（g是一个线程之间共享的智能指针），当只执行了第一步即把ptr指向了<code>Foo1</code>；</li>
+<li>此时调用了线程B,B中有<code>shared_ptr&lt;Foo&gt; n(new Foo)</code>，B中执行了<code>g = n</code>，且两步都完成了，那么此时原来g指向的资源的引用计数变为0就会被释放掉，导致x的ptr悬空了；</li>
+<li>再继续调用线程A又使得x的引用计数指针指向了n指向的资源Foo2。<img src="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/image-20220721223649404.png" alt="image-20220721223649404"></li>
+</ul>
+</li>
+<li><p>引用计数不同的shared_ptr被多个线程“写”是安全的：因为引用计数这一变量是存储在堆上的，多个<code>shared_ptr</code>对象都指向同一个堆地址，管理同一个数据的<code>shared_ptr</code>进行技术的增加或减少由于是原子操作肯定是安全的</p>
+</li>
+</ul>
+<h2 id="weak-ptr"><a href="#weak-ptr" class="headerlink" title="weak_ptr"></a>weak_ptr</h2><ul>
+<li>类似于shared_ptr的助手，由于没有重载operator*和operator-&gt;，所以取名 weak 。</li>
+<li>weak_ptr主要是用于协助shared_ptr工作，作为一个旁观者一样观察资源的使用情况，即weak_ptr只对shared_ptr进行引用，但不改变其引用计数，当被观察的shared_ptr失效，weak_ptr也就失效了。<ul>
+<li>当需要使用weak_ptr正在观察的资源，可以将weak_ptr提升为shared_ptr</li>
+<li>当shared_ptr管理的资源被释放时，weak_ptr会自动变成nullptr</li>
+</ul>
+</li>
+</ul>
+<h3 id="weak-ptr解决循环引用"><a href="#weak-ptr解决循环引用" class="headerlink" title="weak_ptr解决循环引用"></a>weak_ptr解决循环引用</h3><ul>
+<li><p>可能会发生如下的循环引用情况</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">ListNode</span>&#123;</span><br><span class="line">    <span class="built_in">ListNode</span>(T value):_value(value)&#123;&#125;</span><br><span class="line">    ~<span class="built_in">ListNode</span>()&#123;&#125;</span><br><span class="line">    T _value;</span><br><span class="line">    shared_ptr&lt;ListNode&lt;T&gt;&gt; _prev;</span><br><span class="line">    <span class="comment">//weak_ptr&lt;ListNode&lt;T&gt;&gt; _prev;</span></span><br><span class="line">    shared_ptr&lt;ListNode&lt;T&gt;&gt; _next;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="function">shared_ptr&lt;ListNode&gt; <span class="title">p1</span><span class="params">(<span class="keyword">new</span> ListNode&lt;<span class="type">int</span>&gt;(<span class="number">1</span>))</span></span>;</span><br><span class="line">    <span class="function">shared_ptr&lt;ListNode&gt; <span class="title">p2</span><span class="params">(<span class="keyword">new</span> ListNode&lt;<span class="type">int</span>&gt;(<span class="number">2</span>))</span></span>;</span><br><span class="line">    <span class="comment">//形成循环引用，当资源要释放时，p1释放的前提是p2释放，p2释放的前提是p1释放，形成了互相等待的类似“死锁”的问题。此时两个节点都无法释放资源，就会造成内存泄漏</span></span><br><span class="line">    p1-&gt;_next=p2;</span><br><span class="line">    p2-&gt;_prev=p1;</span><br><span class="line">    <span class="comment">//p2-&gt;_prev=p1;当从p2访问p1，需要锁定weakptr以生成sharedptr:p2-&gt;_prev.lock()-&gt;_value;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>循环引用的解决办法是把shared_ptr换成weak_ptr,指向一个由shared_ptr管理的对象。</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/C-%E6%80%BB%E7%BB%93/" rel="tag"># C++总结</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/04/10/%E5%AF%B9%E8%B1%A1%E5%A4%8D%E5%88%B6%E5%92%8C%E6%9E%90%E6%9E%84/" rel="prev" title="（五）对象赋值和析构">
+      <i class="fa fa-chevron-left"></i> （五）对象赋值和析构
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/06/04/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="next" title="多线程">
+      多线程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#unique-ptr"><span class="nav-text">unique_ptr</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shared-ptr"><span class="nav-text">shared_ptr</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%9C%A8%E6%8E%A7%E5%88%B6%E4%BF%A1%E6%81%AF%E4%B8%AD%E4%B9%9F%E8%A6%81%E4%BF%9D%E5%AD%98%E6%8C%87%E5%90%91%E5%85%B1%E4%BA%AB%E8%B5%84%E6%BA%90%E7%9A%84%E6%8C%87%E9%92%88"><span class="nav-text">为什么在控制信息中也要保存指向共享资源的指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shared-ptr%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-text">shared_ptr的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shared-ptr%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98"><span class="nav-text">shared_ptr的安全问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#weak-ptr"><span class="nav-text">weak_ptr</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#weak-ptr%E8%A7%A3%E5%86%B3%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8"><span class="nav-text">weak_ptr解决循环引用</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

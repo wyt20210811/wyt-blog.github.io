@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="C++编译过程 预编译（.cpp -&gt; .i）,主要进行代码文本替换，编译器执行预编译指令，这个过程会得到不包含#指令的.i文件，会拷贝#include包含的文件代码，进行#define宏定义替换，处理条件编译指令（#ifndef&#x2F;#ifdef&#x2F;#endif）等。 编译优化（.i -&gt; .s），通过预编译得到的文件中只包含常量、字符串、变量的定义以及关键字main\">
+<meta property="og:type" content="article">
+<meta property="og:title" content="其他">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E5%85%B6%E4%BB%96/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="C++编译过程 预编译（.cpp -&gt; .i）,主要进行代码文本替换，编译器执行预编译指令，这个过程会得到不包含#指令的.i文件，会拷贝#include包含的文件代码，进行#define宏定义替换，处理条件编译指令（#ifndef&#x2F;#ifdef&#x2F;#endif）等。 编译优化（.i -&gt; .s），通过预编译得到的文件中只包含常量、字符串、变量的定义以及关键字main\">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-06-04T11:24:38.000Z">
+<meta property="article:modified_time" content="2022-07-22T04:10:13.978Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="C++总结">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E5%85%B6%E4%BB%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>其他 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/06/04/%E5%85%B6%E4%BB%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          其他
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-04 19:24:38" itemprop="dateCreated datePublished" datetime="2022-06-04T19:24:38+08:00">2022-06-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-22 12:10:13" itemprop="dateModified" datetime="2022-07-22T12:10:13+08:00">2022-07-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/C-%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">C++总结</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="C-编译过程"><a href="#C-编译过程" class="headerlink" title="C++编译过程"></a>C++编译过程</h2><ul>
+<li>预编译（.cpp -&gt; .i）,主要进行代码文本替换，编译器执行预编译指令，这个过程会得到不包含#指令的.i文件，会拷贝#include包含的文件代码，进行#define宏定义替换，处理条件编译指令（#ifndef&#x2F;#ifdef&#x2F;#endif）等。</li>
+<li>编译优化（.i -&gt; .s），通过预编译得到的文件中只包含常量、字符串、变量的定义以及关键字main\if\else\while等。编译优化是通过语法和词义分析，确定所有指令是否符合规范，符合就编译成汇编代码。</li>
+<li>汇编 (.s -&gt; .o)，把汇编语言翻译成目标机器指令的过程，生成目标文件。目标文件中存放着与源程序等效的目标机器语言代码，由两部分组成：<ul>
+<li>代码段：主要程序的指令，可读&#x2F;可执行&#x2F;不可写</li>
+<li>数据段：程序用到的全局变量或静态数据，可读&#x2F;可写&#x2F;可执行</li>
+</ul>
+</li>
+<li>链接（.o -&gt; .exe&#x2F;.a&#x2F;.so&#x2F;.lib&#x2F;.dll），由于程序中的某个源文件可能会调用另一个源文件中的函数或常量等，链接就是要把这些相关的目标文件连接起来，形成最终的可执行文件。</li>
+</ul>
+<h2 id="堆和栈"><a href="#堆和栈" class="headerlink" title="堆和栈"></a>堆和栈</h2><ul>
+<li><p>堆是由程序员控制的内存区域，通过new和delete来申请和释放堆上的内存</p>
+</li>
+<li><p>栈是由编译器管理的内存，在需要时自动分配，自动清除，主要用来存放局部变量、函数参数等</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>堆</th>
+<th>栈</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>管理方式</td>
+<td>堆中资源由程序员控制，因此可能会发生内存泄漏</td>
+<td>栈资源是由编译器自动管理的，无需手动控制</td>
+</tr>
+<tr>
+<td>内存管理机制</td>
+<td>系统维护一个记录空闲内存地址的链表，当系统收到程序申请时，遍历该链表，找到第一个空间大于申请空间的堆节点，在链表上删除该节点后分配给程序使用，同时系统还会将多余的部分重新放入空闲链表中，释放的内存也会重新放入空闲链表</td>
+<td>栈是一块连续的内存空间，只要栈的剩余空间大于申请空间，系统就会位程序提供栈内存，否则就会报错 stack overflow</td>
+</tr>
+<tr>
+<td>空间大小</td>
+<td>堆是向高地址扩展的数据结构、是不连续的内存区域。因为系统使用链表来存储空闲内存地址，链表不连续并且遍历方向是由低到高。堆的大小受到计算机系统中的有效虚拟内存，堆获得的空间比较灵活也比较大</td>
+<td>栈是向低地址扩展的数据结构，是一块连续的内存区域，大小是操作系统预定好的，在编译时确定，可以设置</td>
+</tr>
+<tr>
+<td>碎片问题</td>
+<td>频繁的new和delete会产生大量内存碎片</td>
+<td>栈是一个先进后出的队列，进出一一对应，不会产生碎片</td>
+</tr>
+<tr>
+<td>分配方式</td>
+<td>动态分配</td>
+<td>有静态分配和动态分配两种，静态分配是由编译器完成的（局部变量分配），动态分配是使用<code>alloc()</code>函数分配的，不过栈动态分配资源的释放是编译器实现的</td>
+</tr>
+<tr>
+<td>效率</td>
+<td>堆由C++函数库提供，机制很复杂，效率比较低</td>
+<td>栈是系统提供的数据结构，计算机底层对栈提供支持，分配专门寄存器存放栈地址，有专门的操作指令</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h2 id="内联函数与宏"><a href="#内联函数与宏" class="headerlink" title="内联函数与宏"></a>内联函数与宏</h2><ul>
+<li>宏是在预编译的时候在调用处展开的，内联函数是在编译时在调用处展开，并且内联函数会检查函数的参数，内联函数也不一定是声明了就一定可以成为内联函数</li>
+<li>内联函数可以作为某个类的成员函数，这样他就可以使用类的保护成员和私有成员了</li>
+</ul>
+<h2 id="浅拷贝和深拷贝"><a href="#浅拷贝和深拷贝" class="headerlink" title="浅拷贝和深拷贝"></a>浅拷贝和深拷贝</h2><ul>
+<li>浅拷贝就类似于引用传递，直接进行简单的对应赋值操作，源对象与拷贝对象共用一份实体，对其中任何一个对象的改动都会影响另外一个对象</li>
+<li>深拷贝类似于值传递，源对象与拷贝对象互相独立，其中任何一个对象的改动都不会影响另一个对象</li>
+<li>如当一个类中有其它类对象成员时就需要深拷贝，即不能直接将一个类对象的某个对象成员直接赋值给另一个类对象。不然当类对象析构时，拷贝的类对象的该对象成员也会被析构掉</li>
+</ul>
+<h2 id="强制类型转换"><a href="#强制类型转换" class="headerlink" title="强制类型转换"></a>强制类型转换</h2><ul>
+<li><code>static_cast</code>:用于数据类型的强制转换，主要用于基本数据类型或将空指针转化为对应类型的指针，但不能用于基本数据类型指针之间的转化。对于基类和派生类指针之间的转化，上行转化（从派生类指针到基类）是安全的，但下行转换（把基类的指针转换为派生类）是不安全的。</li>
+<li><code>reinterpret_cast</code>：用于基本数据类型的指针或引用之间的转换、将指针或引用转成一个足够长度的整型、将整型转换成指针或引用类型。</li>
+<li><code>dynamic_cast</code>：C++支持多态的方式之一，该转换是在运行时处理的，因此是动态dymanic的，它可以首先判断转换是否可以，如果不可以就会返回一个空指针<ul>
+<li>不能用于基本数据类型的强制转换</li>
+<li>转换成功的话返回的是指向类的指针或引用</li>
+<li>使用<code>dymanic_cast</code>的基类中一定要有虚函数，因为有虚函数才说明它会发生基类指针指向派生类对象的情况，此时转换才有意义</li>
+<li>上行转换时，其和<code>static_cast</code>作用等效，但在下行转换时由于具有运行时类型检查的功能，<code>dynamic_cast</code>要更加安全</li>
+</ul>
+</li>
+</ul>
+<h2 id="模板的声明与实现"><a href="#模板的声明与实现" class="headerlink" title="模板的声明与实现"></a>模板的声明与实现</h2><ul>
+<li><p>C++在写模板函数时，头文件不能和cpp唔见坟里，也就是说头文件定义的含模板的地方必须在头文件中实现，没有模板定义的才可以放在cpp文件中实现</p>
+</li>
+<li><p>这样做的原因是，编译时必须确定每个对象所占用的空间大小，而模板如果没有真正使用那编译器就不知道其对象到底是使用多大空间了。所以只有声明与实现放在仪器，编译器才知道要给模板对象分配多大空间。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Node&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TestTemplate</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">TestTemplate</span>(Node node):<span class="built_in">data</span>(node) &#123;&#125;</span><br><span class="line">    Node data;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">print</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Node&gt;</span><br><span class="line"><span class="type">void</span> TestTemplate&lt;node&gt;::<span class="built_in">print</span>() &#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;TestTemplate&quot;</span> &lt;&lt; data &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="类的静态成员变量初始化"><a href="#类的静态成员变量初始化" class="headerlink" title="类的静态成员变量初始化"></a>类的静态成员变量初始化</h2><ul>
+<li>在main函数运行前，程序加载时进行初始化，分为静态初始化和动态初始化</li>
+<li>静态初始化是用常量对静态成员初始化，静态初始化在程序加载过程中完成</li>
+<li>动态初始化是由于该成员变量需要经过函数调用才能完成。会在main函数执行前由运行时调用相应的代码进行初始化。</li>
+</ul>
+<h2 id="左值和右值"><a href="#左值和右值" class="headerlink" title="左值和右值"></a>左值和右值</h2><ul>
+<li>左值既能出现在等号左边，又能出现在等号右边，右值就只能出现在等号右边</li>
+<li>左值是可以寻址的持久性变量，而右值是不可寻址的常量，或者是在表达式求值过程中创建的无名临时对象，是短暂的</li>
+<li>同时左值是可以被修改的，而右值不能被修改</li>
+</ul>
+<h3 id="左值引用和右值引用"><a href="#左值引用和右值引用" class="headerlink" title="左值引用和右值引用"></a>左值引用和右值引用</h3><ul>
+<li><p>引用不管是左值还是右值，都是给变量一个别名，来通过引用修改变量的值，引用可以在传参时避免拷贝</p>
+</li>
+<li><p>左值引用：（除了<code>const</code>）能指向左值，不能指向右值的就是左值引用</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">5</span>;</span><br><span class="line"><span class="type">int</span> &amp;ref_a = a;<span class="comment">//左值引用指向左值，正确</span></span><br><span class="line"><span class="type">int</span> &amp;ref_a = <span class="number">5</span>;<span class="comment">//左值引用指向右值，错误</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> &amp;ref_a = <span class="number">5</span>;<span class="comment">//常量左值引用指向右值，正确</span></span><br></pre></td></tr></table></figure>
+
+<p>由于const左值引用不会修改指向的值，所以它可以指向右值，因此通常我们会使用<code>const &amp;</code>作为函数参数，如<code>void push_back(const value_type &amp;val)</code>，这样才能保证在执行<code>vec.push_back(5)</code>时不会报错</p>
+</li>
+<li><p>右值引用，就是只能指向右值，不能指向左值的：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> &amp;&amp;ref_a_right = <span class="number">5</span>;<span class="comment">//右值引用指向右值，正确</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> a = <span class="number">5</span>;</span><br><span class="line">inr &amp;&amp;ref_a_right = a;<span class="comment">//错误，右值引用不能指向左值</span></span><br><span class="line"></span><br><span class="line">ref_a_right = <span class="number">6</span>;<span class="comment">//通过右值引用修改右值</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="move和forward"><a href="#move和forward" class="headerlink" title="move和forward"></a>move和forward</h3><ul>
+<li><p><code>std::move()</code>将左值强制转化为右值，从而可以让右值引用指向左值</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">5</span>;</span><br><span class="line"><span class="type">int</span> &amp;ref_a_left = a;<span class="comment">//左值引用指向左值</span></span><br><span class="line"><span class="type">int</span> &amp;&amp;ref_a_right = sta::<span class="built_in">move</span>(a);<span class="comment">//把左值a转化为右值，被右值引用指向</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>move的作用：是因为作为函数的形参时，右值引用比左值引用更加灵活（即可以直接指向右值，又可以通过move指向左值）；使用move还可以实现语义移动来提升性能。</p>
+<ul>
+<li><p>比如当一个类中有其他对象成员时，拷贝构造和赋值运算符中都要用到深拷贝，如果此时被拷贝者已经不会再用到了那就非常浪费资源，所以此时可以使用右值引用作为参数，实现成员数据的移动，在调用时再使用move将左值转化为右值即可。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Array</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Array</span>(<span class="type">int</span> size) : <span class="built_in">size_</span>(size) &#123;</span><br><span class="line">        data = <span class="keyword">new</span> <span class="type">int</span>[size_];</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">//移动构造函数</span></span><br><span class="line">    <span class="built_in">Array</span>(Array &amp;&amp;temp_array) &#123;</span><br><span class="line">        data_=temp_array.data_;</span><br><span class="line">        size_=temp_array.size_;</span><br><span class="line">        temp_array.data_ = <span class="literal">nullptr</span>;<span class="comment">//防止temp_arry在析构时直接删除指针指向的数据，提前置空</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span> *data_;</span><br><span class="line">    <span class="type">int</span> size_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Array a;</span><br><span class="line">    <span class="function">Array <span class="title">b</span><span class="params">(std::move(a))</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>std::move</code>适用范围：可移动对象需要拷贝且被拷贝者之后不会再用到</p>
+</li>
+</ul>
+</li>
+<li><p><code>std::forward&lt;T&gt;(u)</code>：move只能把左值转化成右值，而forward可以互相转化。T是左值引用，u就变为左值，否则就变为右值</p>
+</li>
+</ul>
+<h3 id="引用折叠"><a href="#引用折叠" class="headerlink" title="引用折叠"></a>引用折叠</h3><ul>
+<li>即右值引用绑定的对象类型未知，就会出现引用折叠</li>
+<li>所有右值引用折叠到右值引用上都是右值引用</li>
+<li>所有其他引用类型之间的折叠都是左值引用</li>
+</ul>
+<h2 id="static与const"><a href="#static与const" class="headerlink" title="static与const"></a>static与const</h2><ul>
+<li>static:<ul>
+<li>修饰局部变量时只初始化一次，且延长其生命周期到程序运行结束。该static局部变量也是存放在全局数据区的静态变量区，初始化的时候自动初始化为0</li>
+<li>修饰全局变量的时候，该全局变量只能在本文件中访问，即便是用extern声明也不能在其他文件中访问</li>
+<li>修饰一个函数，该函数也只能在本文件中调用</li>
+<li>修饰类中的成员变量或函数成员时，可以直接用类名调用和访问，不过静态成员函数只能访问类中的静态成员变量</li>
+</ul>
+</li>
+<li>const:<ul>
+<li>修饰不同的变量可以防止变量被修改，用于定义程序运行时的常量</li>
+<li>传递参数时常与指向对象的指针或对象的引用传递使用，避免对象拷贝的同时还可以防止指针或引用指向的对象在函数中被意外修改；值传递时由于是复制一份所以不需要const</li>
+<li>修饰类的成员函数，表示不允许该成员函数修改调用该函数的对象值。因此const不能和static同时修饰函数，因为static修饰的函数是没有对象指针的，而const修饰的函数又必须由对象调用</li>
+<li>修饰类对象时，构造一个常量对象，该对象只能调用类中的const函数</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/C-%E6%80%BB%E7%BB%93/" rel="tag"># C++总结</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/06/04/%E5%A4%9A%E6%80%81/" rel="prev" title="多态">
+      <i class="fa fa-chevron-left"></i> 多态
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B"><span class="nav-text">C++编译过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%92%8C%E6%A0%88"><span class="nav-text">堆和栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E4%B8%8E%E5%AE%8F"><span class="nav-text">内联函数与宏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%85%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B7%B1%E6%8B%B7%E8%B4%9D"><span class="nav-text">浅拷贝和深拷贝</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%BA%E5%88%B6%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-text">强制类型转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E7%9A%84%E5%A3%B0%E6%98%8E%E4%B8%8E%E5%AE%9E%E7%8E%B0"><span class="nav-text">模板的声明与实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-text">类的静态成员变量初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A6%E5%80%BC%E5%92%8C%E5%8F%B3%E5%80%BC"><span class="nav-text">左值和右值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A6%E5%80%BC%E5%BC%95%E7%94%A8%E5%92%8C%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8"><span class="nav-text">左值引用和右值引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#move%E5%92%8Cforward"><span class="nav-text">move和forward</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E6%8A%98%E5%8F%A0"><span class="nav-text">引用折叠</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static%E4%B8%8Econst"><span class="nav-text">static与const</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
