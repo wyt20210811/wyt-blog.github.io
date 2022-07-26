@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/wyt-blog.github.io/images/wyt-apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/wyt-blog.github.io/images/wyt-favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/wyt-blog.github.io/images/wyt-favicon-16x16.png">
+  <link rel="mask-icon" href="/wyt-blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/wyt-blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/wyt-blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wyt20210811.github.io","root":"/wyt-blog.github.io/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="关于数据库、网络协议、操作系统、C++、linux等内容的汇总">
+<meta property="og:type" content="article">
+<meta property="og:title" content="整体汇总">
+<meta property="og:url" content="https://wyt20210811.github.io/wyt-blog.github.io/2022/07/04/%E6%95%B4%E4%BD%93%E6%B1%87%E6%80%BB/index.html">
+<meta property="og:site_name" content="wyt-blog">
+<meta property="og:description" content="关于数据库、网络协议、操作系统、C++、linux等内容的汇总">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-04T11:24:38.000Z">
+<meta property="article:modified_time" content="2022-07-26T02:53:34.881Z">
+<meta property="article:author" content="魏宇彤">
+<meta property="article:tag" content="其他">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/07/04/%E6%95%B4%E4%BD%93%E6%B1%87%E6%80%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>整体汇总 | wyt-blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/wyt-blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">wyt-blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/wyt-blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/wyt-blog.github.io/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/wyt-blog.github.io/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/wyt-blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/wyt-blog.github.io/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://wyt20210811.github.io/wyt-blog.github.io/2022/07/04/%E6%95%B4%E4%BD%93%E6%B1%87%E6%80%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/wyt-blog.github.io/images/avatar.png">
+      <meta itemprop="name" content="魏宇彤">
+      <meta itemprop="description" content="学习总结">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wyt-blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          整体汇总
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-07-04 19:24:38" itemprop="dateCreated datePublished" datetime="2022-07-04T19:24:38+08:00">2022-07-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-26 10:53:34" itemprop="dateModified" datetime="2022-07-26T10:53:34+08:00">2022-07-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/wyt-blog.github.io/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>关于数据库、网络协议、操作系统、C++、linux等内容的汇总<br><em><span id="more"></span></em></p>
+<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><ul>
+<li><p>sql查询、大量修改和增加用户表怎么设计、班级里重名的学生名字</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-- 查重复的名字，首先需要根据名字分组，分组以后得到的判断条件是统计每个名字的数量，数量大于1</span><br><span class="line">select name,count(*) as count from tb_user group by name having count &gt; 1;</span><br><span class="line">-- 过滤重复记录，只显示一条</span><br><span class="line">select distinct name from tb_user;</span><br><span class="line">-- 建立外键连接</span><br><span class="line">alter table tb_user add constraint fk_tb_user_id foreign key (user_id) reference dept(id);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>关系型数据库和非关系型的区别：</p>
+<p>首先关系型数据库它是一些二维表连接在一起，它比较易于维护因为数据类型都是表，用sql语句可以完整复杂的查询操作。但他的缺点就是数据必须存放在硬盘上所以磁盘I&#x2F;O瓶颈问题，同时读写性能稍微比较慢由于表结构固定导致灵活性不好。</p>
+<p>非关系型数据库他就是一个数据的存储方式，比如可以存键值对，可以存图片、存文本，这样就比较灵活，而且因为他的数据不是只能存在硬盘上所以速度也比较快；但它不支持sql所以使用成本高并且没有事务处理能力</p>
+</li>
+<li><p>数据库设计三大范式</p>
+<ul>
+<li>第一范式：原子性，每一列都是不可以再具体拆分的列，比如地址，那地址是不是还可以再拆分成省、市、区</li>
+<li>第二范式：在第一范式的基础上，还要满足每一列都要和主键完全相关而不是只与主键的一部分相关，就比如我这个表里既有订单编号又有商品编号，那我关于商品的信息就只与商品编号有关，我买了多少商品这种信息又只与订单编号有关，此时就应该把订单表和商品表给分开</li>
+<li>第三范式：确保每一列都是和主键直接相关的。比如说我这个表里的主键是学号，那我先从学号可以得到校区，此时这个校区就是和主键直接相关的，而校区的地址这些信息就是和校区直接相关、和主键间接相关了。这时候就应该把表分开写</li>
+</ul>
+</li>
+<li><p>group by和order by的区别：group by是分组查询，后加having 可以对分组过滤以后的数据进行条件判断；order by就是对表中查到的数据进行排序，包括默认的升序asc和降序desc</p>
+</li>
+<li><p>索引类型：首先索引他就是一个指向数据的方式，通过这个方式我们就能很快的找到数据。像我们常用的索引结构就是树、哈希表这种。INNODB他就是选择了B+树作为底层的索引结构来建立索引的。索引的类型大概就包括：</p>
+<ul>
+<li>主键索引，这是一个默认创建的索引</li>
+<li>唯一索引，它可以避免某个列里面有重复的数据</li>
+<li>常规索引，正常对一列创建索引</li>
+<li>全文索引，查找文本中的关键词</li>
+<li>聚集索引，直接叶子节点里就存储了一行信息，像默认的主键索引就是聚集索引，要是没有主键索引那就去找第一个唯一索引，再没有innodb会有一个默认分配</li>
+<li>二级索引，就是数据和索引分开放，叶子节点可能就放的是一个主键，此时想要得到数据就要去回表查询，根据主键到主键索引里去找叶子节点中的数据</li>
+</ul>
+</li>
+<li><p>内外连接</p>
+<ul>
+<li>内连接就是取两张表的交集<code>select * from A inner join  B on A.id = B.id</code></li>
+<li>外连接：<ul>
+<li>左外连接：左表和两表交集<code>select * from A left join B on A.id = B.id</code></li>
+<li>右外连接：右表和两表交集</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>默认端口号 ：MySQL为3306，MyCat是8066用于DML\DDL,9066用于数据库管理</p>
+</li>
+<li><p>mysql的引擎：</p>
+<ul>
+<li>innodb ：是现在MySQL用到存储引擎，他是支持事务的因此DML语句就遵循ACID原则了，同时还支持外键约束、行级锁；用到的索引结构是B+树；他的一个存储的逻辑结构就是首先是一个表空间，这个表空间里有若干段，每个段里又有若干个区（这个区的大小一般就是1M），每个区里又分成了若干页（每个页的大小也就是16kb），在每个页中就是一行一行的数据了</li>
+<li>myisam ：早期的MySQL的存储引擎，但是它不支持事务、外键约束、行级锁这些，不过它支持表级锁</li>
+<li>因此innodb他就比较适合用于对数据的完整性要求高、更新删除操作较多的应用了，而myisam就适合对完整性要求不高，查询多的应用</li>
+</ul>
+</li>
+<li><p>隔离级别：首先并发事务他可能会发生几种问题，比如说读到其他事务正在写入但还没提交的数据也就是脏读，或者说前后两次读到的数据不一样也就是不可重复读，再或者我想插入一条数据但是显示已经有了可是我去查询又查不到这条数据，也就是幻读，此时也是因为一个事务已经插入了但没提交导致的。因此并发事务也就存在四个隔离级别：</p>
+<ul>
+<li>读未提交：此时基本就属于三种问题都会发生</li>
+<li>读已提交：可以避免脏读</li>
+<li>重复读：可以避免脏读和不可重复读。innodb就是用的这个隔离级别</li>
+<li>序列化：都可以避免，但此时的事务就不是并行的而是串行了，效率低</li>
+</ul>
+</li>
+<li><p>查询速度很慢可能的原因：</p>
+<ul>
+<li>是不是这个查询没有建立索引，如果说它虽然建立了索引，但是不是可能它这个字段值太大了应该把索引改成只索引前几个值的模糊匹配那种；或者说是不是建立的索引不合适，用到了回表查询；或则虽然建立了索引，但在查询的时候可能用了and这种导致索引失效了呢</li>
+<li>I&#x2F;O吞吐量太小了或者说内存不足了、网速慢了</li>
+<li>查询出来的结果数据量太大了？是不是可以分次查询、或者分表？</li>
+<li>是不是存在死锁了，比如本来应该先锁A再锁B的，结果先锁B再锁A了</li>
+<li>查询语句写的不太好？比如distinct、oreder by也会导致变慢，或者在查询时声明要用哪个索引</li>
+<li>是不是用了视图来查询了</li>
+</ul>
+</li>
+<li><p>ACDI原则：</p>
+<ul>
+<li>原子性：不可分割的，要完成都完成，要失败都失败的</li>
+<li>一致性：事务提交以后所有数据的状态保持一致，也就是在事务提交前后数据库的完整性不变</li>
+<li>隔离性：并发的事物之间互不影响</li>
+<li>持久性：提交或回滚以后，数据库中的改变就是永久的了</li>
+</ul>
+</li>
+</ul>
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><ul>
+<li><p>熟知端口号：FTP 21 HTTP 80 SMTP 25 DNS 53</p>
+</li>
+<li><p>tcp三次握手、四次挥手</p>
+<ul>
+<li>三次握手首先由客户端向服务器发送SYN&#x3D;1，seq&#x3D;a来请求建立连接，虽然此时并没有数据传输但还是会浪费掉一个序列号的；当服务器收到请求后向客户端发送ACK&#x3D;1,SYN&#x3D;1,ack&#x3D;a+1,seq&#x3D;b来同意建立连接同时此时为TCP分配缓存和变量；客户端收到同意建立连接后发送ACK&#x3D;1,seq&#x3D;a+1,ack&#x3D;b+1然后也为TCP分配缓存和变量，这样就建立了TCP连接。之所以要三次握手，是因为TCP可靠传输的关键是维护一个序列号，通过三次握手，双方都得到了对方序列号的起始值并且也能互相确认对方已经收到了。如果只是两次握手，至多是客户端的初始序列号被确认了。</li>
+<li>四次挥手当客户端想要断开连接了，首先向服务器发送FIN&#x3D;1,seq&#x3D;v请求断开连接，服务端收到后会发送ACK&#x3D;1,seq&#x3D;u,ack&#x3D;v+1此时客户端收到以后从客户端到服务端的连接就断开了；但是服务端还可以继续向客户端发送数据，发完了以后再给客户端发送FIN&#x3D;1,ACK&#x3D;1,seq&#x3D;w,ack&#x3D;v+1请求断开连接，客户端收到后发送ACK&#x3D;1,seq&#x3D;v+1,ack&#x3D;w+1，并在等待2MSL时间后断开连接。之所以要四次挥手，就是因为服务器端在客户端断开连接后可能服务器端的数据还没发送完呢，要等他发完了再告诉客户端断开连接。之所以再等2MSL（也就是报文最大生存时间），是为了保证上一次连接的报文都在网络中消失了，不会出现与其他TCP连接报文冲突的情况。</li>
+</ul>
+</li>
+<li><p>tcp为什么可靠：</p>
+<ul>
+<li><p>因为首先tcp报头里有序列号，序列号就保证了报文是有序的；还有确认位ack，他表示我已经正确的收到了以前的所有报文，现在我想要的报文是从ack后的数字开始的；同时TCP还有重传机制，超时没有收到ack会重传或者连续收到三个冗余ack也会重传（可能是中间有个丢了，那接收端会把无序的先放在缓冲区，发送三个想要丢失的那个报文的ack）</p>
+</li>
+<li><p>其次它是面向连接的</p>
+</li>
+<li><p>他还有滑动窗口进行流量控制，以及慢开始和快重传等拥塞控制。其中慢开始就是一开始设置拥塞窗口就是1，然后每收到一个确认就加倍，直到加倍到了慢开始门限再线性的一个一个的增加，当遇到了拥塞，那就把慢开始门限调成现在拥塞窗口的一半，拥塞窗口再从1开始增加；而快重传就是一旦收到三个冗余ack，立刻重传报文，并且让慢开始门限和拥塞窗口都变成现在拥塞窗口的一半</p>
+</li>
+</ul>
+</li>
+<li><p>tcp和udp的区别</p>
+<ul>
+<li><p>首先tcp是有连接的，而udp是无连接的，</p>
+</li>
+<li><p>udp他就是一个尽最大可能交付，由于无需建立和维护连接，它的传输速率比较快，传输时延小，适合实时传输一些小数据量的报文。udp面向的是报文，直接就把应用层传来的报文加个报头给网络层了</p>
+</li>
+<li><p>tcp面向的是字节流，有流量控制、拥塞控制、重传这些可靠的机制，实现了数据可靠、有序、无重复、无丢失，是一个全双工通信</p>
+</li>
+</ul>
+</li>
+<li><p>网络模型及各层协议：</p>
+<ul>
+<li>用于比特传输使两台计算机进行物理上通信的物理层（主要协议有一个令牌环网fddi），比如网卡集线器这些都在物理层、</li>
+<li>在不可靠的物理介质基础上提供可靠的链路传输的数据链路层，数据链路层即可以把下层的比特流封装成帧传给网络层，又可以把网络层传下来的解帧成比特流在物理层传输，同时数据链路层为了保证可靠传输使用了差错控制、流量控制还提供了物理地址寻址；主要协议有ARP地址解析协议</li>
+<li>用于路由选择、分组转发的网络层，同时将网络地址转换成物理地址，可以实现拥塞控制、网际互联，协议主要有IP&#x2F;RIP&#x2F;OSPF等（在OSI模型里网络层有面向连接和无连接的，在TCP&#x2F;IP中只有无连接的）</li>
+<li>传输层它提供的是端到端的、进程之间的逻辑通信，也有差错控制和流量控制（在OSI模型只有面向连接的，在TCP&#x2F;IP中有面向连接和无连接两种），主要协议有TCP,UDP</li>
+<li>会话层主要是建立主机之间的会话，包括建立、保持、释放，协议有SQL</li>
+<li>表示层是对会话的意思进行解释，让收到的主机理解信息，如ASCII，图片、视频等</li>
+<li>应用层就是具体的应用了，协议如http,https,dns等</li>
+</ul>
+</li>
+<li><p>https和http区别</p>
+<ul>
+<li>首先http它是不安全的明文传输，任何人都可以监听它，并且他也没有安全认证双方是不是伪装的，还有无法确认资源的完整性有没有被篡改</li>
+<li>https他就是在http基础上添加了加密、身份认证、完整性保护功能。https用到了SSL安全套接层，在传输层为数据通信提供安全支持。主要的https传输过程就是依靠密钥进行的，首先浏览器把它所支持的加密算法发给服务器，服务器选择其中的一个算法以证书的形式传回客户端，客户端通过SSL解析证书看它是不是合法的，如果合法就生成一个客户端密钥，他是一个对称加密的密钥，此时客户端发起https中的第二次http请求把密钥传给服务器，服务器收到后用自己的私钥去解析密文得到客户端密钥，在把资源用客户端密钥包装成密文返回客户端，客户端收到后用自己的密钥解开密文得到资源，整个https的传输就完成了。</li>
+</ul>
+</li>
+<li><p>http报文头包含什么，请求方式有哪些</p>
+<ul>
+<li>请求报文：请求行（包括方法、uri、协议）、请求首部字段（如在host里写域名、范围请求、编码方式这些）、通用首部字段（像什么要不要从代理那里得到数据，单跳不单跳什么的）</li>
+<li>响应报文：状态行、响应首部字段（比如响应建立多久了，能不能响应范围请求这些）、通用首部字段</li>
+<li>请求方法有get：我想要得到这个资源，post：我把信息传给你你用这个信息得到一个结果还给我，head：返回报文的首部信息已确认url的有效性等，options：问服务器支持什么方法，trace：返回这一路上经过了那些代理，是不是把报文给篡改了，connect：建立隧道以进行安全传输</li>
+</ul>
+</li>
+<li><p>IPV4和IPV6区别</p>
+<ul>
+<li>首先IPV4是32位地址，而IPV6是128位地址；IPV4的格式是数字+‘.’，IPV6的格式是字母+’：‘</li>
+<li>IPV4中有ARP来将IPV4地址转成MAC地址，而IPV6中ARP被换成了NDP</li>
+<li>IPV6还提供了身份验证和加密，但IPV4不提供</li>
+</ul>
+</li>
+<li><p>输入网址按下回车到页面回显发生了什么</p>
+<ul>
+<li>其实我们在输入网址url的时候，浏览器就已经去历史记录、书签这些地方尝试帮我们补全url了，还有些浏览器它会直接在缓冲区就给我们把页面显示出来了</li>
+<li>首先要在应用层，使用DNS进行域名解析，它会先向本地域名服务器（本地域名服务器其实就是移动、联通这些公司提供的）查询，没有的话本地域名服务器会代替它去向根域名服务器查询，顶级域名服务器要么是直接给出IP地址要么告诉去哪个顶级域名服务器找，顶级如果还没有再告诉他去哪个授权域名服务器找，这样直到最后得到服务器的ip地址</li>
+<li>得到IP地址后，客户端就会向该IP地址的服务器发出http会话了，这个会话首先会传到传输层，利用TCP，首先传输层会给这个较长的报文分段，在每个分段打上序号和源端口、目的端口（服务器的端口就是80）传给网络层。</li>
+<li>在网络层利用arp，得到Ip地址对应的mac地址，并由于不在一个局域网内所以要经过多次路由选择中转以后传给数据链路层</li>
+<li>数据链路层根据mac地址在网桥进行端口转发，最后再到物理层经过中继器进行信号放大传输等。至此客户端发送请求的工作就结束了</li>
+<li>服务器接收到请求后也是层层向上传递一直到应用层，然后去查找资源，返回响应报文，这个响应报文里就有状态码这些了，比如200ok、301资源永久重定向了要到新的url去找了、404没有资源了等，同时如果请求成功还会返回thml文件</li>
+<li>浏览器收到html文件后进行渲染给用户显示出来</li>
+</ul>
+</li>
+<li><p>session和cookie区别</p>
+<ul>
+<li>由于http它是无状态的，所以就用cookie来保存状态，比如刚打开过哪个页面这些信息，cookie是服务器产生传给客户端保存的，这样下次这个客户端再访问服务器，服务器就知道他是谁要为他做那些定制化服务了</li>
+<li>session是存放在服务器中的用于标记特定客户端信息的，当某个客户端再次访问服务器，服务器就可以根据cookie里的session-id在session里找到该客户端的信息了</li>
+</ul>
+</li>
+</ul>
+<h2 id="OS"><a href="#OS" class="headerlink" title="OS"></a>OS</h2><ul>
+<li><p>进程和线程</p>
+</li>
+<li><p>线程安全怎么实现的</p>
+<ul>
+<li>通过锁来实现，包括互斥锁、读写锁、自旋锁等</li>
+<li>或者通过atomic原子操作来实现，举例原子智能指针用于智能指针的线程安全问题</li>
+</ul>
+</li>
+<li><p>多线程异步怎么实现</p>
+<ul>
+<li>调用detach()</li>
+<li>launch::async</li>
+</ul>
+</li>
+<li><p>死锁概念、产生条件、解决</p>
+<ul>
+<li>死锁就是多个进程由于争夺资源造成互相等待的局面，没有外力作用谁也不能向前推进了</li>
+<li>它的产生条件有四个，包括资源互斥、还有当等待的时候不剥夺已有的资源、请求新的资源还保持有原来的资源不释放、等待的资源成环了</li>
+<li>解决的话主要是死锁预防、避免和检测与解除。死锁预防首先资源互斥这是不可避免的，而剥夺又会导致前面的工作都失效了，因此避免主要是针对后两个原因的，比如一次把资源都给某个进程让他先跑完或者把资源编号，一分就要都分出去；死锁避免主要就是银行家算法，维护最大需求矩阵，分配矩阵，可用资源矩阵、现在还需求资源矩阵，通过计算和比较看能不能得到一个进程的执行顺序；死锁检测就是画资源分配图然后去化简它看最后能不能把边都删掉，如果不能那就有死锁了，此时解除的方法就是挂起死锁进程剥夺资源，或者撤销一些死锁进程释放资源，或者进程都回退到没有死锁的时候。</li>
+</ul>
+</li>
+</ul>
+<h2 id="linux"><a href="#linux" class="headerlink" title="linux"></a>linux</h2><ul>
+<li><p>磁盘：</p>
+<ul>
+<li>df :文件系统的整体磁盘使用情况</li>
+<li>du :列出目录所占空间</li>
+<li>ln ：连接文件。包括硬链接和软连接，硬链接就是不新建索引节点，创建的是一个指向索引节点的指针，硬链接不能跨目录和文件系统； ln -s就是软连接，软连接就是新建一个索引节点，软连接可以跨区，同时任何用户都可以建立软连接，比较灵活。但删除硬链接文件不会删除源文件，而删除软连接会删掉原文件</li>
+<li>Fdisk -l：显示分区内容</li>
+<li>Mkfs：磁盘格式化</li>
+</ul>
+</li>
+<li><p>启动过程：</p>
+<ul>
+<li>主要就是依靠BIOS基本输入输出系统，它是存放在断电后不会丢失的只读内存中的，开机后首先就是执行BIOS，得到开机的磁盘，在磁盘的第一个扇区里得到主要开机记录，再由主要开机记录执行开机记录中的开机程序</li>
+</ul>
+</li>
+<li><p>关机：</p>
+<ul>
+<li>首先who命令查看有没有其他用户在线</li>
+<li>然后使用sync加快磁盘读写速度，把内存中还没写完的使用sync进行同步</li>
+<li>最后再使用shutdown关机</li>
+</ul>
+</li>
+<li><p>批量修改文件名后缀（rename命令）</p>
+</li>
+<li><p>替换字符串：<code>tr &#39;A&#39; &#39;B&#39;</code></p>
+</li>
+<li><p>rm（删除文件）</p>
+</li>
+<li><p>怎么打开一个特别大的文件：分割？使用<code>head -10000 file.log &gt; temp.log</code>把前10000行写到temp文件里 ，<code>tail -10000 file.log &gt; temp.log</code>把后10000行写到temp，<code>sed -n &#39;10,10000&#39; file.log &gt; temp.log</code>把第10到10000行写入</p>
+</li>
+<li><p>输出一个文件第十行内容：<code>head -10 filename | tail -1</code></p>
+</li>
+<li><p>竖线的意思（管道符，前一个的输出是后一个的输入）</p>
+</li>
+<li><p>ps：查看某个时间点的进程信息</p>
+<p><code>ps -l</code>查看自己的进程</p>
+<p><code>ps -aux</code>查看系统所有进程</p>
+<p><code>ps aux | grep threadx</code>查看特定进程</p>
+</li>
+<li><p>linux查看进程的资源占用的命令：<code>top</code>实时显示进程信息<code>top -d 2</code>每两秒钟刷新一次</p>
+</li>
+<li><p>根据进程名查看进程占用的CPU和内存：</p>
+<ul>
+<li>可以用top：首先得到进程的PID<code>ps -ef | grep zookeeper</code>;再用top<code>top -p 10997</code></li>
+<li>还可以直接用ps ：<code>ps -aux | grep zookeeper(或者PID)</code></li>
+</ul>
+</li>
+<li><p>查询端口号：<code>netstat -mtlp</code> 查看所有tcp端口； <code>netstat -anp | grep port</code>：查看占用端口的进程</p>
+</li>
+<li><p>查看ip：<code>ifconfig</code></p>
+</li>
+</ul>
+<h2 id="C"><a href="#C" class="headerlink" title="C++"></a>C++</h2><ul>
+<li><p>堆和栈的区别：</p>
+<p>首先堆的内存分配是由程序员控制的，而栈是由编译器控制的，因此堆操作依赖于C++语言效率就比较低，而栈操作操作系统有专门处理栈的寄存器效率就比较高。</p>
+<p>其次栈中一般就是存放程序中的局部变量、函数参数等信息，它是一个连续的地址，用的时候就分配，不用就收回也不会产生碎片；而堆其实是一个链表，是一个不连续的地址空间，在需要分配内存的时候是先在链表上找到第一个大小够分配的地址块分给它，多出来的还会还回链表中这样频繁的分配释放就会造成内存碎片了。</p>
+<p>同时，堆的地址空间由于是链表所以是向高地址扩展的，而栈是向低地址扩展的。在分配时堆只有动态分配，而栈可以静态分配也可以在运行时使用<code>std::alloc()</code>动态分配</p>
+</li>
+<li><p>类不能被继承需要用什么修饰：final</p>
+</li>
+<li><p>static相关：</p>
+<p>当static修饰全局变量（全局函数）时，它可以在这个文件内使用但不能在其他文件使用，即使用了<code>extern</code>标记也不可以</p>
+<p>当static修饰局部变量时，该局部变量的生命周期就延长到了程序结束才会结束</p>
+<p>对于类中的static成员变量和函数成员，就不用建立对象来调用它了，可以直接用类名来调用它。不过需要注意就是此时<code>static</code>和<code>const</code>就不能一起用了，因为<code>const</code>一定是指向对象的指针，而<code>static</code>不用对象指针</p>
+</li>
+<li><p>hashmap和hashtable区别，底层实现</p>
+<p>hashmap就是基于hashtable的，由于哈希表无序所以hashmap页无序，里面存的也是键值对，其他的操作都是转调用hashtable的，使用方法与map的方式一样。hashmap在初始时会给它分配大小为100的表格</p>
+<p>hashtable就是首先维护一个buckets vector，vector里面放的是一个一个的bucket，每个bucket又维护一个链表.当我们要插入数据时，首先要检查是不是需要扩容再插入，当我们插入数据以后的元素值大于了buckets vector的大小那就要扩容了，扩容其实就是按照新元素个数分配一个最接近并大于他的质数大小的临时vector，再把原buckets中的每一个bucket中的每一个元素进行处理，判断它是在临时vector中的哪个bucket下，这样都处理完以后，把临时vector和buckets vector对调，释放临时vector就完成扩容了；接下的插入操作，如果是unique插入那先遍历一遍bucket的链表，链表里面有的话就不插入返回false了，如果没有就插在第一个节点前；如果是equal插入那就有的话插在该节点前，没有就插在最前面</p>
+</li>
+<li><p>如何解决哈希冲突</p>
+<p>比较简单的有线性探测，二次探测等，也就是当这个冲突了那就去找下一个或下个平方个有没有数据，二次探测时如果我们设计哈希表的大小是质数只要负载系数不超过0.5，插入一个新节点的探测次数就不会超过2</p>
+<p>STL中用的是开链来解决的，此时哈希表的负载系数就可以大于1了，也就是每个节点下面维护一个哈希链表。</p>
+</li>
+<li><p>重载和重写：</p>
+<p>重载是指几个同名函数，它们的返回值、参数列表中的参数个数、参数类型等必须有某些不同，这样编译器会生成几个不同编号名的函数，在运行时可以根据参数推导出用哪个函数；重写是对基类的虚函数进行重写以实现多态的，但是必须是重写虚函数才行，重写普通函数成员是不能实现多态的，因为普通成员函数他是放在对象内存外的，基类生成基类的实体、派生类生成派生类的实体，用基类指针指向派生类去调用该普通成员函数，实际使用的还是基类实体</p>
+</li>
+<li><p>程序出现内存溢出的原因</p>
+<p>首先肯定是new以后没有正确的delete。具体可能是我们自己写的析构函数里面只有删除对象而没有释放内存；还有可能存在继承的时候没有把基类的析构函数写成虚函数，这样在析构时就只调用了基类子对象的析构函数而没有调用派生类对象的析构函数，析构不完全；或者说我们new的时候new的是一个数组而delete的时候忘记加[]了那就只是delete掉了数组的第一个元素；还有可能当一个类没有定义拷贝构造函数或者重载赋值运算符而且这个类又有指针成员时，那在拷贝的时候就会调用默认拷贝构造采用值传递了，也就是用的是浅拷贝导致两个对象拥有指向同一块内存的指针，那我们用第一个对象delete时已经把这块内存释放掉了，此时再用第二个对象的delete就会发生堆崩溃了，所以当有指针成员的时候需要使用深拷贝。还有一种可能情况是出现了智能指针的循环引用问题，一个释放的条件是另一个指针的释放，此时应该用<code>weak_ptr</code>来解决。</p>
+</li>
+</ul>
+<h3 id="排序算法"><a href="#排序算法" class="headerlink" title="排序算法"></a>排序算法</h3><h4 id="时间复杂度-O-n-2"><a href="#时间复杂度-O-n-2" class="headerlink" title="时间复杂度$O(n^2)$"></a>时间复杂度$O(n^2)$</h4><ul>
+<li><p>不使用额外空间交换数组中的两个数，使用异或位运算进行</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">arr[i] = arr[i]^arr[j];</span><br><span class="line">arr[j] = arr[i]^arr[j];</span><br><span class="line">arr[i] = arr[j]^arr[i];</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="冒泡排序（稳定）"><a href="#冒泡排序（稳定）" class="headerlink" title="冒泡排序（稳定）"></a>冒泡排序（稳定）</h5><ul>
+<li><p>就是比较相邻的两个数，如果左边的数比右边的数大那就交换位置，这样一轮循环下来就会把最大的数交换到这一轮的末尾（冒泡稳定）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">bubbleSort</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; arr.<span class="built_in">size</span>() - <span class="number">1</span>; ++i) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; arr.<span class="built_in">size</span>() <span class="number">-1</span> -i; ++j) &#123;</span><br><span class="line">            <span class="keyword">if</span> (arr[j] &gt; arr[j + <span class="number">1</span>])</span><br><span class="line">                <span class="built_in">swap</span> (arr[j], arr[j + <span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> arr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="选择排序（不稳定）"><a href="#选择排序（不稳定）" class="headerlink" title="选择排序（不稳定）"></a>选择排序（不稳定）</h5><ul>
+<li><p>遍历多次，每次都得到当前遍历范围内最小的数放在当前范围的首位（不稳定）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">selectSort</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr)</span> </span>&#123;</span><br><span class="line">	<span class="type">int</span> minIndex;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; arr.<span class="built_in">size</span>() - <span class="number">1</span>; ++i) &#123;</span><br><span class="line">        minIndex = i;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = i + <span class="number">1</span>; j &lt; arr.<span class="built_in">size</span>(); ++j) &#123;</span><br><span class="line">            <span class="keyword">if</span> (arr[j] &lt; arr[minIndex]) </span><br><span class="line">                minIndex = j;</span><br><span class="line">		&#125;</span><br><span class="line">        <span class="type">int</span> temp = arr[i];</span><br><span class="line">        arr[i] = arr[minIndex];</span><br><span class="line">        arr[minIndex] = temp;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> arr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>选择排序的优化是使用二元选择排序，也就是只遍历<code>arr.size()/2</code>就可以，但在内循环中既找到最小的也找到最大的</p>
+</li>
+</ul>
+<h5 id="插入排序（稳定）"><a href="#插入排序（稳定）" class="headerlink" title="插入排序（稳定）"></a>插入排序（稳定）</h5><ul>
+<li><p>思想就是在插入一个数的时候通过比较直接找到它合适的位置，把它放进去</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">insertSort</span> <span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; arr.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">        <span class="type">int</span> cur = arr[i];</span><br><span class="line">        <span class="type">int</span> j = i - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (j &gt;= <span class="number">0</span> &amp;&amp; arr[j] &gt; cur) &#123;</span><br><span class="line">            arr[j + <span class="number">1</span>] = arr[j];</span><br><span class="line">            --j;</span><br><span class="line">        &#125;</span><br><span class="line">        arr[j + <span class="number">1</span>] = cur;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="时间复杂度-O-nlogn"><a href="#时间复杂度-O-nlogn" class="headerlink" title="时间复杂度$O(nlogn)$"></a>时间复杂度$O(nlogn)$</h4><h5 id="希尔排序（不稳定）"><a href="#希尔排序（不稳定）" class="headerlink" title="希尔排序（不稳定）"></a>希尔排序（不稳定）</h5><ul>
+<li>每隔一定的间隔把数组分成若干组，每组里面用插入排序</li>
+<li>逐渐缩小间隔</li>
+<li>最后间隔缩小到1就是原始的插入排序了，但此时已经大部分都有序了所以只需要交换较少次数</li>
+</ul>
+<h5 id="堆排序（不稳定）"><a href="#堆排序（不稳定）" class="headerlink" title="堆排序（不稳定）"></a>堆排序（不稳定）</h5><ul>
+<li>堆排序其实就是用优先队列，默认是大顶堆（less<int>），大顶堆不断<code>pop()</code>就得到一个递增序列</int></li>
+</ul>
+<h5 id="快排（不稳定）"><a href="#快排（不稳定）" class="headerlink" title="快排（不稳定）"></a>快排（不稳定）</h5><ul>
+<li><p>快排就是先选择一个基数，把原数组从基数划分开，一个都小于基数，一个都大于基数，不断堆划分开的数组递归排序</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">quickSort</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">quick</span>(arr, <span class="number">0</span>, arr.<span class="built_in">size</span>()<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//随机选择基数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">select_pivot</span> <span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr, <span class="type">int</span> low, <span class="type">int</span> high)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> len = high - low + <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> index = low + (<span class="built_in">rand</span>() % len);</span><br><span class="line">    <span class="built_in">swap</span> (arr[index], arr[low]);</span><br><span class="line">    <span class="keyword">return</span> low;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//根据基数划分数组</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">partition</span> <span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr, <span class="type">int</span> low, <span class="type">int</span> high)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> pivot = <span class="built_in">select_pivot</span>(arr,low,high);</span><br><span class="line">    <span class="type">int</span> mid = low;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = low + <span class="number">1</span>; i &lt;= high; ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr[i] &lt; arr[pivot]) &#123;</span><br><span class="line">            ++mid;</span><br><span class="line">            <span class="built_in">swap</span>(arr[i], arr[mid]);</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="built_in">swap</span>(arr[pivot], arr[mid]);</span><br><span class="line">    <span class="keyword">return</span> mid;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">quick</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr, <span class="type">int</span> low, <span class="type">int</span> high)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (low &gt;= high) <span class="keyword">return</span>;</span><br><span class="line">    <span class="type">int</span> mid = <span class="built_in">partition</span>(arr, low, high);</span><br><span class="line">    <span class="built_in">quick</span>(arr, low, mid - <span class="number">1</span>);</span><br><span class="line">    <span class="built_in">quick</span>(arr, mid + <span class="number">1</span>, high);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="归并排序（稳定）"><a href="#归并排序（稳定）" class="headerlink" title="归并排序（稳定）"></a>归并排序（稳定）</h5><ul>
+<li><p>就是不断把数组二分分到只有一个就有序了，再把这些有序的合并起来</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">sort</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (arr.<span class="built_in">size</span>() &lt; <span class="number">2</span>) <span class="keyword">return</span>;</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">temp</span><span class="params">(arr.size())</span></span>;</span><br><span class="line">    <span class="built_in">MergeSort</span>(arr, <span class="number">0</span>, arr.<span class="built_in">size</span>() - <span class="number">1</span>, temp);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">MergeSort</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr, <span class="type">int</span> left, <span class="type">int</span> right, vector&lt;<span class="type">int</span>&gt;&amp; temp)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (left == right) <span class="keyword">return</span>;</span><br><span class="line">    <span class="type">int</span> mid = (left + right) / <span class="number">2</span>;</span><br><span class="line">    <span class="built_in">MergeSort</span> (arr, left, mid, temp);<span class="comment">//把arr的left到mid排好序放在temp的前半段</span></span><br><span class="line">    <span class="built_in">MergeSort</span> (arr, mid + <span class="number">1</span>, right, temp);<span class="comment">//把arr的mid+1到right排好序放在temp的后半段</span></span><br><span class="line">    <span class="built_in">merge</span> (arr, left, right, temp);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">merge</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; arr, <span class="type">int</span> left, <span class="type">int</span> right, vector&lt;<span class="type">int</span>&gt;&amp; temp)</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> mid = (left + right) / <span class="number">2</span>;</span><br><span class="line">    <span class="type">int</span> index1 = left, start2 = mid + <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> index2 = start2;</span><br><span class="line">    <span class="keyword">while</span> (index1 &lt;= mid &amp;&amp; index2 &lt;= end) &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr[index1] &lt;= arr[index2]) &#123;</span><br><span class="line">            temp[index1 + index2 - start2] = arr[index1];</span><br><span class="line">            ++index1;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            temp[index1 + index2 - start2] = arr[index2];</span><br><span class="line">            ++index2;</span><br><span class="line">        &#125;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">while</span> (index1 &lt;= mid) &#123;</span><br><span class="line">        temp[index1 + index2 - start2] = arr[index1];</span><br><span class="line">        ++index1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (index2 &lt;= end) &#123;</span><br><span class="line">        temp[index1 + index2 - start2] = arr[index2];</span><br><span class="line">        ++index2;</span><br><span class="line">    &#125;</span><br><span class="line">    arr.<span class="built_in">assign</span>(temp.<span class="built_in">begin</span>(), temp.<span class="built_in">end</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="时间复杂度-O-n"><a href="#时间复杂度-O-n" class="headerlink" title="时间复杂度$O(n)$"></a>时间复杂度$O(n)$</h4><h5 id="计数排序"><a href="#计数排序" class="headerlink" title="计数排序"></a>计数排序</h5><ul>
+<li>思想就是先遍历一边数组，把每个元素对应的数量都放在map里，然后再第二次遍历数组时，每遍历一个数组就算一下它应该在哪个位置（也就是前面所有比他小的数字的和），直接把他放到那个位置就行了</li>
+</ul>
+<h5 id="桶排序"><a href="#桶排序" class="headerlink" title="桶排序"></a>桶排序</h5><ul>
+<li><p>把数据均匀的分在每个桶里，每个桶在自己选择排序算法，排号以后合并桶</p>
+</li>
+<li><p>排序那些是稳定的，怎么理解稳定：稳定就是排序过程中已经确定的元素的相对顺序不变。插入、冒泡、归并排序都是稳定的。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/wyt-blog.github.io/tags/%E5%85%B6%E4%BB%96/" rel="tag"># 其他</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/06/04/%E5%85%B6%E4%BB%96/" rel="prev" title="其他">
+      <i class="fa fa-chevron-left"></i> 其他
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/wyt-blog.github.io/2022/07/14/%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B/" rel="next" title="测试用例">
+      测试用例 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C"><span class="nav-text">网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OS"><span class="nav-text">OS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#linux"><span class="nav-text">linux</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C"><span class="nav-text">C++</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95"><span class="nav-text">排序算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-O-n-2"><span class="nav-text">时间复杂度$O(n^2)$</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F%EF%BC%88%E7%A8%B3%E5%AE%9A%EF%BC%89"><span class="nav-text">冒泡排序（稳定）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8D%E7%A8%B3%E5%AE%9A%EF%BC%89"><span class="nav-text">选择排序（不稳定）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%E6%8E%92%E5%BA%8F%EF%BC%88%E7%A8%B3%E5%AE%9A%EF%BC%89"><span class="nav-text">插入排序（稳定）</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-O-nlogn"><span class="nav-text">时间复杂度$O(nlogn)$</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8D%E7%A8%B3%E5%AE%9A%EF%BC%89"><span class="nav-text">希尔排序（不稳定）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A0%86%E6%8E%92%E5%BA%8F%EF%BC%88%E4%B8%8D%E7%A8%B3%E5%AE%9A%EF%BC%89"><span class="nav-text">堆排序（不稳定）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BF%AB%E6%8E%92%EF%BC%88%E4%B8%8D%E7%A8%B3%E5%AE%9A%EF%BC%89"><span class="nav-text">快排（不稳定）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%EF%BC%88%E7%A8%B3%E5%AE%9A%EF%BC%89"><span class="nav-text">归并排序（稳定）</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-O-n"><span class="nav-text">时间复杂度$O(n)$</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%A1%E6%95%B0%E6%8E%92%E5%BA%8F"><span class="nav-text">计数排序</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A1%B6%E6%8E%92%E5%BA%8F"><span class="nav-text">桶排序</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="魏宇彤"
+      src="/wyt-blog.github.io/images/avatar.png">
+  <p class="site-author-name" itemprop="name">魏宇彤</p>
+  <div class="site-description" itemprop="description">学习总结</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/wyt-blog.github.io/archives/">
+        
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/wyt-blog.github.io/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/wyt-blog.github.io/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wyt20210811/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wyt20210811&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/wyt-blog.github.io/1932267269@qq.com" title="E-Mail → 1932267269@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/wyt-blog.github.io/lib/anime.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/wyt-blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/wyt-blog.github.io/js/utils.js"></script>
+
+<script src="/wyt-blog.github.io/js/motion.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/wyt-blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
